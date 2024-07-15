@@ -1,4 +1,8 @@
 --Class
+require 'engine/moveable'
+G = require 'globals'
+utf8 = require 'utf8'
+
 DynaText = Moveable:extend()
 
 --Class Methods
@@ -14,8 +18,8 @@ function DynaText:init(config)
     if config.string and type(config.string) ~= 'table' then config.string = {config.string} end
     self.string = (config.string and type(config.string) == 'table' and config.string[1]) or {'HELLO WORLD'}
     self.text_offset = {
-        x = self.font.TEXT_OFFSET.x*self.scale + (self.config.x_offset or 0),
-        y = self.font.TEXT_OFFSET.y*self.scale + (self.config.y_offset or 0),
+        x = G.FONTS.TEXT_OFFSET.x*self.scale + (self.config.x_offset or 0),
+        y = G.FONTS.TEXT_OFFSET.y*self.scale + (self.config.y_offset or 0),
     }
     self.colours = config.colours or {G.C.RED}
     self.created_time = G.TIMERS.REAL
@@ -108,23 +112,23 @@ function DynaText:update_text(first_pass)
                 local current_letter = 1
                 self.strings[k].letters = {}--EMPTY(self.strings[k].letters)
 
-                for _, c in utf8.chars(v) do
-                    local old_letter = old_letters and old_letters[current_letter] or nil
-                    local let_tab = {letter = love.graphics.newText(self.font.FONT, c), char = c, scale = old_letter and old_letter.scale or part_scale}
-                    self.strings[k].letters[current_letter] = let_tab
-                    local tx = self.font.FONT:getWidth(c)*self.scale*part_scale*G.TILESCALE*self.font.FONTSCALE + 2.7*(self.config.spacing or 0)*G.TILESCALE*self.font.FONTSCALE
-                    local ty = self.font.FONT:getHeight(c)*self.scale*part_scale*G.TILESCALE*self.font.FONTSCALE*self.font.TEXT_HEIGHT_SCALE
-                    let_tab.offset = old_letter and old_letter.offset or {x = 0, y = 0}
-                    let_tab.dims = {x = tx/(self.font.FONTSCALE*G.TILESCALE), y = ty/(self.font.FONTSCALE*G.TILESCALE)}
-                    let_tab.pop_in = first_pass and (old_letter and old_letter.pop_in or (self.config.pop_in and 0 or 1)) or 1
-                    let_tab.prefix = current_letter <= part_a and outer_colour or nil
-                    let_tab.suffix = current_letter > part_b and outer_colour or nil
-                    let_tab.colour = inner_colour or nil
-                    if k > 1 then let_tab.pop_in = 0 end
-                    tempW = tempW + tx/(G.TILESIZE*G.TILESCALE)
-                    tempH = math.max(ty/(G.TILESIZE*G.TILESCALE), tempH)
-                    current_letter = current_letter + 1
-                end
+                -- for _, c in utf8.chars(v) do
+                --     local old_letter = old_letters and old_letters[current_letter] or nil
+                --     local let_tab = {letter = love.graphics.newText(self.font.FONT, c), char = c, scale = old_letter and old_letter.scale or part_scale}
+                --     self.strings[k].letters[current_letter] = let_tab
+                --     local tx = self.font.FONT:getWidth(c)*self.scale*part_scale*G.TILESCALE*self.font.FONTSCALE + 2.7*(self.config.spacing or 0)*G.TILESCALE*self.font.FONTSCALE
+                --     local ty = self.font.FONT:getHeight(c)*self.scale*part_scale*G.TILESCALE*self.font.FONTSCALE*self.font.TEXT_HEIGHT_SCALE
+                --     let_tab.offset = old_letter and old_letter.offset or {x = 0, y = 0}
+                --     let_tab.dims = {x = tx/(self.font.FONTSCALE*G.TILESCALE), y = ty/(self.font.FONTSCALE*G.TILESCALE)}
+                --     let_tab.pop_in = first_pass and (old_letter and old_letter.pop_in or (self.config.pop_in and 0 or 1)) or 1
+                --     let_tab.prefix = current_letter <= part_a and outer_colour or nil
+                --     let_tab.suffix = current_letter > part_b and outer_colour or nil
+                --     let_tab.colour = inner_colour or nil
+                --     if k > 1 then let_tab.pop_in = 0 end
+                --     tempW = tempW + tx/(G.TILESIZE*G.TILESCALE)
+                --     tempH = math.max(ty/(G.TILESIZE*G.TILESCALE), tempH)
+                --     current_letter = current_letter + 1
+                -- end
 
                 self.strings[k].W = tempW
                 self.strings[k].H = tempH

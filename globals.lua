@@ -42,6 +42,7 @@ G.ARGS = {
 G.C = {
     BLUE = HEX:HEX("009dff"),
     RED = HEX:HEX('FE5F55'),
+    WHITE = HEX:HEX('FFFFFF'),
 }
 
 G.SANDBOX = {
@@ -55,5 +56,34 @@ G.SANDBOX = {
     card_size = 1,
     gamespeed = 0
 }
+
+G.FONTS = {
+    file = "resources/fonts/m6x11plus.ttf", render_scale = G.TILESIZE*10, TEXT_HEIGHT_SCALE = 0.83, TEXT_OFFSET = {x=10,y=-20}, FONTSCALE = 0.1, squish = 1, DESCSCALE = 1
+    -- {file = "resources/fonts/NotoSansSC-Bold.ttf", render_scale = G.TILESIZE*7, TEXT_HEIGHT_SCALE = 0.7, TEXT_OFFSET = {x=0,y=-35}, FONTSCALE = 0.12, squish = 1, DESCSCALE = 1.1},
+    -- {file = "resources/fonts/NotoSansTC-Bold.ttf", render_scale = G.TILESIZE*7, TEXT_HEIGHT_SCALE = 0.7, TEXT_OFFSET = {x=0,y=-35}, FONTSCALE = 0.12, squish = 1, DESCSCALE = 1.1},
+    -- {file = "resources/fonts/NotoSansKR-Bold.ttf", render_scale = G.TILESIZE*7, TEXT_HEIGHT_SCALE = 0.8, TEXT_OFFSET = {x=0,y=-20}, FONTSCALE = 0.12, squish = 1, DESCSCALE = 1},
+    -- {file = "resources/fonts/NotoSansJP-Bold.ttf", render_scale = G.TILESIZE*7, TEXT_HEIGHT_SCALE = 0.8, TEXT_OFFSET = {x=0,y=-20}, FONTSCALE = 0.12, squish = 1, DESCSCALE = 1},
+    -- {file = "resources/fonts/NotoSans-Bold.ttf", render_scale = G.TILESIZE*7, TEXT_HEIGHT_SCALE = 0.65, TEXT_OFFSET = {x=0,y=-40}, FONTSCALE = 0.12, squish = 1, DESCSCALE = 1},
+    -- {file = "resources/fonts/m6x11plus.ttf", render_scale = G.TILESIZE*10, TEXT_HEIGHT_SCALE = 0.9, TEXT_OFFSET = {x=10,y=15}, FONTSCALE = 0.1, squish = 1, DESCSCALE = 1},
+    -- {file = "resources/fonts/GoNotoCurrent-Bold.ttf", render_scale = G.TILESIZE*10, TEXT_HEIGHT_SCALE = 0.8, TEXT_OFFSET = {x=10,y=-20}, FONTSCALE = 0.1, squish = 1, DESCSCALE = 1},
+    -- {file = "resources/fonts/GoNotoCJKCore.ttf", render_scale = G.TILESIZE*10, TEXT_HEIGHT_SCALE = 0.8, TEXT_OFFSET = {x=10,y=-20}, FONTSCALE = 0.1, squish = 1, DESCSCALE = 1},
+}
+G.STATES = {
+    MENU = 1,
+    TUTORIAL = 2,
+    SPLASH = 3,
+    SANDBOX = 4,
+}
+G.STAGES = {
+    MAIN_MENU = 1,
+    RUN = 2,
+    SANDBOX = 3
+}
+G.STAGE_OBJECTS = {
+    {},{},{}
+}
+G.STAGE = G.STAGES.MAIN_MENU
+G.STATE = G.STATES.SPLASH
+G.STATE_COMPLETE = false
 
 return G

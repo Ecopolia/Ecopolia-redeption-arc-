@@ -1,3 +1,4 @@
+require 'engine/moveable'
 --Class
 UIBox = Moveable:extend()
 

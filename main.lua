@@ -1,6 +1,8 @@
 if (love.system.getOS() == 'OS X' ) and (jit.arch == 'arm64' or jit.arch == 'arm') then jit.off() end
 i18n = require 'libs/i18n'
 config = require 'config'
+require 'engine/text'
+
 
 local SHADERS = {}
 
@@ -100,13 +102,21 @@ function love.draw()
   love.graphics.setShader()
 
   -- Draw "ECOPOLIA" in the middle of the screen
-  local text = "ECOPOLIA"
-  local textWidth = love.graphics.getFont():getWidth(text)
-  local textHeight = love.graphics.getFont():getHeight()
-  local textX = windowWidth / 2 - textWidth / 2
-  local textY = windowHeight / 2 - textHeight / 2
-  love.graphics.print(text, textX, textY)
-
+  -- local textWidth = love.graphics.getFont():getWidth(text)
+  -- local textHeight = love.graphics.getFont():getHeight()
+  -- local textX = windowWidth / 2 - textWidth / 2
+  -- local textY = windowHeight / 2 - textHeight / 2
+  -- love.graphics.print(text, textX, textY)
+  -- DynaText({string = text, colours = {G.C.WHITE},shadow = true, rotate = true, float = true, bump = true, scale = 0.9, spacing = 1, pop_in = 4.5})
+  local text = DynaText({
+    string = "ECOPOLIA",
+    font = love.graphics.newFont(24),
+    scale = 1,
+    colours = {1, 1, 1, 1},
+    X = 100,
+    Y = 200
+  })
+  text:draw()
   if config.devMode then
     -- Draw "dev mode" banner in the top left corner
     local devModeText = "dev mode"
