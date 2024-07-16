@@ -9,8 +9,10 @@ local SHADERS = {}
 -- Initialize tables
 G = require 'globals'
 HEX = require 'systems/HEX'
+Text = require 'libs/text'
 
 function love.load()
+  -- Set the title of the window
   love.window.setTitle("EcoPolia (redemption arc)")
   
   -- Get the base directory of the project
@@ -32,6 +34,24 @@ function love.load()
   SHADERS.CRT = love.graphics.newShader("ressources/shaders/CRT.fs")
   SHADERS.splash = love.graphics.newShader("ressources/shaders/splash.fs")
   sceneCanvas = love.graphics.newCanvas()
+
+  -- loads fonts
+  Fonts = {
+    default = love.graphics.newFont(16),
+    m6x11plus = love.graphics.newFont("ressources/fonts/m6x11plus.ttf", 72)
+  }
+  -- Enable Advanced Scripting with the [function=lua code] command.
+  Text.configure.function_command_enable(true)
+
+  Text.configure.font_table("Fonts")
+
+  text_ecopolia = Text.new("left", { color = {0.9,0.9,0.9,0.95}, shadow_color = {0.5,0.5,1,0.4}, font = Fonts.m6x11plus, keep_space_on_line_break=true,})
+  text_ecopolia:send("[shake=3][breathe=3]ECOPOLIA[/breathe][/shake]", 320, true)
+
+  text_dev_mode = Text.new("left", { color = {0.9,0.9,0.9,0.95}, shadow_color = {0.5,0.5,1,0.4}, font = Fonts.default, keep_space_on_line_break=true})
+  text_dev_mode:send("dev mode", 320-80, true)
+
+  canvasPixelHeight = sceneCanvas:getPixelHeight()
 end
 
 function love.update(dt)
@@ -51,15 +71,6 @@ function love.update(dt)
   SHADERS.background:send("colour_3", HEX:HEX("374244")) -- Assuming HEX function is correctly defined
   SHADERS.background:send("contrast", 1) -- Example value
   SHADERS.background:send("spin_amount", G.ARGS.spin.amount) -- Now using the dynamically calculated value
-end
-
-function love.draw()
-  -- Set the font and font size
-  love.graphics.setFont(love.graphics.newFont(24))
-
-  -- Set the canvas to draw off-screen
-  love.graphics.setCanvas(sceneCanvas)
-  love.graphics.clear()
 
   -- update splash shader
   SHADERS.splash:send('time', G.SANDBOX.vort_time)
@@ -68,18 +79,6 @@ function love.draw()
   SHADERS.splash:send('colour_2', G.C[G.SANDBOX.col_op[2]])
   SHADERS.splash:send('mid_flash', G.SANDBOX.mid_flash)
   SHADERS.splash:send('vort_offset', 0)
-
-  -- Apply background shader and draw the scene
-   love.graphics.setShader(SHADERS.background)
-  -- love.graphics.setShader(SHADERS.splash)
-  local windowWidth, windowHeight = love.graphics.getDimensions()
-  love.graphics.rectangle("fill", 0, 0, windowWidth, windowHeight)
-
-  -- Reset shader and canvas to draw to the screen
-  love.graphics.setShader()
-  love.graphics.setCanvas()
-
-  canvasPixelHeight = sceneCanvas:getPixelHeight()
 
   -- Update CRT shader parameters
   -- Assuming G.SETTINGS, G.TIMERS, and other necessary variables are already updated
@@ -90,10 +89,38 @@ function love.draw()
   SHADERS.CRT:send('time', 400 + G.TIMERS.REAL)
   SHADERS.CRT:send('noise_fac', 0.001*G.SETTINGS.GRAPHICS.crt/100)
   SHADERS.CRT:send('crt_intensity', 0.16*G.SETTINGS.GRAPHICS.crt/100)
-  SHADERS.CRT:send('glitch_intensity', 0)
+  SHADERS.CRT:send('glitch_intensity', 1)
   SHADERS.CRT:send('scanlines', canvasPixelHeight*0.75/1)
   SHADERS.CRT:send('screen_scale', G.TILESCALE*G.TILESIZE)
   SHADERS.CRT:send('hovering', 1)
+
+  -- update timers
+  G.TIMERS.REAL = G.TIMERS.REAL + dt
+  G.TIMERS.REAL_SHADER = G.TIMERS.REAL_SHADER + dt
+  -- G.TIMERS.BACKGROUND = G.TIMERS.BACKGROUND + dt
+  G.SANDBOX.vort_time = G.SANDBOX.vort_time + dt
+
+  text_ecopolia:update(dt)
+end
+
+function love.draw()
+
+  -- Set the canvas to draw off-screen
+  love.graphics.setCanvas(sceneCanvas)
+  love.graphics.clear()
+
+  -- Apply background shader and draw the scene
+  -- love.graphics.setShader(SHADERS.background)
+  love.graphics.setShader(SHADERS.splash)
+  local windowWidth, windowHeight = love.graphics.getDimensions()
+  love.graphics.rectangle("fill", 0, 0, windowWidth, windowHeight)
+
+  -- Reset shader and canvas to draw to the screen
+  love.graphics.setShader()
+  love.graphics.setCanvas()
+
+  
+
   -- Apply CRT shader and draw the canvas to the screen
   love.graphics.setShader(SHADERS['CRT'])
   love.graphics.draw(sceneCanvas, 0, 0)
@@ -102,29 +129,11 @@ function love.draw()
   love.graphics.setShader()
 
   -- Draw "ECOPOLIA" in the middle of the screen
-  -- local textWidth = love.graphics.getFont():getWidth(text)
-  -- local textHeight = love.graphics.getFont():getHeight()
-  -- local textX = windowWidth / 2 - textWidth / 2
-  -- local textY = windowHeight / 2 - textHeight / 2
-  -- love.graphics.print(text, textX, textY)
-  -- DynaText({string = text, colours = {G.C.WHITE},shadow = true, rotate = true, float = true, bump = true, scale = 0.9, spacing = 1, pop_in = 4.5})
-  local text = DynaText({
-    string = "ECOPOLIA",
-    font = love.graphics.newFont(24),
-    scale = 1,
-    colours = {1, 1, 1, 1},
-    X = 100,
-    Y = 200
-  })
-  text:draw()
+  text_ecopolia:draw( windowWidth / 2 - love.graphics.getFont():getWidth("ECOPOLIA") / 2, windowHeight / 2  - love.graphics.getFont():getHeight() / 2)
+
   if config.devMode then
     -- Draw "dev mode" banner in the top left corner
-    local devModeText = "dev mode"
-    local devModeTextWidth = love.graphics.getFont():getWidth(devModeText)
-    local devModeTextHeight = love.graphics.getFont():getHeight()
-    local devModeTextX = 10
-    local devModeTextY = 10
-    love.graphics.print(devModeText, devModeTextX, devModeTextY)
+    text_dev_mode:draw(10, 10)
   end
 end
 

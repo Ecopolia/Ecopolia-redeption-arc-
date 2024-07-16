@@ -43,13 +43,14 @@ G.C = {
     BLUE = HEX:HEX("009dff"),
     RED = HEX:HEX('FE5F55'),
     WHITE = HEX:HEX('FFFFFF'),
+    DARK_GREEN = HEX:HEX('059212'),
+    LIGHT_GREEN = HEX:HEX('9BEC00'),
 }
 
 G.SANDBOX = {
     vort_time = 7,
     vort_speed = 0,
-    col_op = {'RED','BLUE','GREEN','BLACK','L_BLACK','WHITE','EDITION','DARK_EDITION','ORANGE','PURPLE'},
-    col1 = G.C.RED,col2 = G.C.BLUE,
+    col_op = {'DARK_GREEN','LIGHT_GREEN','RED','BLUE','GREEN','BLACK','L_BLACK','WHITE','EDITION','DARK_EDITION','ORANGE','PURPLE'},
     mid_flash = 0,
     edition = 'base',
     tilt = 1,
