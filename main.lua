@@ -1,38 +1,48 @@
 if (love.system.getOS() == 'OS X' ) and (jit.arch == 'arm64' or jit.arch == 'arm') then jit.off() end
 i18n = require 'libs/i18n'
 config = require 'config'
-require 'engine/text'
+HEX = require 'systems/HEX'
 
 
-local SHADERS = {}
+require 'engine/object'
+require 'engine/event'
+require 'engine/node'
+require 'engine/moveable'
+require 'engine/sprite'
+require 'game'
+require 'globals'
+require 'helper_garbage'
+
+
+-- local SHADERS = {}
 
 -- Initialize tables
-G = require 'globals'
-HEX = require 'systems/HEX'
+
 Text = require 'libs/text'
 
 function love.load()
-  -- Set the title of the window
-  love.window.setTitle("EcoPolia (redemption arc)")
+  if config.devMode then
+    love._openConsole()
+  end
+  G:start_up()
+
+  -- -- Set the title of the window
+  -- love.window.setTitle("EcoPolia (redemption arc)")
+  -- love.graphics.setLineStyle("rough")
   
-  -- Get the base directory of the project
-  local baseDir = love.filesystem.getSource()
+  -- -- Get the base directory of the project
+  -- local baseDir = love.filesystem.getSource()
 
-  -- Construct the relative paths
-  local enPath = baseDir .. '/i18n/en.lua'
-  local frPath = baseDir .. '/i18n/fr.lua'
-  local soundPath = baseDir .. '/assets/sounds/main_grassland.mp3'
+  -- -- Construct the relative paths
+  -- local enPath = baseDir .. '/i18n/en.lua'
+  -- local frPath = baseDir .. '/i18n/fr.lua'
+  -- local soundPath = baseDir .. '/assets/sounds/main_grassland.mp3'
 
-  -- Load the language files
-  i18n.loadFile(enPath)
-  i18n.loadFile(frPath)
+  -- -- Load the language files
+  -- i18n.loadFile(enPath)
+  -- i18n.loadFile(frPath)
 
-  i18n.setLocale('fr')
-
-  --Load all shaders from resources
-  SHADERS.background = love.graphics.newShader("ressources/shaders/background.fs")
-  SHADERS.CRT = love.graphics.newShader("ressources/shaders/CRT.fs")
-  SHADERS.splash = love.graphics.newShader("ressources/shaders/splash.fs")
+  -- i18n.setLocale('fr')
   sceneCanvas = love.graphics.newCanvas()
 
   -- loads fonts
@@ -45,73 +55,61 @@ function love.load()
 
   Text.configure.font_table("Fonts")
 
-  text_ecopolia = Text.new("left", { color = {0.9,0.9,0.9,0.95}, shadow_color = {0.5,0.5,1,0.4}, font = Fonts.m6x11plus, keep_space_on_line_break=true,})
-  text_ecopolia:send("[shake=3][breathe=3]ECOPOLIA[/breathe][/shake]", 320, true)
+
 
   text_dev_mode = Text.new("left", { color = {0.9,0.9,0.9,0.95}, shadow_color = {0.5,0.5,1,0.4}, font = Fonts.default, keep_space_on_line_break=true})
   text_dev_mode:send("dev mode", 320-80, true)
 
   canvasPixelHeight = sceneCanvas:getPixelHeight()
+
 end
 
 function love.update(dt)
-  -- Calculate _dt based on the condition provided
-  local _dt = G.ARGS.spin.amount > G.ARGS.spin.eased and dt*2. or 0.3*dt
-  local delta = G.ARGS.spin.real - G.ARGS.spin.eased
-  if math.abs(delta) > _dt then delta = delta * _dt / math.abs(delta) end
-  G.ARGS.spin.eased = G.ARGS.spin.eased + delta
-  G.ARGS.spin.amount = _dt * (G.ARGS.spin.eased) + (1 - _dt) * G.ARGS.spin.amount
-  G.TIMERS.BACKGROUND = G.TIMERS.BACKGROUND - 60 * (G.ARGS.spin.eased - G.ARGS.spin.amount) * _dt
+  -- -- Update shader parameters dynamically
+  -- SHADERS.background:send("time", love.timer.getTime())
+  -- SHADERS.background:send("spin_time", G.TIMERS.BACKGROUND) -- Now using the dynamically calculated value
+  -- SHADERS.background:send("colour_1", HEX:HEX("374244")) -- Assuming HEX function is correctly defined
+  -- SHADERS.background:send("colour_2", {1, 1, 0, 1}) -- Lighter Green
+  -- SHADERS.background:send("colour_3", HEX:HEX("374244")) -- Assuming HEX function is correctly defined
+  -- SHADERS.background:send("contrast", 1) -- Example value
+  -- SHADERS.background:send("spin_amount", G.ARGS.spin.amount) -- Now using the dynamically calculated value
 
-  -- Update shader parameters dynamically
-  SHADERS.background:send("time", love.timer.getTime())
-  SHADERS.background:send("spin_time", G.TIMERS.BACKGROUND) -- Now using the dynamically calculated value
-  SHADERS.background:send("colour_1", HEX:HEX("374244")) -- Assuming HEX function is correctly defined
-  SHADERS.background:send("colour_2", {1, 1, 0, 1}) -- Lighter Green
-  SHADERS.background:send("colour_3", HEX:HEX("374244")) -- Assuming HEX function is correctly defined
-  SHADERS.background:send("contrast", 1) -- Example value
-  SHADERS.background:send("spin_amount", G.ARGS.spin.amount) -- Now using the dynamically calculated value
+  -- -- update splash shader
+  G.SHADERS['splash']:send('time', G.SANDBOX.vort_time)
+  G.SHADERS['splash']:send('vort_speed', G.SANDBOX.vort_speed + 0.4)
+  G.SHADERS['splash']:send('colour_1', G.C[G.SANDBOX.col_op[1]])
+  G.SHADERS['splash']:send('colour_2', G.C[G.SANDBOX.col_op[2]])
+  G.SHADERS['splash']:send('mid_flash', G.SANDBOX.mid_flash)
+  G.SHADERS['splash']:send('vort_offset', 0)
 
-  -- update splash shader
-  SHADERS.splash:send('time', G.SANDBOX.vort_time)
-  SHADERS.splash:send('vort_speed', G.SANDBOX.vort_speed + 0.4)
-  SHADERS.splash:send('colour_1', G.C[G.SANDBOX.col_op[1]])
-  SHADERS.splash:send('colour_2', G.C[G.SANDBOX.col_op[2]])
-  SHADERS.splash:send('mid_flash', G.SANDBOX.mid_flash)
-  SHADERS.splash:send('vort_offset', 0)
+  G.SHADERS['CRT']:send('distortion_fac', {1.0 + 0.07*G.SETTINGS.GRAPHICS.crt/100, 1.0 + 0.1*G.SETTINGS.GRAPHICS.crt/100})
+  G.SHADERS['CRT']:send('scale_fac', {1.0 - 0.008*G.SETTINGS.GRAPHICS.crt/100, 1.0 - 0.008*G.SETTINGS.GRAPHICS.crt/100})
+  G.SHADERS['CRT']:send('feather_fac', 0.01)
+  G.SHADERS['CRT']:send('bloom_fac', G.SETTINGS.GRAPHICS.bloom - 1)
+  G.SHADERS['CRT']:send('time', 400 + G.TIMERS.REAL)
+  G.SHADERS['CRT']:send('noise_fac', 0.001*G.SETTINGS.GRAPHICS.crt/100)
+  G.SHADERS['CRT']:send('crt_intensity', 0.16*G.SETTINGS.GRAPHICS.crt/100)
+  G.SHADERS['CRT']:send('glitch_intensity', 1)
+  G.SHADERS['CRT']:send('scanlines', canvasPixelHeight*0.75/1)
+  G.SHADERS['CRT']:send('screen_scale', G.TILESCALE*G.TILESIZE)
+  G.SHADERS['CRT']:send('hovering', 1)
 
-  -- Update CRT shader parameters
-  -- Assuming G.SETTINGS, G.TIMERS, and other necessary variables are already updated
-  SHADERS.CRT:send('distortion_fac', {1.0 + 0.07*G.SETTINGS.GRAPHICS.crt/100, 1.0 + 0.1*G.SETTINGS.GRAPHICS.crt/100})
-  SHADERS.CRT:send('scale_fac', {1.0 - 0.008*G.SETTINGS.GRAPHICS.crt/100, 1.0 - 0.008*G.SETTINGS.GRAPHICS.crt/100})
-  SHADERS.CRT:send('feather_fac', 0.01)
-  SHADERS.CRT:send('bloom_fac', G.SETTINGS.GRAPHICS.bloom - 1)
-  SHADERS.CRT:send('time', 400 + G.TIMERS.REAL)
-  SHADERS.CRT:send('noise_fac', 0.001*G.SETTINGS.GRAPHICS.crt/100)
-  SHADERS.CRT:send('crt_intensity', 0.16*G.SETTINGS.GRAPHICS.crt/100)
-  SHADERS.CRT:send('glitch_intensity', 1)
-  SHADERS.CRT:send('scanlines', canvasPixelHeight*0.75/1)
-  SHADERS.CRT:send('screen_scale', G.TILESCALE*G.TILESIZE)
-  SHADERS.CRT:send('hovering', 1)
-
-  -- update timers
-  G.TIMERS.REAL = G.TIMERS.REAL + dt
-  G.TIMERS.REAL_SHADER = G.TIMERS.REAL_SHADER + dt
-  -- G.TIMERS.BACKGROUND = G.TIMERS.BACKGROUND + dt
   G.SANDBOX.vort_time = G.SANDBOX.vort_time + dt
 
-  text_ecopolia:update(dt)
+  if G.text_ecopolia then G.text_ecopolia:update(dt) end
+  timer_checkpoint(nil, 'update', true)
+  G:update(dt)
 end
 
 function love.draw()
-
+  timer_checkpoint(nil, 'draw', true)
   -- Set the canvas to draw off-screen
   love.graphics.setCanvas(sceneCanvas)
   love.graphics.clear()
 
   -- Apply background shader and draw the scene
   -- love.graphics.setShader(SHADERS.background)
-  love.graphics.setShader(SHADERS.splash)
+  love.graphics.setShader(G.SHADERS['splash'])
   local windowWidth, windowHeight = love.graphics.getDimensions()
   love.graphics.rectangle("fill", 0, 0, windowWidth, windowHeight)
 
@@ -122,19 +120,21 @@ function love.draw()
   
 
   -- Apply CRT shader and draw the canvas to the screen
-  love.graphics.setShader(SHADERS['CRT'])
+  love.graphics.setShader(G.SHADERS['CRT'])
   love.graphics.draw(sceneCanvas, 0, 0)
 
   -- Reset shader after drawing
   love.graphics.setShader()
 
   -- Draw "ECOPOLIA" in the middle of the screen
-  text_ecopolia:draw( windowWidth / 2 - love.graphics.getFont():getWidth("ECOPOLIA") / 2, windowHeight / 2  - love.graphics.getFont():getHeight() / 2)
-
+  if G.text_ecopolia then
+    G.text_ecopolia:draw(windowWidth / 2 - love.graphics.getFont():getWidth("ECOPOLIA") / 2, windowHeight / 2 - love.graphics.getFont():getHeight() / 2)
+  end
   if config.devMode then
     -- Draw "dev mode" banner in the top left corner
     text_dev_mode:draw(10, 10)
   end
+  
 end
 
 function love.keypressed(key)

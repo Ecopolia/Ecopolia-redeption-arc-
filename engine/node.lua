@@ -1,4 +1,3 @@
-require 'engine/object'
 ---@class Node
 Node = Object:extend()
 
