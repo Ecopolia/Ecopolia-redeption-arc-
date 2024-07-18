@@ -167,7 +167,7 @@ function Game:splash_screen()
         func = (function()
             print("Event 2 triggered!")
             G.text_ecopolia = Text.new("left", { color = {0.9,0.9,0.9,0.95}, shadow_color = {0.5,0.5,1,0.4}, font = Fonts.m6x11plus, keep_space_on_line_break=true,})
-            G.text_ecopolia:send("[shake=3][breathe=3]ECOPOLIA[/breathe][/shake]", 320, true)
+            G.text_ecopolia:send("[shake=3][breathe=3]ECOPOLIA [blink]|[/blink][/breathe][/shake]", 320, false)
         return true
     end)
     }))
@@ -252,34 +252,40 @@ function Game:update(dt)
 end
 
 function Game:draw()
-    G.FRAMES.DRAW = G.FRAMES.DRAW + 1
-    --draw the room
-    reset_drawhash()
-    timer_checkpoint('start->canvas', 'draw')
+    timer_checkpoint(nil, 'draw', true)
+    -- Set the canvas to draw off-screen
+    love.graphics.setCanvas(sceneCanvas)
+    love.graphics.clear()
 
-    love.graphics.setCanvas{self.CANVAS}
-    love.graphics.push()
-    love.graphics.scale(G.CANV_SCALE)
+    -- Apply background shader and draw the scene
+    -- love.graphics.setShader(SHADERS.background)
+    love.graphics.setShader(G.SHADERS['splash'])
 
+    local windowWidth, windowHeight = love.graphics.getDimensions()
+    love.graphics.rectangle("fill", 0, 0, windowWidth, windowHeight)
+
+    -- Reset shader and canvas to draw to the screen
     love.graphics.setShader()
-    love.graphics.clear(0,0,0,1)
-    
-    for k, v in pairs(self.I.NODE) do
-        if not v.parent then 
-            love.graphics.push()
-            v:translate_container()
-            v:draw()
-            love.graphics.pop()
-        end
-    end
+    love.graphics.setCanvas()
 
-    for k, v in pairs(self.I.MOVEABLE) do
-        if not v.parent then 
-            love.graphics.push()
-            v:translate_container()
-            v:draw()
-            love.graphics.pop()
-        end
+    -- Apply CRT shader and draw the canvas to the screen
+    love.graphics.setShader(G.SHADERS['CRT'])
+
+    love.graphics.draw(sceneCanvas, 0, 0)
+
+    -- Reset shader after drawing
+    love.graphics.setShader()
+
+    -- Draw "ECOPOLIA" in the middle of the screen
+    if G.text_ecopolia then
+        G.text_ecopolia:draw(windowWidth / 2 -
+                                 love.graphics.getFont():getWidth("ECOPOLIA") /
+                                 2, windowHeight / 2 -
+                                 love.graphics.getFont():getHeight() / 2)
+    end
+    if config.devMode then
+        -- Draw "dev mode" banner in the top left corner
+        text_dev_mode:draw(10, 10)
     end
 
 end

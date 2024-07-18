@@ -133,6 +133,8 @@ function Game:set_globals()
 
     self.exp_times = {xy = 0, scale = 0, r = 0}
 
+    self.F_ENABLE_PERF_OVERLAY = true
+
 end
 
 G = Game()

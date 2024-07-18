@@ -32,7 +32,7 @@ function Event:init(config)
             start_time = nil,
             end_time = nil,
         }
-    self.func = config.func or function(t) return t end
+        self.func = config.func or function(t) return t end
     end
     if self.trigger == 'condition' then
         self.condition = {
@@ -40,7 +40,10 @@ function Event:init(config)
             ref_value = config.ref_value,
             stop_val = config.stop_val,
         }
-    self.func = config.func or function() return self.condition.ref_table[self.condition.ref_value] == self.condition.stop_val end
+        self.func = config.func or function() return self.condition.ref_table[self.condition.ref_value] == self.condition.stop_val end
+    end
+    if self.trigger == 'repeat_until' then
+        self.repeat_until = config.repeat_until or function() return false end
     end
     self.time = G.TIMERS[self.timer]
 end
@@ -98,6 +101,14 @@ function Event:handle(_results)
     if self.trigger == 'immediate' then
         _results.completed = self.func()
         _results.time_done = true
+    end
+    if self.trigger == 'repeat_until' then
+        if not self.repeat_until() then
+            _results.completed = false
+        else
+            _results.completed = self.func()
+            _results.time_done = true
+        end
     end
     if _results.completed then self.complete = true end
 end
