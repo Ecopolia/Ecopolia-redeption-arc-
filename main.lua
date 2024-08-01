@@ -148,9 +148,11 @@ function love.mousereleased(x, y, button)
 end
 
 function love.quit()
-    profile.stop()
-    print(profile.report())
-    -- press enter to exit
-    print("Press enter to exit")
-    io.read()
+    if config.devMode then
+        profile.stop()
+        print(profile.report())
+        -- press enter to exit
+        print("Press enter to exit")
+        io.read()
+    end
 end
