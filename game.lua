@@ -259,10 +259,10 @@ function Game:draw()
 
     -- Apply background shader and draw the scene
     -- love.graphics.setShader(SHADERS.background)
-    love.graphics.setShader(G.SHADERS['splash'])
+    -- love.graphics.setShader(G.SHADERS['splash'])
 
     local windowWidth, windowHeight = love.graphics.getDimensions()
-    love.graphics.rectangle("fill", 0, 0, windowWidth, windowHeight)
+    -- love.graphics.rectangle("fill", 0, 0, windowWidth, windowHeight)
 
     -- Reset shader and canvas to draw to the screen
     love.graphics.setShader()
@@ -274,7 +274,7 @@ function Game:draw()
     love.graphics.draw(sceneCanvas, 0, 0)
 
     -- Reset shader after drawing
-    love.graphics.setShader()
+    -- love.graphics.setShader()
 
     -- Draw "ECOPOLIA" in the middle of the screen
     if G.text_ecopolia then

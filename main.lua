@@ -1,9 +1,12 @@
 if (love.system.getOS() == 'OS X') and
     (jit.arch == 'arm64' or jit.arch == 'arm') then jit.off() end
+
 i18n = require 'libs/i18n'
 config = require 'config'
 HEX = require 'systems/HEX'
 Text = require 'libs/text'
+Inky = require("libs/inky")
+local PlayButton = require("objects/buttons/play_button")
 
 require 'engine/object'
 require 'engine/event'
@@ -19,6 +22,11 @@ local profile = require("engine/profile")
 
 -- Start the profiler
 profile.start()
+
+
+local scene = Inky.scene()
+local pointer = Inky.pointer(scene)
+local play_button = PlayButton(scene)
 
 function love.load()
     if config.devMode then love._openConsole() end
@@ -62,7 +70,6 @@ function love.load()
     text_dev_mode:send("dev mode", 320 - 80, true)
 
     canvasPixelHeight = sceneCanvas:getPixelHeight()
-
 end
 
 function love.update(dt)
@@ -107,10 +114,19 @@ function love.update(dt)
     if G.text_ecopolia then G.text_ecopolia:update(dt) end
     timer_checkpoint(nil, 'update', true)
     G:update(dt)
+
+    local mx, my = love.mouse.getX(), love.mouse.getY()
+    pointer:setPosition(mx, my)
 end
 
 function love.draw()
+    scene:beginFrame()
     G:draw()
+
+    local windowWidth, windowHeight = love.graphics.getDimensions()
+    play_button:render(windowWidth / 2 - love.graphics.getFont():getWidth("ECOPOLIA") / 2, windowHeight / 2 - love.graphics.getFont():getHeight() / 2 + 70, 100, 50, true)
+    scene:finishFrame()
+
 end
 
 function love.keypressed(key)
@@ -123,6 +139,12 @@ function love.keyreleased(key)
 end
 function love.mousemoved(x, y)
     -- grid:updateMousePosition(x, y)
+end
+
+function love.mousereleased(x, y, button)
+    if button == 1 then
+        pointer:raise("release")
+    end
 end
 
 function love.quit()
