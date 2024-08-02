@@ -42,6 +42,8 @@ function Game:set_globals()
         default = love.graphics.newFont(16),
         m6x11plus = love.graphics.newFont("resources/fonts/m6x11plus.ttf", 72)
     }
+
+    self.ACTIVATE_SHADER = true
 end
 
 function Game:updateShaders(dt)
