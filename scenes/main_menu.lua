@@ -2,10 +2,10 @@ local main_menu = {}
 
 function main_menu:load()
     main_menu_name = Text.new("left", { color = {0.9,0.9,0.9,0.95}, shadow_color = {0.5,0.5,1,0.4}, font = G.Fonts.m6x11plus, keep_space_on_line_break=true,})
-    main_menu_name:send("[bold]E[/bold]COPOLIA|", 320, false)
+    main_menu_name:send("[shake=0.4][breathe=0.2]ECOPOLIA[blink]|[/blink][/shake][/breathe]", 320, false)
 
     ButtonManager.registerButton({'main_menu'}, {
-        text = "Play",
+        text = "[shake=0.4][breathe=0.2]Play[/shake][/breathe]",
         dsfull = false,
         x = 100,
         y = 100,
@@ -16,11 +16,11 @@ function main_menu:load()
             self.setScene("testground")
         end,
         onHover = function(button)
-            button.text = "Go"
+            button.text = "[shake=0.4][breathe=0.2][blink]Go[/blink][/shake][/breathe]"
             button.button_text:send(button.text, 320, button.dsfull)
         end,
         onUnhover = function(button)
-            button.text = "Play"
+            button.text = "[shake=0.4][breathe=0.2]Play[/shake][/breathe]"
             button.button_text:send(button.text, 320, button.dsfull)
         end,
         css = {
@@ -35,7 +35,7 @@ function main_menu:load()
     })
 
     ButtonManager.registerButton({'main_menu', 'testground'}, {
-        text = "Quit",
+        text = "[shake=0.4][breathe=0.2]Quit[/shake][/breathe]",
         x = 100,
         y = 200,
         w = 200,
@@ -103,10 +103,12 @@ function main_menu:draw()
 
     -- Draw the main menu name in the center of the screen
     main_menu_name:draw(10, 10)
+
+    ButtonManager.drawButtons('main_menu')
 end
 
 function main_menu:outsideShaderDraw()
-    ButtonManager.drawButtons('main_menu')
+    
 end
 
 function main_menu:update(dt)

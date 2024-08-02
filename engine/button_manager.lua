@@ -27,14 +27,18 @@ function ButtonManager.registerButton(scopes, config)
     end
 end
 
+local function stripTags(text)
+    return text:gsub("%[.-%]", "")
+end
+
 function ButtonManager.drawButtons(scope)
     if not scopedButtons[scope] then return end
+
     for _, button in ipairs(scopedButtons[scope]) do
         local css = button.css
 
         -- Set background color
         love.graphics.setColor(button.hovered and (css.hoverBackgroundColor or {1, 1, 1}) or (css.backgroundColor or {0.8, 0.8, 0.8}))
-
         -- Draw button rectangle
         love.graphics.rectangle("fill", button.x, button.y, button.w, button.h, css.borderRadius or 0)
 
@@ -61,15 +65,18 @@ function ButtonManager.drawButtons(scope)
         -- Update text to handle dynamic effects
         button.button_text:update(0)
 
-        -- Get the width and height of the rendered text
-        local textWidth = love.graphics.getFont():getWidth(button.text)
-        local textHeight = love.graphics.getFont():getHeight(button.text)
+        -- Strip tags from the text for width and height calculation
+        local strippedText = stripTags(button.text)
+        
+        -- Get the width and height of the rendered text without tags
+        local textWidth = love.graphics.getFont():getWidth(strippedText)
+        local textHeight = love.graphics.getFont():getHeight(strippedText)
 
         -- Calculate text position
         local textX = button.x + (button.w - textWidth) / 2
         local textY = button.y + (button.h - textHeight) / 2
 
-        -- Draw button_text
+        -- Draw button_text with tags
         button.button_text:draw(textX, textY)
 
         -- Reset color
