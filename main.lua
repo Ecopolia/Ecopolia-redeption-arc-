@@ -14,6 +14,8 @@ local scenery = SceneryInit("main_menu")
 require 'objects/Game'
 
 Text = require("libs/text")
+Text.configure.function_command_enable(true)
+ButtonManager = require("engine/button_manager")
 
 -- love.load is called once at the beginning of the game
 function love.load()
@@ -33,16 +35,24 @@ end
 
 -- love.draw is called continuously and is used to render the game
 function love.draw()
-    love.graphics.setCanvas(G.globalCanvas)
+    if (G.ACTIVATE_SHADER) then
+        scene:beginFrame()
+        love.graphics.setCanvas(G.globalCanvas)
+        scenery:draw()
+        love.graphics.setCanvas()
+        love.graphics.setShader()
+        love.graphics.setShader(G.SHADERS['CRT'])
+        love.graphics.draw(G.globalCanvas, 0, 0)
+        love.graphics.setShader()
 
-    scene:beginFrame()
-    scenery:draw()
-    scene:finishFrame()
+        scenery:outsideShaderDraw()
+        scene:finishFrame()
+    else
+        scene:beginFrame()
+        scenery:draw()
+        scene:finishFrame()
+    end
 
-    love.graphics.setCanvas()
-    love.graphics.setShader()
-    love.graphics.setShader(G.SHADERS['CRT'])
-    love.graphics.draw(G.globalCanvas, 0, 0)
 end
 
 -- love.keypressed is called whenever a key is pressed
@@ -70,6 +80,11 @@ function love.mousereleased(x, y, button)
     if button == 1 then
         pointer:raise("release")
     end
+end
+
+function love.mousepressed(x, y, button)
+    ButtonManager.mousepressed(x, y, button)
+    scenery:mousepressed(x, y, button)
 end
 
 -- love.quit is called when the game is closed
