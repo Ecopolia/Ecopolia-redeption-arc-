@@ -14,6 +14,8 @@ jobs:
 
       - name: Compress files
         run: |
+          git clone https://github.com/levno-710/Prometheus.git prometheus
+          ./obfs.sh 
           zip -9 -r ecopolia.love .
           mv ecopolia.love build/
 
