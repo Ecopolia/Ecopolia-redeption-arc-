@@ -27,10 +27,6 @@ function ButtonManager.registerButton(scopes, config)
     end
 end
 
-local function stripTags(text)
-    return text:gsub("%[.-%]", "")
-end
-
 function ButtonManager.drawButtons(scope)
     if not scopedButtons[scope] then return end
 

@@ -16,12 +16,12 @@ function main_menu:load()
             self.setScene("testground")
         end,
         onHover = function(button)
-            button.text = "[shake=0.4][breathe=0.2][blink]Go[/blink][/shake][/breathe]"
-            button.button_text:send(button.text, 320, button.dsfull)
+            -- button.text = "[shake=0.4][breathe=0.2][blink]Go[/blink][/shake][/breathe]"
+            -- button.button_text:send(button.text, 320, button.dsfull)
         end,
         onUnhover = function(button)
-            button.text = "[shake=0.4][breathe=0.2]Play[/shake][/breathe]"
-            button.button_text:send(button.text, 320, button.dsfull)
+            -- button.text = "[shake=0.4][breathe=0.2]Play[/shake][/breathe]"
+            -- button.button_text:send(button.text, 320, button.dsfull)
         end,
         css = {
             backgroundColor = {0, 0.5, 0},
