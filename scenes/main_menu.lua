@@ -56,55 +56,16 @@ function main_menu:load()
     version_text = Text.new("left", { color = {0.9,0.9,0.9,0.95}, shadow_color = {0.5,0.5,1,0.4}, font = G.Fonts.default, keep_space_on_line_break=true,})
     version_text:send("Version: " .. version, 320, true)
 
+    earth = love.graphics.newImage("assets/spritesheets/earth.png")
+    local earth_grid = anim8.newGrid(100, 100, earth:getWidth(), earth:getHeight())
+    earth_animation = anim8.newAnimation(earth_grid('1-50', '1-100'), 0.1)
+
 end
 
 function main_menu:draw()
     -- Set the background color to grey and draw a rectangle covering the entire screen
     love.graphics.setColor(0.5, 0.5, 0.5)
     love.graphics.rectangle('fill', 0, 0, love.graphics.getWidth(), love.graphics.getHeight())
-
-    size =  100 -- Default size if not specified
-    x = 500
-    y = 200
-    -- Calculate radii
-    local outerRadius = size / 2
-    local middleRadius = outerRadius * 0.7
-    local innerRadius = outerRadius * 0.3
-
-    -- Center coordinates for the circles
-    local centerX = x + outerRadius
-    local centerY = y + outerRadius
-
-    -- Set the color to black for the logo parts
-    love.graphics.setColor(0, 0, 0)
-
-    -- Draw the outer circle
-    love.graphics.circle("fill", centerX, centerY, outerRadius)
-
-    -- Draw the middle circle (cutout)
-    love.graphics.setColor(1, 1, 1)
-    love.graphics.circle("fill", centerX, centerY, middleRadius)
-
-    -- Draw the inner circle (black)
-    love.graphics.setColor(0, 0, 0)
-    love.graphics.circle("fill", centerX, centerY, innerRadius)
-
-    -- Draw the vertical rectangle at the top
-    love.graphics.rectangle("fill", centerX - outerRadius * 0.1, y, outerRadius * 0.2, outerRadius * 0.6)
-
-    -- Draw the three rectangles at the bottom
-    local rectWidth = outerRadius * 0.2
-    local rectHeight = outerRadius * 0.6
-    local bottomY = y + size - rectHeight
-
-    -- Left rectangle
-    love.graphics.rectangle("fill", centerX - outerRadius * 0.9, bottomY, rectWidth, rectHeight)
-
-    -- Middle rectangle
-    love.graphics.rectangle("fill", centerX - rectWidth / 2, bottomY, rectWidth, rectHeight)
-
-    -- Right rectangle
-    love.graphics.rectangle("fill", centerX + outerRadius * 0.7, bottomY, rectWidth, rectHeight)
 
     -- Draw the main menu name in the center of the screen
     main_menu_name:draw(10, 10)
@@ -113,6 +74,9 @@ function main_menu:draw()
     version_text:draw(G.WINDOW.WIDTH - 200 , G.WINDOW.HEIGHT - 50)
 
     ButtonManager.drawButtons('main_menu')
+
+    -- resize animation to 3 times the size
+    earth_animation:draw(earth, 400, 100, 0, 5, 5)
 end
 
 function main_menu:outsideShaderDraw()
@@ -121,6 +85,7 @@ end
 function main_menu:update(dt)
     main_menu_name:update(dt)
     ButtonManager.updateButtons('main_menu', dt)
+    earth_animation:update(dt)
 end
 
 function main_menu:mousepressed(x, y, button)

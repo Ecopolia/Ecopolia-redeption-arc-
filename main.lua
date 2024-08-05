@@ -3,6 +3,8 @@ require 'version'
 require 'misc/commons'
 require 'engine/object'
 
+anim8 = require 'libs/anim8/anim8'
+
 local profile = require("engine/profile")
 profile.start()
 
@@ -21,8 +23,15 @@ ButtonManager = require("engine/button_manager")
 
 -- love.load is called once at the beginning of the game
 function love.load()
-    love._openConsole()
-    love.window.setTitle("Ecopolia (redemption arc)")
+    if version == 'dev-mode' then
+        local os = love.system.getOS()
+        if os ~= 'Linux' then
+            love._openConsole()
+        end
+        love.window.setTitle("Ecopolia (redemption arc) - Dev Mode")
+    else
+        love.window.setTitle("Ecopolia (redemption arc) - " .. version)
+    end
     love.window.setMode(G.WINDOW.WIDTH, G.WINDOW.HEIGHT)
     scenery:load()
 end
