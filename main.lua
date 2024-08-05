@@ -1,4 +1,5 @@
 -- Require necessary modules
+require 'version'
 require 'misc/commons'
 require 'engine/object'
 

@@ -53,15 +53,9 @@ function main_menu:load()
     })
 
     local file = io.open(G.ROOT_PATH .. "/version", "r")
-    if file then
-        local version = file:read()
-        file:close()
-        print("Version: " .. version)
-        version_text = Text.new("left", { color = {0.9,0.9,0.9,0.95}, shadow_color = {0.5,0.5,1,0.4}, font = G.Fonts.default, keep_space_on_line_break=true,})
-        version_text:send("Version: " .. version, 320, true)
-    else
-        print("Version file not found")
-    end
+    version_text = Text.new("left", { color = {0.9,0.9,0.9,0.95}, shadow_color = {0.5,0.5,1,0.4}, font = G.Fonts.default, keep_space_on_line_break=true,})
+    version_text:send("Version: " .. version, 320, true)
+
 end
 
 function main_menu:draw()
