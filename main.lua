@@ -21,6 +21,8 @@ ButtonManager = require("engine/button_manager")
 -- love.load is called once at the beginning of the game
 function love.load()
     love._openConsole()
+    love.window.setTitle("Ecopolia (redemption arc)")
+    love.window.setMode(G.WINDOW.WIDTH, G.WINDOW.HEIGHT)
     scenery:load()
 end
 
@@ -71,7 +73,6 @@ end
 -- love.mousemoved is called whenever the mouse is moved
 -- x, y are the new coordinates of the mouse
 function love.mousemoved(x, y)
-    -- Add mouse move handling logic here
 end
 
 -- love.mousereleased is called whenever a mouse button is released

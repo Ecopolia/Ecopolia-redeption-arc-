@@ -8,7 +8,12 @@ function Game:init()
 end
 
 function Game:set_globals()
-    self.globalCanvas = love.graphics.newCanvas()
+    self.WINDOW = {
+        WIDTH = 1280,
+        HEIGHT = 720
+    }
+
+    self.globalCanvas = love.graphics.newCanvas(self.WINDOW.WIDTH, self.WINDOW.HEIGHT)
     self.canvasPixelHeight = self.globalCanvas:getPixelHeight()
     self.TILESIZE = 20
     self.TILESCALE = 3.65
@@ -44,6 +49,8 @@ function Game:set_globals()
     }
 
     self.ACTIVATE_SHADER = true
+    
+    self.ROOT_PATH = love.filesystem.getSource()
 end
 
 function Game:updateShaders(dt)
