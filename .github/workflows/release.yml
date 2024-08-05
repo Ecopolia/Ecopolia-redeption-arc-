@@ -12,14 +12,8 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: install lua
-        run: sudo apt-get install lua5.1
-
       - name: Compress files
         run: |
-          git clone https://github.com/levno-710/Prometheus.git prometheus
-          chmod +x ./obfs.sh && ./obfs.sh
-          rm -rf prometheus
           zip -9 -r ecopolia.love .
           mv ecopolia.love build/
 
