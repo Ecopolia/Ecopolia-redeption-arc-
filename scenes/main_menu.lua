@@ -51,6 +51,17 @@ function main_menu:load()
             font = G.Fonts.m6x11plus
         }
     })
+
+    local file = io.open(G.ROOT_PATH .. "/version", "r")
+    if file then
+        local version = file:read()
+        file:close()
+        print("Version: " .. version)
+        version_text = Text.new("left", { color = {0.9,0.9,0.9,0.95}, shadow_color = {0.5,0.5,1,0.4}, font = G.Fonts.default, keep_space_on_line_break=true,})
+        version_text:send("Version: " .. version, 320, true)
+    else
+        print("Version file not found")
+    end
 end
 
 function main_menu:draw()
@@ -104,11 +115,13 @@ function main_menu:draw()
     -- Draw the main menu name in the center of the screen
     main_menu_name:draw(10, 10)
 
+    -- Draw the version text at the bottom right corner of the screen
+    version_text:draw(G.WINDOW.WIDTH - 200 , G.WINDOW.HEIGHT - 50)
+
     ButtonManager.drawButtons('main_menu')
 end
 
 function main_menu:outsideShaderDraw()
-    
 end
 
 function main_menu:update(dt)
