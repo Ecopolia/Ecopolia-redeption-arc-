@@ -15,7 +15,7 @@ jobs:
       - name: Compress files
         run: |
           rm version
-          echo $(git rev-parse HEAD | cut -c1-5) > version
+          echo "version = '$(git rev-parse HEAD | cut -c1-5)'" > version.lua
           zip -9 -r ecopolia.love .
           mv ecopolia.love build/
 
