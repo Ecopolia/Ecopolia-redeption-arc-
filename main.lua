@@ -1,4 +1,5 @@
 -- Require necessary modules
+require 'misc/commons'
 require 'engine/object'
 
 local profile = require("engine/profile")

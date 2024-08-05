@@ -4,3 +4,7 @@ function hex(hex)
     local color = {tonumber(r,16)/255,tonumber(g,16)/255,tonumber(b,16)/255,tonumber(a,16)/255 or 255}
     return color
   end
+
+function stripTags(text)
+  return text:gsub("%[.-%]", "")
+end

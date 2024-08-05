@@ -1,0 +1,101 @@
+name: Build and Release Game
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  pack:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Compress files
+        run: |
+          zip -9 -r ecopolia.love .
+          mv ecopolia.love build/
+
+      - name: Upload .love file as artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: ecopolia-love-file
+          path: build/ecopolia.love
+
+  build:
+    runs-on: windows-latest
+    needs: pack
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Download .love file artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: ecopolia-love-file
+
+      - name: Create executable
+        run: |
+          cd build
+          move ..\ecopolia.love .
+          powershell -Command "Get-Content love.exe, ecopolia.love -Encoding Byte | Set-Content ecopolia.exe -Encoding Byte"
+
+      - name: Package executable and DLLs
+        run: |
+          cd build
+          mkdir release
+          move ecopolia.exe release/
+          copy SDL2.dll release/
+          copy OpenAL32.dll release/
+          copy love.dll release/
+          copy lua51.dll release/
+          copy mpg123.dll release/
+          copy msvcp120.dll release/
+          copy msvcr120.dll release/
+          cd release
+          powershell -Command "Compress-Archive -Path * -DestinationPath ../ecopolia_release.zip"
+
+      - name: Upload release artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: ecopolia-release-zip
+          path: build/ecopolia_release.zip
+
+  release:
+    permissions: write-all
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      
+      - name: Download .love file artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: ecopolia-release-zip
+
+      - name: Get latest commit hash
+        id: get_commit
+        run: echo "::set-output name=commit_hash::$(git rev-parse HEAD | cut -c1-5)"
+
+      - name: Create GitHub Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.get_commit.outputs.commit_hash }}
+          release_name: Release ${{ steps.get_commit.outputs.commit_hash }}
+          draft: false
+          prerelease: false
+
+      - name: Upload release asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ecopolia_release.zip
+          asset_name: ecopolia_release.zip
+          asset_content_type: application/zip
