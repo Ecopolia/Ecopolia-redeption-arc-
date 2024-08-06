@@ -41,7 +41,7 @@ jobs:
         run: |
           cd build
           move ..\ecopolia.love .
-          powershell -Command "Get-Content love.exe, ecopolia.love -Encoding Byte | Set-Content ecopolia.exe -Encoding Byte"
+          cmd /c copy /b love.exe+ecopolia.love ecopolia.exe
 
       - name: Package executable and DLLs
         run: |
