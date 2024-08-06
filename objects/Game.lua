@@ -51,6 +51,8 @@ function Game:set_globals()
     self.ACTIVATE_SHADER = true
     
     self.ROOT_PATH = love.filesystem.getSource()
+
+    self.TRANSITION = 0
 end
 
 function Game:updateShaders(dt)
@@ -71,6 +73,8 @@ function Game:updateShaders(dt)
     self.SHADERS['CRT']:send('scanlines', self.canvasPixelHeight * 0.75 / 1)
     self.SHADERS['CRT']:send('screen_scale', self.TILESCALE * self.TILESIZE)
     self.SHADERS['CRT']:send('hovering', 1)
+
+    self.SHADERS['CRT']:send('transition_amount', G.TRANSITION)
 end
 
 function Game:updateTimers(dt)
@@ -78,6 +82,7 @@ function Game:updateTimers(dt)
     self.TIMERS.REAL_SHADER = self.TIMERS.REAL
     self.TIMERS.UPTIME = self.TIMERS.UPTIME + dt
     self.real_dt = dt
+    Timer.update(dt)
 end
 
 

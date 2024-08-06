@@ -22,6 +22,8 @@ Text = require("libs/text")
 Text.configure.function_command_enable(true)
 ButtonManager = require("engine/button_manager")
 
+Timer = require 'libs/hump/timer'
+
 -- love.load is called once at the beginning of the game
 function love.load()
     if version == 'dev-mode' then
@@ -58,7 +60,6 @@ function love.draw()
         love.graphics.setShader(G.SHADERS['CRT'])
         love.graphics.draw(G.globalCanvas, 0, 0)
         love.graphics.setShader()
-
         scenery:outsideShaderDraw()
         scene:finishFrame()
     else
