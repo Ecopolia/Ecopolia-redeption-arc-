@@ -2,7 +2,7 @@ local main_menu = {}
 
 function main_menu:load()
     main_menu_name = Text.new("left", { color = {0.9,0.9,0.9,0.95}, shadow_color = {0.5,0.5,1,0.4}, font = G.Fonts.m6x11plus, keep_space_on_line_break=true,})
-    main_menu_name:send("[shake=0.4][breathe=0.2]ECOPOLIA[blink]|[/blink][/shake][/breathe]", 320, false)
+    main_menu_name:send("[shake=0.4][breathe=0.2]ECOPOLIA [blink]|[/blink][/shake][/breathe]", 320, false)
 
     ButtonManager.registerButton({'main_menu'}, {
         text = "[shake=0.4][breathe=0.2]Play[/shake][/breathe]",
@@ -60,12 +60,13 @@ function main_menu:load()
     local earth_grid = anim8.newGrid(100, 100, earth:getWidth(), earth:getHeight())
     earth_animation = anim8.newAnimation(earth_grid('1-50', '1-100'), 0.1)
 
+    space_bg = love.graphics.newImage("assets/imgs/space_bg.png")
+    
 end
 
 function main_menu:draw()
-    -- Set the background color to grey and draw a rectangle covering the entire screen
-    love.graphics.setColor(0.5, 0.5, 0.5)
-    love.graphics.rectangle('fill', 0, 0, love.graphics.getWidth(), love.graphics.getHeight())
+
+    love.graphics.draw(space_bg, 0, 0, 0, 1, 1)
 
     -- Draw the main menu name in the center of the screen
     main_menu_name:draw(10, 10)
@@ -76,7 +77,9 @@ function main_menu:draw()
     ButtonManager.drawButtons('main_menu')
 
     -- resize animation to 3 times the size
+    love.graphics.setDefaultFilter('nearest', 'nearest')
     earth_animation:draw(earth, 400, 100, 0, 5, 5)
+    love.graphics.setDefaultFilter('linear', 'linear')
 end
 
 function main_menu:outsideShaderDraw()
