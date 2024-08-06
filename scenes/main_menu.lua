@@ -1,5 +1,10 @@
 local main_menu = {}
 
+local stars = {}
+local numStars = 20
+local falling_star_timer = 0
+local falling_star_interval = 20
+
 function main_menu:load()
     main_menu_name = Text.new("left", { color = {0.9,0.9,0.9,0.95}, shadow_color = {0.5,0.5,1,0.4}, font = G.Fonts.m6x11plus, keep_space_on_line_break=true,})
     main_menu_name:send("[shake=0.4][breathe=0.2]ECOPOLIA [blink]|[/blink][/shake][/breathe]", 320, false)
@@ -61,11 +66,34 @@ function main_menu:load()
     earth_animation = anim8.newAnimation(earth_grid('1-50', '1-100'), 0.1)
 
     space_bg = love.graphics.newImage("assets/imgs/space_bg.png")
+
+    star = love.graphics.newImage("assets/spritesheets/star.png")
     
+    -- Create a grid for the animation frames
+    local star_grid = anim8.newGrid(32, 32, star:getWidth(), star:getHeight())
+    
+    -- Generate random positions for the stars and create individual animations
+    for i = 1, numStars do
+        local x = math.random(0, love.graphics.getWidth())
+        local y = math.random(0, love.graphics.getHeight())
+        local frameDuration = math.random(30, 50) / 100 -- Random frame duration between 0.1 and 0.2 seconds
+        local animation = anim8.newAnimation(star_grid('1-4', 1), frameDuration)
+        table.insert(stars, {x = x, y = y, animation = animation})
+    end
+
+    falling_star = love.graphics.newImage("assets/spritesheets/falling_star.png")
+    local falling_star_grid = anim8.newGrid(128, 128, falling_star:getWidth(), falling_star:getHeight())
+    falling_star_animation = anim8.newAnimation(falling_star_grid('1-9', 1), 0.125)
+
+    local menu_theme_source = love.audio.newSource('assets/sounds/space_music/meet-the-princess.wav', 'static')
+    local menu_theme = ripple.newSound(menu_theme_source, {
+        volume = 0.3,
+        loop = true
+    })
+    menu_theme:play()
 end
 
 function main_menu:draw()
-
     love.graphics.draw(space_bg, 0, 0, 0, 1, 1)
 
     -- Draw the main menu name in the center of the screen
@@ -75,6 +103,15 @@ function main_menu:draw()
     version_text:draw(G.WINDOW.WIDTH - 200 , G.WINDOW.HEIGHT - 50)
 
     ButtonManager.drawButtons('main_menu')
+
+    for _, starData in ipairs(stars) do
+        starData.animation:draw(star, starData.x, starData.y, 0, 0.5, 0.5, 16, 16)
+    end
+
+    -- Draw the falling star if the timer is within the interval
+    if falling_star_timer <= 1 then
+        falling_star_animation:draw(falling_star, 1000, 200, 0, 1, 1, 64, 64)
+    end
 
     -- resize animation to 3 times the size
     love.graphics.setDefaultFilter('nearest', 'nearest')
@@ -89,6 +126,18 @@ function main_menu:update(dt)
     main_menu_name:update(dt)
     ButtonManager.updateButtons('main_menu', dt)
     earth_animation:update(dt)
+
+    -- Update each star's animation
+    for _, starData in ipairs(stars) do
+        starData.animation:update(dt)
+    end
+
+    -- Update the falling star animation and timer
+    falling_star_animation:update(dt)
+    falling_star_timer = falling_star_timer + dt
+    if falling_star_timer >= falling_star_interval then
+        falling_star_timer = 0
+    end
 end
 
 function main_menu:mousepressed(x, y, button)

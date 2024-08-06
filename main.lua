@@ -4,6 +4,7 @@ require 'misc/commons'
 require 'engine/object'
 
 anim8 = require 'libs/anim8/anim8'
+ripple = require 'libs/ripple'
 
 local profile = require("engine/profile")
 profile.start()
