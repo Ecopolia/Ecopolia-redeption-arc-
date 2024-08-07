@@ -17,6 +17,19 @@ function main_menu:load()
     main_menu_name = Text.new("left", { color = {0.9,0.9,0.9,0.95}, shadow_color = {0.5,0.5,1,0.4}, font = G.Fonts.m6x11plus, keep_space_on_line_break=true,})
     main_menu_name:send("[shake=0.4][breathe=0.2]ECOPOLIA [blink]|[/blink][/shake][/breathe]", 320, false)
 
+    SettingsWindow = Window.new({
+        x = G.WINDOW.WIDTH / 2 - 200,
+        y = G.WINDOW.HEIGHT / 2 - 250,
+        w = 400,
+        h = 500,
+        borderThickness = 32,
+        title = "Settings",
+        uiAtlas = G.UiAtlas_Animation,
+        font = G.Fonts.m6x11plus_medium,
+        visible = false
+    })
+    uiManager:registerElement("main_menu", "SettingsWindow", SettingsWindow)
+
     ButtonManager.registerButton({'main_menu'}, {
         text = "[shake=0.4][breathe=0.2]Play[/shake][/breathe]",
         dsfull = false,
@@ -78,6 +91,7 @@ function main_menu:load()
         h = 64,
         onClick = function()
             G.METAL_BUTTONS_ICONS_ANIMATIONS.settings:resume()
+            SettingsWindow:toggle()
         end,
         css = {
             backgroundColor = {0, 0, 0, 0},
@@ -177,7 +191,7 @@ function main_menu:draw()
     earth_animation:draw(earth, 400, 100, 0, earth_zoom, earth_zoom)
     love.graphics.setDefaultFilter('linear', 'linear')
 
-    
+    uiManager:draw("main_menu")
 
 end
 

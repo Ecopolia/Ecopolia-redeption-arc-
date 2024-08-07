@@ -45,7 +45,8 @@ function Game:set_globals()
 
     self.Fonts = {
         default = love.graphics.newFont(16),
-        m6x11plus = love.graphics.newFont("resources/fonts/m6x11plus.ttf", 72)
+        m6x11plus = love.graphics.newFont("resources/fonts/m6x11plus.ttf", 72),
+        m6x11plus_medium = love.graphics.newFont("resources/fonts/m6x11plus.ttf", 24)
     }
 
     self.ACTIVATE_SHADER = true
@@ -61,6 +62,26 @@ function Game:set_globals()
     self.METAL_BUTTONS_ICONS_ANIMATIONS ={
         settings = anim8.newAnimation(self.METAL_BUTTONS_ICONS_GRID('10-12', 2), 0.1, 'pauseAtStart'),
         music = anim8.newAnimation(self.METAL_BUTTONS_ICONS_GRID('7-9', 8), 0.1, 'pauseAtStart'),
+        close = anim8.newAnimation(self.METAL_BUTTONS_ICONS_GRID('7-9', 4), 0.1, 'pauseAtStart'),
+    }
+
+    self.UiAtlas = love.graphics.newImage("assets/spritesheets/ui.png")
+    self.UiAtlasGrid = anim8.newGrid(32, 32, self.UiAtlas:getWidth(), self.UiAtlas:getHeight())
+
+    self.UiAtlas_Animation = {
+        blueTopLeftCorner = anim8.newAnimation(self.UiAtlasGrid(2, 2), 0.1, 'pauseAtStart'),
+        blueTop = anim8.newAnimation(self.UiAtlasGrid(3, 2), 0.1, 'pauseAtStart'),
+        blueTopRightCorner = anim8.newAnimation(self.UiAtlasGrid(4, 2), 0.1, 'pauseAtStart'),
+        blueLeft = anim8.newAnimation(self.UiAtlasGrid(2, 3), 0.1, 'pauseAtStart'),
+        blueMiddle = anim8.newAnimation(self.UiAtlasGrid(3, 3), 0.1, 'pauseAtStart'),
+        blueRight = anim8.newAnimation(self.UiAtlasGrid(4, 3), 0.1, 'pauseAtStart'),
+        blueBottomLeftCorner = anim8.newAnimation(self.UiAtlasGrid(2, 4), 0.1, 'pauseAtStart'),
+        blueBottom = anim8.newAnimation(self.UiAtlasGrid(3, 4), 0.1, 'pauseAtStart'),
+        blueBottomRightCorner = anim8.newAnimation(self.UiAtlasGrid(4, 4), 0.1, 'pauseAtStart'),
+
+        titleWithBottomDropShadowLeftCorner = anim8.newAnimation(self.UiAtlasGrid(14, 4), 0.1, 'pauseAtStart'),
+        titleWithBottomDropShadowMiddle = anim8.newAnimation(self.UiAtlasGrid(15, 4), 0.1, 'pauseAtStart'),
+        titleWithBottomDropShadowRightCorner = anim8.newAnimation(self.UiAtlasGrid(16, 4), 0.1, 'pauseAtStart'),
     }
 
 end
