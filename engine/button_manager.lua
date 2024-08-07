@@ -16,7 +16,9 @@ function ButtonManager.registerButton(scopes, config)
         onHover = config.onHover or function() end,
         onUnhover = config.onUnhover or function() end,
         css = config.css or {},
-        button_text = nil -- Initialize button_text as nil
+        button_text = nil, -- Initialize button_text as nil
+        anim8 = config.anim8 or false,
+        image = config.image or nil
     }
 
     for _, scope in ipairs(scopes) do
@@ -74,6 +76,11 @@ function ButtonManager.drawButtons(scope)
 
         -- Draw button_text with tags
         button.button_text:draw(textX, textY)
+
+        -- draw anim8 animation if available
+        if button.anim8 then
+            button.anim8:draw(button.image, button.x, button.y, 0, button.w / button.anim8:getDimensions(), button.h / button.anim8:getDimensions(), 0, 0)
+        end
 
         -- Reset color
         love.graphics.setColor(1, 1, 1)

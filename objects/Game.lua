@@ -53,6 +53,16 @@ function Game:set_globals()
     self.ROOT_PATH = love.filesystem.getSource()
 
     self.TRANSITION = 0
+    self.TRANSITION_DURATION = 2
+
+    self.METAL_BUTTONS_ICONS_IMAGE = love.graphics.newImage("assets/spritesheets/buttons/metal_buttons_icons.png")
+    self.METAL_BUTTONS_ICONS_GRID = anim8.newGrid(32, 32, self.METAL_BUTTONS_ICONS_IMAGE:getWidth(), self.METAL_BUTTONS_ICONS_IMAGE:getHeight())
+
+    self.METAL_BUTTONS_ICONS_ANIMATIONS ={
+        settings = anim8.newAnimation(self.METAL_BUTTONS_ICONS_GRID('10-12', 2), 0.1, 'pauseAtStart'),
+        music = anim8.newAnimation(self.METAL_BUTTONS_ICONS_GRID('7-9', 8), 0.1, 'pauseAtStart'),
+    }
+
 end
 
 function Game:updateShaders(dt)
@@ -85,5 +95,16 @@ function Game:updateTimers(dt)
     Timer.update(dt)
 end
 
+function Game:updateAnimation(dt)
+    for _, animation in pairs(self.METAL_BUTTONS_ICONS_ANIMATIONS) do
+        animation:update(dt)
+    end
+end
+
+function Game:update(dt)
+    self:updateAnimation(dt)
+    self:updateTimers(dt)
+    self:updateShaders(dt)
+end
 
 G = Game()

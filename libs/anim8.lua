@@ -294,6 +294,10 @@ function Animation:getDimensions()
   return w,h
 end
 
+function Animation:getCurrentFrame()
+  -- returns the current frame index
+  return self.position
+end
 -----------------------------------------------------------
 
 anim8.newGrid       = newGrid

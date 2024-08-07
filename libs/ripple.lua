@@ -497,6 +497,16 @@ function Sound:stop(fadeDuration)
 	end
 end
 
+function Sound:toggle(fadeDuration)
+	for _, instance in ipairs(self._instances) do
+		if instance._paused then
+			instance:resume(fadeDuration)
+		else
+			instance:pause(fadeDuration)
+		end
+	end
+end
+
 function Sound:update(dt)
 	for _, instance in ipairs(self._instances) do
 		instance:_update(dt)
