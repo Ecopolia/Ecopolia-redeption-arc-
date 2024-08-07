@@ -44,7 +44,7 @@ function main_menu:load()
             -- end)
             -- stop the music
             menu_theme:stop(G.TRANSITION_DURATION)
-            self.setScene('template')
+            self.setScene('battleground')
         end,
         onHover = function(button)
             -- button.text = "[shake=0.4][breathe=0.2][blink]Go[/blink][/shake][/breathe]"
@@ -90,8 +90,17 @@ function main_menu:load()
         w = 64,
         h = 64,
         onClick = function()
-            G.METAL_BUTTONS_ICONS_ANIMATIONS.settings:resume()
-            SettingsWindow:toggle()
+            G.METAL_BUTTONS_ICONS_ANIMATIONS.settings:gotoFrame(3)
+            Timer.after(0.3 , function()
+                SettingsWindow:toggle()
+                G.METAL_BUTTONS_ICONS_ANIMATIONS.settings:gotoFrame(1)
+            end)
+        end,
+        onHover = function(button)
+            G.METAL_BUTTONS_ICONS_ANIMATIONS.settings:gotoFrame(2)
+        end,
+        onUnhover = function(button)
+            G.METAL_BUTTONS_ICONS_ANIMATIONS.settings:gotoFrame(1)
         end,
         css = {
             backgroundColor = {0, 0, 0, 0},
@@ -116,6 +125,20 @@ function main_menu:load()
                 G.METAL_BUTTONS_ICONS_ANIMATIONS.music:gotoFrame(1)
             else
                 G.METAL_BUTTONS_ICONS_ANIMATIONS.music:gotoFrame(3)
+            end
+        end,
+        onHover = function(button)
+            if G.METAL_BUTTONS_ICONS_ANIMATIONS.music:getCurrentFrame() == 3 then
+                
+            else
+                G.METAL_BUTTONS_ICONS_ANIMATIONS.music:gotoFrame(2)
+            end
+        end,
+        onUnhover = function(button)
+            if G.METAL_BUTTONS_ICONS_ANIMATIONS.music:getCurrentFrame() == 3 then
+                
+            else
+                G.METAL_BUTTONS_ICONS_ANIMATIONS.music:gotoFrame(1)
             end
         end,
         css = {
