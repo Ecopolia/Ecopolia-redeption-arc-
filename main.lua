@@ -20,6 +20,10 @@ Text = require("libs/text")
 Text.configure.function_command_enable(true)
 
 ButtonManager = require("engine/button_manager")
+uiManager = require("engine/ui_manager")
+
+UiElement = require("objects/ui_element")
+Window = require('objects/components/window')
 
 local SceneryInit = require("libs/scenery")
 local scenery = SceneryInit("main_menu")
