@@ -13,7 +13,7 @@ local transition_timer = 0
 local transition_duration = 2
 
 function main_menu:load()
-    transitionIn()
+    ManualtransitionIn() -- i do this cause it is the first scene
     main_menu_name = Text.new("left", { color = {0.9,0.9,0.9,0.95}, shadow_color = {0.5,0.5,1,0.4}, font = G.Fonts.m6x11plus, keep_space_on_line_break=true,})
     main_menu_name:send("[shake=0.4][breathe=0.2]ECOPOLIA [blink]|[/blink][/shake][/breathe]", 320, false)
 
@@ -21,14 +21,17 @@ function main_menu:load()
         text = "[shake=0.4][breathe=0.2]Play[/shake][/breathe]",
         dsfull = false,
         x = 100,
-        y = 100,
+        y = G.WINDOW.HEIGHT - 200,
         w = 200,
         h = 60,
         onClick = function()
-            transitionOut()
-            Timer.after(2, function()
-                transitionIn()
-            end)
+            -- transitionOut()
+            -- Timer.after(2, function()
+            --     transitionIn()
+            -- end)
+            -- stop the music
+            menu_theme:stop(G.TRANSITION_DURATION)
+            self.setScene('template')
         end,
         onHover = function(button)
             -- button.text = "[shake=0.4][breathe=0.2][blink]Go[/blink][/shake][/breathe]"
@@ -52,7 +55,7 @@ function main_menu:load()
     ButtonManager.registerButton({'main_menu', 'testground'}, {
         text = "[shake=0.4][breathe=0.2]Quit[/shake][/breathe]",
         x = 100,
-        y = 200,
+        y = G.WINDOW.HEIGHT - 100,
         w = 200,
         h = 60,
         onClick = function()
@@ -65,6 +68,51 @@ function main_menu:load()
             borderColor = {1, 1, 1},
             font = G.Fonts.m6x11plus
         }
+    })
+
+    ButtonManager.registerButton({'main_menu'}, {
+        text = "",
+        x = G.WINDOW.WIDTH - 100,
+        y = 10,
+        w = 64,
+        h = 64,
+        onClick = function()
+            G.METAL_BUTTONS_ICONS_ANIMATIONS.settings:resume()
+        end,
+        css = {
+            backgroundColor = {0, 0, 0, 0},
+            hoverBackgroundColor = {0, 0, 0, 0},
+            hoverBorderColor = {0, 0, 0, 0},
+            textColor = {0, 0, 0, 0},
+            font = G.Fonts.m6x11plus
+        },
+        anim8 = G.METAL_BUTTONS_ICONS_ANIMATIONS.settings,
+        image = G.METAL_BUTTONS_ICONS_IMAGE
+    })
+
+    ButtonManager.registerButton({'main_menu'}, {
+        text = "",
+        x = G.WINDOW.WIDTH - 160,
+        y = 10,
+        w = 64,
+        h = 64,
+        onClick = function()
+            menu_theme:toggle()
+            if G.METAL_BUTTONS_ICONS_ANIMATIONS.music:getCurrentFrame() == 3 then
+                G.METAL_BUTTONS_ICONS_ANIMATIONS.music:gotoFrame(1)
+            else
+                G.METAL_BUTTONS_ICONS_ANIMATIONS.music:gotoFrame(3)
+            end
+        end,
+        css = {
+            backgroundColor = {0, 0, 0, 0},
+            hoverBackgroundColor = {0, 0, 0, 0},
+            hoverBorderColor = {0, 0, 0, 0},
+            textColor = {0, 0, 0, 0},
+            font = G.Fonts.m6x11plus
+        },
+        anim8 = G.METAL_BUTTONS_ICONS_ANIMATIONS.music,
+        image = G.METAL_BUTTONS_ICONS_IMAGE
     })
 
     local file = io.open(G.ROOT_PATH .. "/version", "r")
@@ -95,12 +143,13 @@ function main_menu:load()
     local falling_star_grid = anim8.newGrid(128, 128, falling_star:getWidth(), falling_star:getHeight())
     falling_star_animation = anim8.newAnimation(falling_star_grid('1-9', 1), 0.125)
 
-    local menu_theme_source = love.audio.newSource('assets/sounds/space_music/meet-the-princess.wav', 'static')
-    local menu_theme = ripple.newSound(menu_theme_source, {
+    menu_theme_source = love.audio.newSource('assets/sounds/space_music/meet-the-princess.wav', 'static')
+    menu_theme = ripple.newSound(menu_theme_source, {
         volume = 0.3,
         loop = true
     })
     menu_theme:play()
+
 end
 
 function main_menu:draw()
@@ -127,6 +176,9 @@ function main_menu:draw()
     love.graphics.setDefaultFilter('nearest', 'nearest')
     earth_animation:draw(earth, 400, 100, 0, earth_zoom, earth_zoom)
     love.graphics.setDefaultFilter('linear', 'linear')
+
+    
+
 end
 
 function main_menu:outsideShaderDraw()
@@ -148,6 +200,8 @@ function main_menu:update(dt)
     if falling_star_timer >= falling_star_interval then
         falling_star_timer = 0
     end
+
+    menu_theme:update(dt)
 end
 
 function main_menu:mousepressed(x, y, button)

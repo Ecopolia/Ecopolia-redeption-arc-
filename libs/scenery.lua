@@ -109,6 +109,23 @@ local checkScenePresent = function(scene, sceneTable)
     return present
 end
 
+-- Transition functions
+local function transitionIn(callback)
+    G.TRANSITION = 0
+    Timer.tween(G.TRANSITION_DURATION, G, {TRANSITION = 1}, 'in-out-cubic', function()
+        G.TRANSITION = 1
+        if callback then callback() end
+    end)
+end
+
+local function transitionOut(callback)
+    G.TRANSITION = 1
+    Timer.tween(G.TRANSITION_DURATION, G, {TRANSITION = 0}, 'in-out-cubic', function()
+        G.TRANSITION = 0
+        if callback then callback() end
+    end)
+end
+
 -- The base Scenery Class
 Scenery.__index = Scenery
 
@@ -135,12 +152,24 @@ function Scenery.init(...)
     -- This function is available for all scene.
     function this.setScene(key, data)
         assert(this.scenes[key], "No such scene '" .. key .. "'")
-        this.currentscene = key
-        if this.scenes[this.currentscene].load then
-            this.scenes[this.currentscene]:load(data)
-        end
+
+        -- Call transitionOut and then transitionIn with proper callbacks
+        transitionOut(function()
+            if this.scenes[this.currentscene] and this.scenes[this.currentscene].unload then
+                this.scenes[this.currentscene]:unload()
+            end
+
+            this.currentscene = key
+
+            transitionIn(function()
+                if this.scenes[this.currentscene].load then
+                    this.scenes[this.currentscene]:load(data)
+                end
+            end)
+        end)
     end
 
+    -- Inject transition functions into each scene
     for _, value in pairs(this.scenes) do
         value["setScene"] = this.setScene
     end

@@ -2,7 +2,6 @@ local template = {}
 
 
 function template:load(args)
-   transitionIn()
 end
 
 function template:draw()

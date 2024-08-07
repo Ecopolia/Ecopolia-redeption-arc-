@@ -9,14 +9,14 @@ function stripTags(text)
   return text:gsub("%[.-%]", "")
 end
 
-function transitionOut()
+function ManualtransitionOut()
   G.TRANSITION = 1
   Timer.tween(2, G, {TRANSITION = 0}, 'in-out-cubic', function()
       G.TRANSITION = 0
   end)
 end
 
-function transitionIn()
+function ManualtransitionIn()
   G.TRANSITION = 0
   Timer.tween(2, G, {TRANSITION = 1}, 'in-out-cubic', function()
       G.TRANSITION = 1

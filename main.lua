@@ -3,7 +3,7 @@ require 'version'
 require 'misc/commons'
 require 'engine/object'
 
-anim8 = require 'libs/anim8/anim8'
+anim8 = require 'libs/anim8'
 ripple = require 'libs/ripple'
 
 local profile = require("engine/profile")
@@ -13,16 +13,16 @@ Inky = require("libs/inky")
 local scene = Inky.scene()
 local pointer = Inky.pointer(scene)
 
-local SceneryInit = require("libs/scenery")
-local scenery = SceneryInit("main_menu")
-
 require 'objects/Game'
+Timer = require 'libs/hump/timer'
 
 Text = require("libs/text")
 Text.configure.function_command_enable(true)
+
 ButtonManager = require("engine/button_manager")
 
-Timer = require 'libs/hump/timer'
+local SceneryInit = require("libs/scenery")
+local scenery = SceneryInit("main_menu")
 
 -- love.load is called once at the beginning of the game
 function love.load()
@@ -45,8 +45,7 @@ function love.update(dt)
     local mx, my = love.mouse.getX(), love.mouse.getY()
     pointer:setPosition(mx, my)
     scenery:update(dt)
-    G:updateTimers(dt)
-    G:updateShaders(dt)
+    G:update(dt)
 end
 
 -- love.draw is called continuously and is used to render the game
