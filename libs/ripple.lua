@@ -497,6 +497,15 @@ function Sound:stop(fadeDuration)
 	end
 end
 
+function Sound:isPlaying()
+	for _, instance in ipairs(self._instances) do
+		if instance._paused then
+			return false
+		end
+	end
+	return #self._instances > 0
+end
+
 function Sound:toggle(fadeDuration)
 	for _, instance in ipairs(self._instances) do
 		if instance._paused then
@@ -522,6 +531,9 @@ function ripple.newSound(source, options)
 	}, Sound)
 	sound:_setOptions(options)
 	if options and options.loop then sound.loop = true end
+	-- play and directly pause the song so i can first use resume
+	sound:play()
+	sound:pause()
 	return sound
 end
 
