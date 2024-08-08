@@ -16,6 +16,14 @@ function main_menu:load()
     ManualtransitionIn() -- i do this cause it is the first scene
     main_menu_name = Text.new("left", { color = {0.9,0.9,0.9,0.95}, shadow_color = {0.5,0.5,1,0.4}, font = G.Fonts.m6x11plus, keep_space_on_line_break=true,})
     main_menu_name:send("[shake=0.4][breathe=0.2]ECOPOLIA [blink]|[/blink][/shake][/breathe]", 320, false)
+    menu_theme_source = love.audio.newSource('assets/sounds/space_music/meet-the-princess.wav', 'static')
+    menu_theme = ripple.newSound(menu_theme_source, {
+        volume = 0.3,
+        loop = true
+    })
+    -- due to a little hack the song was already playing but paused on newSource so we resume it if we want to play it
+    menu_theme:resume()
+    
 
     SettingsWindow = Window.new({
         x = G.WINDOW.WIDTH / 2 - 200,
@@ -26,7 +34,8 @@ function main_menu:load()
         title = "Settings",
         uiAtlas = G.UiAtlas_Animation,
         font = G.Fonts.m6x11plus_medium,
-        visible = false
+        visible = false,
+        color = {0.5, 0.5, 0.9}
     })
     uiManager:registerElement("main_menu", "SettingsWindow", SettingsWindow)
 
@@ -141,6 +150,14 @@ function main_menu:load()
                 G.METAL_BUTTONS_ICONS_ANIMATIONS.music:gotoFrame(1)
             end
         end,
+        onLoad = function(button)
+            if menu_theme:isPlaying() then
+                
+            else
+                Timer.after(1, function() G.METAL_BUTTONS_ICONS_ANIMATIONS.music:gotoFrame(3) end)
+
+            end
+        end,
         css = {
             backgroundColor = {0, 0, 0, 0},
             hoverBackgroundColor = {0, 0, 0, 0},
@@ -179,14 +196,6 @@ function main_menu:load()
     falling_star = love.graphics.newImage("assets/spritesheets/falling_star.png")
     local falling_star_grid = anim8.newGrid(128, 128, falling_star:getWidth(), falling_star:getHeight())
     falling_star_animation = anim8.newAnimation(falling_star_grid('1-9', 1), 0.125)
-
-    menu_theme_source = love.audio.newSource('assets/sounds/space_music/meet-the-princess.wav', 'static')
-    menu_theme = ripple.newSound(menu_theme_source, {
-        volume = 0.3,
-        loop = true
-    })
-    menu_theme:play()
-
 end
 
 function main_menu:draw()

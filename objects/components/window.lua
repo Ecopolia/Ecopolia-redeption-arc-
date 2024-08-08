@@ -9,6 +9,7 @@ function Window.new(css)
     self.title = css.title or ""
     self.font = css.font or love.graphics.newFont(12)
     self.visible = css.visible or false
+    self.color = css.color or {1, 1, 1}
     return self
 end
 
@@ -23,6 +24,9 @@ function Window:draw()
 
     local anims = self.uiAtlas
     love.graphics.setFont(self.font)
+
+    -- Set the color of the window
+    love.graphics.setColor(self.color)
 
     -- Draw corners
     anims.blueTopLeftCorner:draw(G.UiAtlas, self.x, self.y)
@@ -48,6 +52,9 @@ function Window:draw()
             anims.blueMiddle:draw(G.UiAtlas, self.x + i * self.borderThickness, self.y + j * self.borderThickness)
         end
     end
+
+    -- reset color
+    love.graphics.setColor(1, 1, 1)
 
     -- Draw title background if title is provided
     if self.title and self.title ~= "" then

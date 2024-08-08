@@ -84,6 +84,37 @@ function Game:set_globals()
         titleWithBottomDropShadowRightCorner = anim8.newAnimation(self.UiAtlasGrid(16, 4), 0.1, 'pauseAtStart'),
     }
 
+    self.MONSTERS = {
+        CROW = {
+            name = "Crow",
+            images = {
+                idle = love.graphics.newImage("assets/spritesheets/monsters/crow/crow_idle.png")
+            },
+            health = 100,
+            attack = 10,
+            defense = 5,
+            speed = 10,
+            experience = 10,
+            level = 1,
+            type = "flying",
+            abilities = {
+                "Peck",
+                "Fly",
+                "Screech"
+            }
+        }
+    }
+    
+    -- Define the grids after the images are loaded
+    self.MONSTERS.CROW.grids = {
+        idle = anim8.newGrid(64, 64, self.MONSTERS.CROW.images.idle:getWidth(), self.MONSTERS.CROW.images.idle:getHeight())
+    }
+    
+    -- Define the animations after the grids are created
+    self.MONSTERS.CROW.animations = {
+        idle = anim8.newAnimation(self.MONSTERS.CROW.grids.idle('1-4', 1), 0.2):flipH()
+    }
+
 end
 
 function Game:updateShaders(dt)
@@ -118,6 +149,10 @@ end
 
 function Game:updateAnimation(dt)
     for _, animation in pairs(self.METAL_BUTTONS_ICONS_ANIMATIONS) do
+        animation:update(dt)
+    end
+
+    for _, animation in pairs(self.MONSTERS.CROW.animations) do
         animation:update(dt)
     end
 end

@@ -20,6 +20,11 @@ function battleground:draw()
 
     love.graphics.draw(bg, 0, 0, 0, G.WINDOW.WIDTH / bg:getWidth(), G.WINDOW.HEIGHT / bg:getHeight())
 
+    -- Draw G.MONSTERS.CROW.animations.idle
+    G.MONSTERS.CROW.animations.idle:draw(G.MONSTERS.CROW.images.idle, 800, 200, 0, 7, 7, 0, 0)
+    --flip the image
+
+
     uiManager:draw("battleground")
     ButtonManager.drawButtons('battleground')
 end

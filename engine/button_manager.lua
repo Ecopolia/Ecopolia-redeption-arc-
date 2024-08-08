@@ -15,6 +15,7 @@ function ButtonManager.registerButton(scopes, config)
         onClick = config.onClick or function() end,
         onHover = config.onHover or function() end,
         onUnhover = config.onUnhover or function() end,
+        onLoad = config.onLoad or function() end,
         css = config.css or {},
         button_text = nil, -- Initialize button_text as nil
         anim8 = config.anim8 or false,
@@ -27,6 +28,7 @@ function ButtonManager.registerButton(scopes, config)
         end
         table.insert(scopedButtons[scope], button)
     end
+    button.onLoad(button)
 end
 
 function ButtonManager.drawButtons(scope)
