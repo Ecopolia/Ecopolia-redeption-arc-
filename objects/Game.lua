@@ -106,6 +106,24 @@ function Game:updateShaders(dt)
     self.SHADERS['CRT']:send('hovering', 1)
 
     self.SHADERS['CRT']:send('transition_amount', G.TRANSITION)
+
+    self.SHADERS['watercolor']:send('scale_fac', {
+        1.0 - 0.008 * self.SETTINGS.GRAPHICS.crt / 100,
+        1.0 - 0.008 * self.SETTINGS.GRAPHICS.crt / 100
+    })
+    self.SHADERS['watercolor']:send('noise_fac', 0.001 * self.SETTINGS.GRAPHICS.crt / 100)
+    
+    -- This uniform controls the radius of the transition effect
+    self.SHADERS['watercolor']:send('transition_amount', G.TRANSITION)
+
+    self.SHADERS['toon']:send('scale_fac', {
+        1.0 - 0.008 * self.SETTINGS.GRAPHICS.crt / 100,
+        1.0 - 0.008 * self.SETTINGS.GRAPHICS.crt / 100
+    })
+    self.SHADERS['toon']:send('edge_threshold', 1.8)  -- Adjust this value to control edge detection sensitivity
+    
+    -- This uniform controls the radius of the transition effect
+    self.SHADERS['toon']:send('transition_amount', G.TRANSITION)
 end
 
 function Game:updateTimers(dt)
