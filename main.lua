@@ -28,6 +28,8 @@ Window = require('objects/components/window')
 local SceneryInit = require("libs/scenery")
 local scenery = SceneryInit("main_menu")
 
+LoveDialogue = require "libs/LoveDialogue"
+
 -- love.load is called once at the beginning of the game
 function love.load()
     if version == 'dev-mode' then
@@ -77,6 +79,7 @@ end
 -- key is the key that was pressed
 function love.keypressed(key)
     -- Add key press handling logic here
+    scenery:keypressed(key)
 end
 
 -- love.keyreleased is called whenever a key is released
