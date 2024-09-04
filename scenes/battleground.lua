@@ -1,6 +1,8 @@
 local battleground = {}
 bg = love.graphics.newImage("assets/imgs/battlegrounds/Battleground4.png")
 
+local myDialogue
+
 function battleground:load(args)
     
     battle_theme_source = love.audio.newSource('assets/sounds/space_music/battle.wav', 'static')
@@ -9,6 +11,8 @@ function battleground:load(args)
         loop = true
     })
     battle_theme:play()
+    myDialogue = LoveDialogue.play("dialogs/test.ld", {enableFadeIn = false, enableFadeOut = false})
+   
 end
 
 function battleground:draw()
@@ -27,6 +31,10 @@ function battleground:draw()
 
     uiManager:draw("battleground")
     ButtonManager.drawButtons('battleground')
+
+    if myDialogue then
+        myDialogue:draw()
+    end
 end
 
 function battleground:outsideShaderDraw()
@@ -38,12 +46,21 @@ function battleground:update(dt)
     -- Update the button manager
     uiManager:update("battleground", dt)
     ButtonManager.updateButtons('battleground', dt)
+    if myDialogue then
+        myDialogue:update(dt)
+    end
     
 end
 
 function battleground:mousepressed(x, y, button)
     -- Handle mouse press events for buttons
     ButtonManager.mousepressed('battleground', x, y, button)
+end
+
+function battleground:keypressed(key)
+    if myDialogue then
+        myDialogue:keypressed(key)
+    end
 end
 
 return battleground
