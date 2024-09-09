@@ -56,6 +56,9 @@ function Game:set_globals()
     self.TRANSITION = 0
     self.TRANSITION_DURATION = 2
 
+    self.pixel_scale_factor = 2
+    self.PIXEL_SIZE = {0.005 , 0.005}
+    
     self.METAL_BUTTONS_ICONS_IMAGE = love.graphics.newImage("assets/spritesheets/buttons/metal_buttons_icons.png")
     self.METAL_BUTTONS_ICONS_GRID = anim8.newGrid(32, 32, self.METAL_BUTTONS_ICONS_IMAGE:getWidth(), self.METAL_BUTTONS_ICONS_IMAGE:getHeight())
 
@@ -137,6 +140,9 @@ function Game:updateShaders(dt)
     self.SHADERS['CRT']:send('hovering', 1)
 
     self.SHADERS['CRT']:send('transition_amount', G.TRANSITION)
+
+    self.SHADERS['PXL']:send('pixel_size', G.PIXEL_SIZE)
+    self.SHADERS['CEL']:send('pixel_size', G.PIXEL_SIZE)
 end
 
 function Game:updateTimers(dt)

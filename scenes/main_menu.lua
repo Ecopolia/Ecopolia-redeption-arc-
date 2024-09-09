@@ -11,6 +11,7 @@ local earth_zoom = 5
 local transitioning = false
 local transition_timer = 0
 local transition_duration = 2
+local mainMenuCanvas = love.graphics.newCanvas(G.WINDOW.WIDTH, G.WINDOW.HEIGHT)
 
 function main_menu:load()
     ManualtransitionIn() -- i do this cause it is the first scene
@@ -53,7 +54,7 @@ function main_menu:load()
             -- end)
             -- stop the music
             menu_theme:stop(G.TRANSITION_DURATION)
-            self.setScene('template')
+            self.setScene('intro')
         end,
         onHover = function(button)
             -- button.text = "[shake=0.4][breathe=0.2][blink]Go[/blink][/shake][/breathe]"
@@ -204,6 +205,10 @@ function main_menu:load()
 end
 
 function main_menu:draw()
+    -- Draw to the main menu canvas
+    love.graphics.setCanvas(mainMenuCanvas)
+    love.graphics.clear()
+
     love.graphics.draw(space_bg, 0, 0, 0, 1, 1)
 
     -- Draw the main menu name in the center of the screen
@@ -221,13 +226,19 @@ function main_menu:draw()
         falling_star_animation:draw(falling_star, 1000, 200, 0, 1, 1, 64, 64)
     end
 
-    -- resize animation to 3 times the size
+    -- Resize animation to 3 times the size
     love.graphics.setDefaultFilter('nearest', 'nearest')
     earth_animation:draw(earth, 400, 100, 0, earth_zoom, earth_zoom)
     love.graphics.setDefaultFilter('linear', 'linear')
 
     uiManager:draw("main_menu")
 
+    love.graphics.setCanvas() -- Reset to default canvas
+
+    -- Apply CRT shader to the main menu canvas content
+    love.graphics.setShader(G.SHADERS['CRT'])
+    love.graphics.draw(mainMenuCanvas, 0, 0)
+    love.graphics.setShader() -- Reset shader to default
 end
 
 function main_menu:outsideShaderDraw()
