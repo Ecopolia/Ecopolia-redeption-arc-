@@ -30,7 +30,6 @@ function battleground:draw()
 
 
     uiManager:draw("battleground")
-    ButtonManager.drawButtons('battleground')
 
     if myDialogue then
         myDialogue:draw()
@@ -45,7 +44,6 @@ end
 function battleground:update(dt)
     -- Update the button manager
     uiManager:update("battleground", dt)
-    ButtonManager.updateButtons('battleground', dt)
     if myDialogue then
         myDialogue:update(dt)
     end
@@ -54,7 +52,6 @@ end
 
 function battleground:mousepressed(x, y, button)
     -- Handle mouse press events for buttons
-    ButtonManager.mousepressed('battleground', x, y, button)
 end
 
 function battleground:keypressed(key)

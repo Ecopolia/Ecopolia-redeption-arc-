@@ -12,9 +12,7 @@ function dialogtest:draw()
     -- Clear the screen with grey color
     love.graphics.clear(0.5, 0.5, 0.5, 1)
 
-
     uiManager:draw("dialogtest")
-    ButtonManager.drawButtons('dialogtest')
 
     if myDialogue then
         myDialogue:draw()
@@ -29,7 +27,6 @@ end
 function dialogtest:update(dt)
     -- Update the button manager
     uiManager:update("dialogtest", dt)
-    ButtonManager.updateButtons('dialogtest', dt)
     if myDialogue then
         myDialogue:update(dt)
     end
@@ -38,7 +35,6 @@ end
 
 function dialogtest:mousepressed(x, y, button)
     -- Handle mouse press events for buttons
-    ButtonManager.mousepressed('dialogtest', x, y, button)
 end
 
 function dialogtest:keypressed(key)

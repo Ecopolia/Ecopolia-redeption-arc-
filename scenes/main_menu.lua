@@ -39,7 +39,7 @@ function main_menu:load()
     })
     uiManager:registerElement("main_menu", "SettingsWindow", SettingsWindow)
 
-    ButtonManager.registerButton({'main_menu'}, {
+    local play = Button.new({
         text = "[shake=0.4][breathe=0.2]Play[/shake][/breathe]",
         dsfull = false,
         x = 100,
@@ -53,7 +53,7 @@ function main_menu:load()
             -- end)
             -- stop the music
             menu_theme:stop(G.TRANSITION_DURATION)
-            self.setScene('dialogtest')
+            self.setScene('template')
         end,
         onHover = function(button)
             -- button.text = "[shake=0.4][breathe=0.2][blink]Go[/blink][/shake][/breathe]"
@@ -74,7 +74,7 @@ function main_menu:load()
         }
     })
 
-    ButtonManager.registerButton({'main_menu', 'testground'}, {
+    local quit = Button.new({
         text = "[shake=0.4][breathe=0.2]Quit[/shake][/breathe]",
         x = 100,
         y = G.WINDOW.HEIGHT - 100,
@@ -92,7 +92,7 @@ function main_menu:load()
         }
     })
 
-    ButtonManager.registerButton({'main_menu'}, {
+    local settings = Button.new({
         text = "",
         x = G.WINDOW.WIDTH - 100,
         y = 10,
@@ -122,7 +122,7 @@ function main_menu:load()
         image = G.METAL_BUTTONS_ICONS_IMAGE
     })
 
-    ButtonManager.registerButton({'main_menu'}, {
+    local music = Button.new({
         text = "",
         x = G.WINDOW.WIDTH - 160,
         y = 10,
@@ -196,6 +196,11 @@ function main_menu:load()
     falling_star = love.graphics.newImage("assets/spritesheets/falling_star.png")
     local falling_star_grid = anim8.newGrid(128, 128, falling_star:getWidth(), falling_star:getHeight())
     falling_star_animation = anim8.newAnimation(falling_star_grid('1-9', 1), 0.125)
+    
+    uiManager:registerElement("main_menu", "play", play)
+    uiManager:registerElement("main_menu", "quit", quit)
+    uiManager:registerElement("main_menu", "settings", settings)
+    uiManager:registerElement("main_menu", "music", music)
 end
 
 function main_menu:draw()
@@ -206,8 +211,6 @@ function main_menu:draw()
 
     -- Draw the version text at the bottom right corner of the screen
     version_text:draw(G.WINDOW.WIDTH - 200 , G.WINDOW.HEIGHT - 50)
-
-    ButtonManager.drawButtons('main_menu')
 
     for _, starData in ipairs(stars) do
         starData.animation:draw(star, starData.x, starData.y, 0, 0.5, 0.5, 16, 16)
@@ -232,7 +235,7 @@ end
 
 function main_menu:update(dt)
     main_menu_name:update(dt)
-    ButtonManager.updateButtons('main_menu', dt)
+    uiManager:update("main_menu", dt)
     earth_animation:update(dt)
 
     -- Update each star's animation
@@ -251,7 +254,6 @@ function main_menu:update(dt)
 end
 
 function main_menu:mousepressed(x, y, button)
-    ButtonManager.mousepressed('main_menu', x, y, button)
 end
 
 return main_menu
