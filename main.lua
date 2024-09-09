@@ -54,25 +54,10 @@ function love.update(dt)
     G:update(dt)
 end
 
--- love.draw is called continuously and is used to render the game
 function love.draw()
-    if (G.ACTIVATE_SHADER) then
-        scene:beginFrame()
-        love.graphics.setCanvas(G.globalCanvas)
-        scenery:draw()
-        love.graphics.setCanvas()
-        love.graphics.setShader()
-        love.graphics.setShader(G.SHADERS['CRT'])
-        love.graphics.draw(G.globalCanvas, 0, 0)
-        love.graphics.setShader()
-        scenery:outsideShaderDraw()
-        scene:finishFrame()
-    else
-        scene:beginFrame()
-        scenery:draw()
-        scene:finishFrame()
-    end
-
+    scene:beginFrame()
+    scenery:draw()
+    scene:finishFrame()
 end
 
 -- love.keypressed is called whenever a key is pressed
@@ -91,6 +76,7 @@ end
 -- love.mousemoved is called whenever the mouse is moved
 -- x, y are the new coordinates of the mouse
 function love.mousemoved(x, y)
+    scenery:mousemoved(x,y)
 end
 
 -- love.mousereleased is called whenever a mouse button is released
