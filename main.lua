@@ -19,11 +19,11 @@ Timer = require 'libs/hump/timer'
 Text = require("libs/text")
 Text.configure.function_command_enable(true)
 
-ButtonManager = require("engine/button_manager")
 uiManager = require("engine/ui_manager")
 
 UiElement = require("objects/ui_element")
 Window = require('objects/components/window')
+Button = require('objects/components/button')
 
 local SceneryInit = require("libs/scenery")
 local scenery = SceneryInit("main_menu")
@@ -103,7 +103,7 @@ function love.mousereleased(x, y, button)
 end
 
 function love.mousepressed(x, y, button)
-    ButtonManager.mousepressed(x, y, button)
+    uiManager:mousepressed(x, y, button)
     scenery:mousepressed(x, y, button)
 end
 
