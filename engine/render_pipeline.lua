@@ -25,7 +25,6 @@ function Pipeline:addStage(shader, drawFunc)
     print("Stage added. Total stages: " .. #self.stages)
 end
 
-
 function Pipeline:run()
     if #self.stages == 0 then
         error("Pipeline has no stages to run")
@@ -40,6 +39,11 @@ function Pipeline:run()
         -- Apply shader if it exists
         if stage.shader then
             love.graphics.setShader(stage.shader)
+        end
+        
+        -- Draw the previous stage's canvas if it exists
+        if i > 1 then
+            love.graphics.draw(self.stages[i - 1].canvas, 0, 0)
         end
 
         -- Execute the drawing function

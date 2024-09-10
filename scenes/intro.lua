@@ -15,13 +15,11 @@ local function setupPipeline()
 
     -- Add the PXL shader stage
     pipeline:addStage(G.SHADERS['PXL'], function()
-        love.graphics.draw(pipeline.stages[1].canvas, 0, 0)
         uiManager:draw("intro")
     end)
 
     -- Add the CRT shader stage
     pipeline:addStage(G.SHADERS['CRT'], function()
-        love.graphics.draw(pipeline.stages[2].canvas, 0, 0)
     end)
 
     return pipeline
