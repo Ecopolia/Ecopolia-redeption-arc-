@@ -11,7 +11,7 @@ function battleground:load(args)
         loop = true
     })
     battle_theme:play()
-    myDialogue = LoveDialogue.play("dialogs/test.ld", {enableFadeIn = false, enableFadeOut = false})
+    myDialogue = LoveDialogue.play("dialogs/test.ld", {enableFadeIn = false, enableFadeOut = false, fadeInDuration = 0, fadeOutDuration = 0})
    
 end
 
