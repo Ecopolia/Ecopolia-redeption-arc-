@@ -40,8 +40,31 @@ function map:update(dt)
 
     -- Logique supplémentaire pour l'update une fois que la carte est chargée
     if mapLoaded and gamemap then
+        -- Mettre à jour la carte (par exemple, si elle contient des éléments interactifs ou de la physique)
         gamemap:update(dt)
+
     end
 end
+
+-- -- Gestion du zoom avec la molette de la souris
+-- function love.wheelmoved(x, y)
+--     if y < 0 then
+--         -- DéZoomer
+--         zoomFactor = zoomFactor * 1.1
+--     elseif y > 0 then
+--         -- Zoomer
+--         zoomFactor = zoomFactor * 0.9
+--     end
+
+--     if(zoomFactor > 40) then
+--         zoomFactor = 40
+--     end
+
+--     if(zoomFactor < 1) then
+--         zoomFactor = 1
+--     end
+
+--     print(zoomFactor)
+-- end
 
 return map
