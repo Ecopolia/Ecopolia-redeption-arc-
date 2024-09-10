@@ -26,11 +26,14 @@ uiManager = require("engine/ui_manager")
 UiElement = require("objects/ui_element")
 Window = require('objects/components/window')
 Button = require('objects/components/button')
+ATB = require('objects/components/atb')
 
 local SceneryInit = require("libs/scenery")
 local scenery = SceneryInit("main_menu")
 
 LoveDialogue = require "libs/LoveDialogue"
+
+NPC = require 'objects/npc'
 
 -- love.load is called once at the beginning of the game
 function love.load()
@@ -92,7 +95,7 @@ end
 
 function love.mousepressed(x, y, button)
     uiManager:mousepressed(x, y, button)
-    scenery:mousepressed(x, y, button)
+    -- scenery:mousepressed(x, y, button)
 end
 
 -- love.quit is called when the game is closed
