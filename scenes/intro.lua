@@ -1,20 +1,40 @@
 local intro = {}
 
-local intro_canva = love.graphics.newCanvas(G.WINDOW.WIDTH, G.WINDOW.HEIGHT)
-local pxlCanvas = love.graphics.newCanvas(G.WINDOW.WIDTH, G.WINDOW.HEIGHT)
-local crtCanvas = love.graphics.newCanvas(G.WINDOW.WIDTH, G.WINDOW.HEIGHT)
-
 local mouseMovedTimer = 0
 local mouseInactivityDuration = 3
+
+local function setupPipeline()
+    local pipeline = Pipeline.new(G.WINDOW.WIDTH, G.WINDOW.HEIGHT)
+
+    -- Add the video drawing stage without a shader
+    pipeline:addStage(nil, function()
+        if intro_vid:isPlaying() then
+            love.graphics.draw(intro_vid, 0, -100, 0, 1.5, 2)
+        end
+    end)
+
+    -- Add the PXL shader stage
+    pipeline:addStage(G.SHADERS['PXL'], function()
+        love.graphics.draw(pipeline.stages[1].canvas, 0, 0)
+        uiManager:draw("intro")
+    end)
+
+    -- Add the CRT shader stage
+    pipeline:addStage(G.SHADERS['CRT'], function()
+        love.graphics.draw(pipeline.stages[2].canvas, 0, 0)
+    end)
+
+    return pipeline
+end
 
 function intro:load(args)
     -- Load the video
     intro_vid = love.graphics.newVideo('assets/vids/intro.ogv')
     intro_vid:play()  -- Start playing the video
 
-    skipButton = Button.new({
+    self.skipButton = Button.new({
         text = "[shake=0.4][breathe=0.2]Skip[/shake][/breathe]",
-        x = 1080,  -- Adjust position to bottom right
+        x = 1080,
         y = 640,
         w = 180,
         h = 60,
@@ -22,10 +42,10 @@ function intro:load(args)
             -- Define what happens when the SKIP button is clicked
             -- For example, skip the intro video or transition to another game state
             print("Skipping intro...")
-            intro_vid:pause()
-            playing = intro_vid:isPlaying( )
-            print(playing)
-            -- self.setScene('battleground')
+            if intro_vid then
+                intro_vid = nil  -- Release the video resource
+            end
+            self.setScene("battleground")
         end,
         css = {
             backgroundColor = {0.5, 0.5, 0.5},  -- Grey background
@@ -35,45 +55,17 @@ function intro:load(args)
             font = G.Fonts.m6x11plus  -- Assuming this font is defined elsewhere
         }
     })
-    skipButton.visible = false 
+    self.skipButton.visible = false 
 
-    uiManager:registerElement("intro", "skip", skipButton)
-    
+    uiManager:registerElement("intro", "skip", self.skipButton)
+
+    self.pipeline = setupPipeline()
 end
 
 function intro:draw()
-    -- Draw video to canvas without shaders first
-    love.graphics.setCanvas(intro_canva)
-    love.graphics.clear()
-
-    
-    if intro_vid then
-        if intro_vid:isPlaying( ) then 
-            love.graphics.draw(intro_vid, 0, -100, 0, 1.5, 2)
-        end
+    if intro_vid then 
+        self.pipeline:run()
     end
-
-    
-
-    love.graphics.setCanvas()
-    -- Apply PXL shader to canvas content
-    love.graphics.setCanvas(pxlCanvas)
-    love.graphics.setShader(G.SHADERS['PXL'])
-    love.graphics.draw(intro_canva, 0, 0)
-    love.graphics.setShader() -- Reset shader to default
-    uiManager:draw("intro")
-    love.graphics.setCanvas()
-
-    -- Apply CRT shader to PXL shader canvas content
-    love.graphics.setCanvas(crtCanvas)
-    
-    love.graphics.setShader(G.SHADERS['CRT'])
-    love.graphics.draw(pxlCanvas, 0, 0)
-    love.graphics.setShader() -- Reset shader to default
-    love.graphics.setCanvas()
-
-    -- Draw the final output with CRT shader applied
-    love.graphics.draw(crtCanvas, 0, 0)
 end
 
 function intro:update(dt)
@@ -87,15 +79,15 @@ function intro:update(dt)
 
     mouseMovedTimer = mouseMovedTimer + dt
     if mouseMovedTimer > mouseInactivityDuration then
-        skipButton.visible = false
+        self.skipButton.visible = false
     end
 end
 
 function intro:mousemoved(x, y)
     -- Reset the timer and show the Skip button when the mouse is moved
-    if skipButton then
+    if self.skipButton then
         mouseMovedTimer = 0
-        skipButton.visible = true
+        self.skipButton.visible = true
     end
 end
 

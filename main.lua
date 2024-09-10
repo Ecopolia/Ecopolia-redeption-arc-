@@ -3,6 +3,8 @@ require 'version'
 require 'misc/commons'
 require 'engine/object'
 
+Pipeline = require 'engine/render_pipeline'
+
 anim8 = require 'libs/anim8'
 ripple = require 'libs/ripple'
 
