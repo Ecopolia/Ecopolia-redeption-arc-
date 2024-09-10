@@ -32,6 +32,8 @@ local scenery = SceneryInit("main_menu")
 
 LoveDialogue = require "libs/LoveDialogue"
 
+sti = require 'libs/sti'
+
 -- love.load is called once at the beginning of the game
 function love.load()
     if version == 'dev-mode' then
