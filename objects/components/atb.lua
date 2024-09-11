@@ -39,10 +39,18 @@ function ATB:draw()
     local npcBarWidth = 10  -- Width of each NPC's vertical bar
     local npcBarHeight = self.height  -- Height of the NPC bar (same as the ATB height)
     local barSpacing = 5   -- Spacing between bars
+    local circleRadius = 30 -- Radius of the circles
+    
 
     for i, npc in ipairs(self.characters) do
         -- Set NPC's color (assumed to be stored in npc.color)
         love.graphics.setColor(npc.color)
+
+        if npc.group == 'ally' then
+            outlineColor = {0.3, 0.7, 0.9} -- Blueish outline for allies
+        else
+            outlineColor = {0.9, 0.3, 0.3} -- Reddish outline for enemies
+        end
 
         -- Calculate the position for each vertical bar
         local barX = self.x + (i - 1) * (npcBarWidth + barSpacing)  -- Spacing between bars
@@ -55,8 +63,28 @@ function ATB:draw()
         love.graphics.rectangle("fill", progressX, barY, npcBarWidth, npcBarHeight)
 
         -- Draw the outline of the bar (optional)
-        love.graphics.setColor(1, 1, 1)  -- Set color to white for the bar outline
+        love.graphics.setColor(outlineColor)  -- Set color to white for the bar outline
         love.graphics.rectangle("line", progressX, barY, npcBarWidth, npcBarHeight)
+
+        -- Draw a circle above the bar representing the character's position
+        local circleX = progressX + npcBarWidth / 2 -- Center the circle above the bar
+        local circleY
+
+        if npc.group == 'ally' then
+            circleY = self.y - circleRadius - 10 -- Circle above the bar for allies
+        else
+            circleY = self.y + self.height + circleRadius + 10 -- Circle below the bar for enemies
+        end  
+        
+        -- Set the color for the circle
+        love.graphics.setColor(npc.color)
+
+        -- Draw the circle
+        love.graphics.circle("fill", circleX, circleY, circleRadius)
+
+        -- Draw the outline of the circle (optional)
+        love.graphics.setColor(outlineColor) -- White for the circle outline
+        love.graphics.circle("line", circleX, circleY, circleRadius)
     end
 
     -- Reset color to white
