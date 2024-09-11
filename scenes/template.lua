@@ -1,28 +1,64 @@
 local template = {}
 
-function template:load(args)
+local function setupPipeline()
+    local pipeline = Pipeline.new(G.WINDOW.WIDTH, G.WINDOW.HEIGHT)
 
+    pipeline:addStage(nil, function()
+        -- Blue background
+        love.graphics.clear(0, 0, 0.9)
+        uiManager:draw("template")
+    end)
+
+    -- Add the CRT shader stage
+    pipeline:addStage(G.SHADERS['CRT'], function() end)
+
+    return pipeline
+end
+
+function template:load(args)
+    -- Initialize NPCs for ATB
+    local npcs = {
+        NPC.new("Warrior", {math.random(), math.random(), math.random()}, 2),
+        NPC.new("Mage", {math.random(), math.random(), math.random()}, 1.5),
+        NPC.new("Thief", {math.random(), math.random(), math.random()}, 2.5)
+    }
+    
+    -- Create ATB using the UI Manager
+    self.atbBar = ATB.new({
+        x = 400, 
+        y = 300, 
+        w = 500, 
+        h = 30
+    }, npcs)
+    
+    -- Register ATB bar with uiManager
+    uiManager:registerElement("template", "atbBar", self.atbBar)
+
+    -- Setup the rendering pipeline
+    self.pipeline = setupPipeline()
 end
 
 function template:draw()
-    -- Clear the screen with black color
-    love.graphics.clear(0.1, 0.1, 0.1, 1)
-    uiManager:draw("template")
+    if not self.pipeline then
+        print("Waiting for pipeline to draw")
+        return
+    end
+
+    self.pipeline:run()
 end
 
 function template:outsideShaderDraw()
     -- This function is currently empty
-    
 end
 
 function template:update(dt)
-    -- Update the button manager
+    -- Update the ATB bar and other UI elements
     uiManager:update("template", dt)
-    
 end
 
 function template:mousepressed(x, y, button)
-    -- Handle mouse press events for buttons
+    -- Handle mouse press events for UI elements
+    uiManager:mousepressed("template", x, y, button)
 end
 
 return template
