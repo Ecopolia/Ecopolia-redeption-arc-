@@ -5,12 +5,12 @@ local function setupPipeline()
 
     pipeline:addStage(nil, function()
         -- Blue background
-        love.graphics.clear(0, 0, 0.9)
+        love.graphics.clear(0, 0, 0.7)
         uiManager:draw("template")
     end)
 
     -- Add the CRT shader stage
-    pipeline:addStage(G.SHADERS['CRT'], function() end)
+    -- pipeline:addStage(G.SHADERS['CRT'], function() end)
 
     return pipeline
 end
@@ -18,7 +18,7 @@ end
 function template:load(args)
     -- Initialize NPCs for ATB
     local npcs = {
-        NPC.new("Warrior", {math.random(), math.random(), math.random()}, 2),
+        NPC.new("Skeletton", {math.random(), math.random(), math.random()}, 1, 'ennemy'),
         NPC.new("Mage", {math.random(), math.random(), math.random()}, 1.5),
         NPC.new("Thief", {math.random(), math.random(), math.random()}, 2.5)
     }
