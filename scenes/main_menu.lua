@@ -54,7 +54,7 @@ function main_menu:load()
             -- end)
             -- stop the music
             menu_theme:stop(G.TRANSITION_DURATION)
-            self.setScene('template')
+            self.setScene('intro')
         end,
         onHover = function(button)
             -- button.text = "[shake=0.4][breathe=0.2][blink]Go[/blink][/shake][/breathe]"
