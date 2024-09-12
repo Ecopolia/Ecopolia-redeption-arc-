@@ -26,10 +26,10 @@ uiManager = require("engine/ui_manager")
 UiElement = require("objects/ui_element")
 Window = require('objects/components/window')
 Button = require('objects/components/button')
-ATB = require('objects/components/atb')
+Freeform = require('objects/components/freeform')
 
 local SceneryInit = require("libs/scenery")
-local scenery = SceneryInit("main_menu")
+local scenery = SceneryInit("template")
 
 LoveDialogue = require "libs/LoveDialogue"
 
