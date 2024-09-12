@@ -1,14 +1,14 @@
 local Player = require("player")
 
 function love.load()
-    anim8 = require 'lib/anim8' -- Charger la bibliothèque anim8
+    anim8 = require 'libs/anim8' -- Charger la bibliothèque anim8
     love.graphics.setDefaultFilter('nearest', 'nearest') -- Activer le rendu pixelisé
 
     -- Créer une instance du joueur avec position et vitesse initiales
     player = Player:new(400, 200, 2)
 
     -- Charger la feuille de sprites pour les animations
-    player.spriteSheet = love.graphics.newImage("sprites/main.png")
+    player.spriteSheet = love.graphics.newImage("spritessheets/character/maincharacter.png")
 
     -- Créer une grille de sprites (64x128 pour chaque sprite)
     player.grid = anim8.newGrid(64, 128, player.spriteSheet:getWidth(), player.spriteSheet:getHeight())
