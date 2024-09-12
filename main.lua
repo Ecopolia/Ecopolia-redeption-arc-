@@ -37,6 +37,8 @@ NPC = require 'objects/npc'
 
 sti = require 'libs/sti'
 
+Player = require("engine/player")
+
 -- love.load is called once at the beginning of the game
 function love.load()
     if version == 'dev-mode' then

@@ -205,6 +205,41 @@ function main_menu:load()
         }
     })
 
+    local plr_btn = Button.new({
+        text = "[shake=0.4][breathe=0.2]Player Dev[/shake][/breathe]",
+        dsfull = false,
+        x = 730,
+        y = G.WINDOW.HEIGHT - 150,
+        w = 300,
+        h = 60,
+        onClick = function()
+            -- transitionOut()
+            -- Timer.after(2, function()
+            --     transitionIn()
+            -- end)
+            -- stop the music
+            menu_theme:stop(G.TRANSITION_DURATION)
+            self.setScene('testcharacter')
+        end,
+        onHover = function(button)
+            -- button.text = "[shake=0.4][breathe=0.2][blink]Go[/blink][/shake][/breathe]"
+            -- button.button_text:send(button.text, 320, button.dsfull)
+        end,
+        onUnhover = function(button)
+            -- button.text = "[shake=0.4][breathe=0.2]Play[/shake][/breathe]"
+            -- button.button_text:send(button.text, 320, button.dsfull)
+        end,
+        css = {
+            backgroundColor = {0, 0.5, 0},
+            hoverBackgroundColor = {0, 1, 0},
+            textColor = {1, 1, 1},
+            hoverTextColor = {0, 0, 0},
+            borderColor = {1, 1, 1},
+            borderRadius = 10,
+            font = G.Fonts.m6x11plus
+        }
+    })
+
     local file = io.open(G.ROOT_PATH .. "/version", "r")
     version_text = Text.new("left", { color = {0.9,0.9,0.9,0.95}, shadow_color = {0.5,0.5,1,0.4}, font = G.Fonts.default, keep_space_on_line_break=true,})
     version_text:send("Version: " .. version, 320, true)
@@ -238,6 +273,7 @@ function main_menu:load()
     uiManager:registerElement("main_menu", "settings", settings)
     uiManager:registerElement("main_menu", "music", music)
     uiManager:registerElement("main_menu", "map", map)
+    uiManager:registerElement("main_menu", "plr_btn", plr_btn)
 end
 
 function main_menu:draw()
