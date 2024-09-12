@@ -8,7 +8,7 @@ function love.load()
     player = Player:new(400, 200, 2)
 
     -- Charger la feuille de sprites pour les animations
-    player.spriteSheet = love.graphics.newImage("spritessheets/character/maincharacter.png")
+    player.spriteSheet = love.graphics.newImage("spritesheets/character/maincharacter.png")
 
     -- Créer une grille de sprites (64x128 pour chaque sprite)
     player.grid = anim8.newGrid(64, 128, player.spriteSheet:getWidth(), player.spriteSheet:getHeight())
