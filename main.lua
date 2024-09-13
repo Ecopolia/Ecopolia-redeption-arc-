@@ -29,7 +29,7 @@ Button = require('objects/components/button')
 Freeform = require('objects/components/freeform')
 
 local SceneryInit = require("libs/scenery")
-local scenery = SceneryInit("template")
+local scenery = SceneryInit("main_menu")
 
 LoveDialogue = require "libs/LoveDialogue"
 
