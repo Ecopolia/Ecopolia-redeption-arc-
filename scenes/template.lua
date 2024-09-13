@@ -105,6 +105,8 @@ function template:load(args)
         }
     })
 
+    image = love.graphics.newImage("assets/spritesheets/cards/card_01t.png")
+    card = Card.new(100,100,1,image)
 
     -- Register the areas with lower Z-index values
     uiManager:registerElement("template", "deck", DeckArea)
@@ -114,6 +116,9 @@ function template:load(args)
     uiManager:registerElement("template", "pa", PlayerArea)
     uiManager:registerElement("template", "ea", EnnemyArea)
     uiManager:registerElement("template", "eotb", EndButton)  
+
+    uiManager:registerElement("template", "eotb", EndButton)
+    uiManager:registerElement("template", "card1", card)
 
     -- Setup the rendering pipeline
     self.pipeline = setupPipeline()
