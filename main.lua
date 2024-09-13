@@ -26,7 +26,8 @@ uiManager = require("engine/ui_manager")
 UiElement = require("objects/ui_element")
 Window = require('objects/components/window')
 Button = require('objects/components/button')
-ATB = require('objects/components/atb')
+Freeform = require('objects/components/freeform')
+Card = require('objects/components/card')
 
 local SceneryInit = require("libs/scenery")
 local scenery = SceneryInit("main_menu")
@@ -36,6 +37,8 @@ LoveDialogue = require "libs/LoveDialogue"
 NPC = require 'objects/npc'
 
 sti = require 'libs/sti'
+
+push = require "libs/push"
 
 -- love.load is called once at the beginning of the game
 function love.load()
@@ -48,23 +51,20 @@ function love.load()
     else
         love.window.setTitle("Ecopolia (redemption arc) - " .. version)
     end
-    love.window.setMode(G.WINDOW.WIDTH, G.WINDOW.HEIGHT)
+    local FSWidth, FSHeight = love.window.getDesktopDimensions()
+    push:setupScreen(G.WINDOW.WIDTH, G.WINDOW.HEIGHT, FSWidth, FSHeight, {fullscreen = false , resizable = true})
     scenery:load()
 end
 
 -- love.update is called continuously and is used to update the game state
 -- dt is the time elapsed since the last update
 function love.update(dt)
-    local mx, my = love.mouse.getX(), love.mouse.getY()
-    pointer:setPosition(mx, my)
     scenery:update(dt)
     G:update(dt)
 end
 
 function love.draw()
-    scene:beginFrame()
     scenery:draw()
-    scene:finishFrame()
 end
 
 -- love.keypressed is called whenever a key is pressed
@@ -83,6 +83,7 @@ end
 -- love.mousemoved is called whenever the mouse is moved
 -- x, y are the new coordinates of the mouse
 function love.mousemoved(x, y)
+    x, y = push:toReal(x, y)
     scenery:mousemoved(x,y)
 end
 
@@ -98,6 +99,10 @@ end
 function love.mousepressed(x, y, button)
     uiManager:mousepressed(x, y, button)
     -- scenery:mousepressed(x, y, button)
+end
+
+function love.resize(w, h)
+    return push:resize(w, h)
 end
 
 -- love.quit is called when the game is closed

@@ -95,4 +95,13 @@ function Window:draw()
     end
 end
 
+function Window:isMouseOver()
+    local mx, my = love.mouse.getPosition()
+    mx, my = push:toGame(mx, my) 
+    if mx and my then
+        return mx > self.x and mx < self.x + self.width and my > self.y and my < self.y + self.height
+
+    end
+end
+
 return Window
