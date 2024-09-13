@@ -20,7 +20,7 @@ Timer = require 'libs/hump/timer'
 
 Text = require("libs/text")
 Text.configure.function_command_enable(true)
-
+deep = require 'libs/deep'
 uiManager = require("engine/ui_manager")
 
 UiElement = require("objects/ui_element")
@@ -36,6 +36,8 @@ LoveDialogue = require "libs/LoveDialogue"
 NPC = require 'objects/npc'
 
 sti = require 'libs/sti'
+
+
 
 -- love.load is called once at the beginning of the game
 function love.load()
