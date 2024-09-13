@@ -2,12 +2,13 @@ UiElement = {}
 UiElement.__index = UiElement
 
 -- Create a new UI element
-function UiElement.new(x, y, width, height)
+function UiElement.new(x, y, width, height, z)
     local self = setmetatable({}, UiElement)
     self.x = x
     self.y = y
     self.width = width
     self.height = height
+    self.z = z
     self.visible = true
     return self
 end

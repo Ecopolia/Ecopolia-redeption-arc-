@@ -3,7 +3,7 @@ Window = setmetatable({}, { __index = UiElement })
 Window.__index = Window
 
 function Window.new(css)
-    local self = setmetatable(UiElement.new(css.x or 0, css.y or 0, css.w or 100, css.h or 50), Window)
+    local self = setmetatable(UiElement.new(css.x or 0, css.y or 0, css.w or 100, css.h or 50, css.z or 0), Window)
     self.borderThickness = css.borderThickness or 2
     self.title = css.title or ""
     self.font = css.font or love.graphics.newFont(12)
