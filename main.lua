@@ -32,7 +32,7 @@ Freeform = require('objects/components/freeform')
 Card = require('objects/components/card')
 
 local SceneryInit = require("libs/scenery")
-local scenery = SceneryInit("template")
+local scenery = SceneryInit("main_menu")
 
 LoveDialogue = require "libs/LoveDialogue"
 
