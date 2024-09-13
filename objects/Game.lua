@@ -120,6 +120,28 @@ function Game:set_globals()
 
 end
 
+-- Function to create a monster instance
+function Game:createMonster(type, x, y)
+    local monsterData = self.MONSTERS[type]
+    if not monsterData then return nil end
+
+    local monster = {
+        name = monsterData.name,
+        health = monsterData.health,
+        attack = monsterData.attack,
+        defense = monsterData.defense,
+        speed = monsterData.speed,
+        experience = monsterData.experience,
+        level = monsterData.level,
+        type = monsterData.type,
+        abilities = monsterData.abilities,
+        x = x,
+        y = y
+    }
+
+    return monster
+end
+
 function Game:updateShaders(dt)
     self.SHADERS['CRT']:send('distortion_fac', {
         1.0 + 0.07 * self.SETTINGS.GRAPHICS.crt / 100,
