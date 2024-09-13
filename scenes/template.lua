@@ -5,7 +5,7 @@ local function setupPipeline()
 
     pipeline:addStage(nil, function()
         -- Blue background
-        love.graphics.clear(0, 0, 0.7)
+        love.graphics.clear(hex('5fcde4'))
         uiManager:draw("template")
     end)
 
@@ -104,9 +104,9 @@ function template:load(args)
             font = G.Fonts.m6x11plus_small,
         }
     })
+
     image = love.graphics.newImage("assets/spritesheets/cards/card_01t.png")
     card = Card.new(100,100,1,image)
-
 
     -- Register the areas with lower Z-index values
     uiManager:registerElement("template", "deck", DeckArea)
@@ -115,6 +115,8 @@ function template:load(args)
     uiManager:registerElement("template", "pb", PlacementBoard)
     uiManager:registerElement("template", "pa", PlayerArea)
     uiManager:registerElement("template", "ea", EnnemyArea)
+    uiManager:registerElement("template", "eotb", EndButton)  
+
     uiManager:registerElement("template", "eotb", EndButton)
     uiManager:registerElement("template", "card1", card)
 

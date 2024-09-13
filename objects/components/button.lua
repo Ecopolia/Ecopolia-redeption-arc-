@@ -3,7 +3,7 @@ Button = setmetatable({}, { __index = UiElement })
 Button.__index = Button
 
 function Button.new(config)
-    local self = setmetatable(UiElement.new(config.x or 0, config.y or 0, config.w or 100, config.h or 50), Button)
+    local self = setmetatable(UiElement.new(config.x or 0, config.y or 0, config.w or 100, config.h or 50, config.z or 0), Button)
     self.text = config.text or "Button"
     self.dsfull = config.dsfull or true
     self.hovered = false

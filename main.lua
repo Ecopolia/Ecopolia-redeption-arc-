@@ -20,17 +20,19 @@ Timer = require 'libs/hump/timer'
 
 Text = require("libs/text")
 Text.configure.function_command_enable(true)
-
+deep = require 'libs/deep'
 uiManager = require("engine/ui_manager")
 
 UiElement = require("objects/ui_element")
 Window = require('objects/components/window')
 Button = require('objects/components/button')
+
+Freeform = require('objects/components/freeform')
 -- Freeform = require('objects/components/freeform')
 Card = require('objects/components/card')
 
 local SceneryInit = require("libs/scenery")
-local scenery = SceneryInit("main_menu")
+local scenery = SceneryInit("template")
 
 LoveDialogue = require "libs/LoveDialogue"
 
