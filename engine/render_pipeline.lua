@@ -29,18 +29,18 @@ function Pipeline:run()
     if #self.stages == 0 then
         error("Pipeline has no stages to run")
     end
-    
+
     -- Iterate over all stages and apply them
     for i, stage in ipairs(self.stages) do
         -- Set the canvas for this stage
         love.graphics.setCanvas(stage.canvas)
         love.graphics.clear()
-        
+
         -- Apply shader if it exists
         if stage.shader then
             love.graphics.setShader(stage.shader)
         end
-        
+
         -- Draw the previous stage's canvas if it exists
         if i > 1 then
             love.graphics.draw(self.stages[i - 1].canvas, 0, 0)
@@ -51,20 +51,22 @@ function Pipeline:run()
 
         -- Reset the shader
         love.graphics.setShader()
-
-        -- Unset the canvas if this is the last stage
-        if i == #self.stages then
-            love.graphics.setCanvas()
-        end
+        love.graphics.setCanvas()  -- Reset the canvas
     end
 
-    -- Draw the final result from the last stage's canvas
+    -- Start push for resolution handling
+    push:start()
+
+    -- Draw the final result from the last stage's canvas using push scaling
     local finalCanvas = self.stages[#self.stages].canvas
     if finalCanvas then
         love.graphics.draw(finalCanvas, 0, 0)
     else
         error("Final stage's canvas is nil")
     end
+
+    -- End the push pipeline (this applies resolution scaling and renders to screen)
+    push:finish()
 end
 
 return Pipeline

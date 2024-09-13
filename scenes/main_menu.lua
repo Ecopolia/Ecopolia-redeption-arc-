@@ -13,6 +13,54 @@ local transition_timer = 0
 local transition_duration = 2
 local mainMenuCanvas = love.graphics.newCanvas(G.WINDOW.WIDTH, G.WINDOW.HEIGHT)
 
+local function setupMainMenuPipeline()
+    local pipeline = Pipeline.new(G.WINDOW.WIDTH, G.WINDOW.HEIGHT)
+
+    -- Stage 1: Draw the background and static elements (no shader)
+    pipeline:addStage(nil, function()
+        -- Draw the space background
+        love.graphics.draw(space_bg, 0, 0, 0, 1, 1)
+
+        -- Draw the main menu name in the center of the screen
+        main_menu_name:draw(10, 10)
+
+        -- Draw the version text at the bottom right corner
+        version_text:draw(G.WINDOW.WIDTH - 200, G.WINDOW.HEIGHT - 50)
+
+        -- Draw stars animations
+        for _, starData in ipairs(stars) do
+            starData.animation:draw(star, starData.x, starData.y, 0, 0.5, 0.5, 16, 16)
+        end
+
+        -- Draw falling star animation if applicable
+        if falling_star_timer <= 1 then
+            falling_star_animation:draw(falling_star, 1000, 200, 0, 1, 1, 64, 64)
+        end
+    end)
+
+    -- Stage 2: Apply resizing and draw earth animation (no shader)
+    pipeline:addStage(nil, function()
+        -- Resize earth animation to 3 times the size
+        love.graphics.setDefaultFilter('nearest', 'nearest')
+        earth_animation:draw(earth, 400, 100, 0, earth_zoom, earth_zoom)
+        love.graphics.setDefaultFilter('linear', 'linear')
+    end)
+
+    -- Stage 3: Draw UI elements (no shader)
+    pipeline:addStage(nil, function()
+        -- Draw the UI elements for the main menu
+        uiManager:draw("main_menu")
+    end)
+
+    -- Stage 4: Apply CRT shader
+    pipeline:addStage(G.SHADERS['CRT'], function()
+        -- The pipeline will automatically handle canvas switching, so you just draw
+    end)
+
+    return pipeline
+end
+
+
 function main_menu:load()
     ManualtransitionIn() -- i do this cause it is the first scene
     main_menu_name = Text.new("left", { color = {0.9,0.9,0.9,0.95}, shadow_color = {0.5,0.5,1,0.4}, font = G.Fonts.m6x11plus, keep_space_on_line_break=true,})
@@ -238,46 +286,14 @@ function main_menu:load()
     uiManager:registerElement("main_menu", "settings", settings)
     uiManager:registerElement("main_menu", "music", music)
     uiManager:registerElement("main_menu", "map", map)
+
+    self.pipeline = setupMainMenuPipeline()
 end
 
 function main_menu:draw()
-    -- Draw to the main menu canvas
-    love.graphics.setCanvas(mainMenuCanvas)
-    love.graphics.clear()
-
-    love.graphics.draw(space_bg, 0, 0, 0, 1, 1)
-
-    -- Draw the main menu name in the center of the screen
-    main_menu_name:draw(10, 10)
-
-    -- Draw the version text at the bottom right corner of the screen
-    version_text:draw(G.WINDOW.WIDTH - 200 , G.WINDOW.HEIGHT - 50)
-
-    for _, starData in ipairs(stars) do
-        starData.animation:draw(star, starData.x, starData.y, 0, 0.5, 0.5, 16, 16)
+    if self.pipeline then
+        self.pipeline:run()
     end
-
-    -- Draw the falling star if the timer is within the interval
-    if falling_star_timer <= 1 then
-        falling_star_animation:draw(falling_star, 1000, 200, 0, 1, 1, 64, 64)
-    end
-
-    -- Resize animation to 3 times the size
-    love.graphics.setDefaultFilter('nearest', 'nearest')
-    earth_animation:draw(earth, 400, 100, 0, earth_zoom, earth_zoom)
-    love.graphics.setDefaultFilter('linear', 'linear')
-
-    uiManager:draw("main_menu")
-
-    love.graphics.setCanvas() -- Reset to default canvas
-
-    -- Apply CRT shader to the main menu canvas content
-    love.graphics.setShader(G.SHADERS['CRT'])
-    love.graphics.draw(mainMenuCanvas, 0, 0)
-    love.graphics.setShader() -- Reset shader to default
-end
-
-function main_menu:outsideShaderDraw()
 end
 
 function main_menu:update(dt)
