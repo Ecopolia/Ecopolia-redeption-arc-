@@ -26,7 +26,7 @@ uiManager = require("engine/ui_manager")
 UiElement = require("objects/ui_element")
 Window = require('objects/components/window')
 Button = require('objects/components/button')
-Freeform = require('objects/components/freeform')
+-- Freeform = require('objects/components/freeform')
 Card = require('objects/components/card')
 
 local SceneryInit = require("libs/scenery")
