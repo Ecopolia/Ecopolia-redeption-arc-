@@ -1,0 +1,1 @@
+Start-Process -FilePath ".\build\love.exe" -ArgumentList "tests/ --console" -NoNewWindow -Wait
