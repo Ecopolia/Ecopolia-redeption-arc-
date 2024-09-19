@@ -1,0 +1,16 @@
+- Ou mettre les fichiers relative a la sauvegarde : 
+Suivre l'architecture qu'on a décidé au début
+
+
+- Comment doit se faire la sauvegarde ?:
+Dans un fichier txt ou json ? Faciellement modfiable par l'utilisateur
+Dans un fichier crypté (.dat ou txt) : Utilisation de la lib bitser
+
+- Comment tester : 
+Création d'une scene save_scene en ajoutant des commandes de déplacement
+
+- Évolution possible :
+- Ne plus passer par le game object G de paul.
+- Décider comment doit se faire l'instanciation de chaque entité du jeu,
+Ce qui permettrait de la sauvergarder (Actuellement le monstre n'était pas une instance mais directement la classe)
+
