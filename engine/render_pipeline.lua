@@ -6,7 +6,6 @@ function Pipeline.new(width, height)
     self.width = width
     self.height = height
     self.stages = {}
-    print('Pipeline init')
     return self
 end
 
@@ -22,7 +21,6 @@ function Pipeline:addStage(shader, drawFunc)
     }
     
     table.insert(self.stages, stage)
-    print("Stage added. Total stages: " .. #self.stages)
 end
 
 function Pipeline:run()

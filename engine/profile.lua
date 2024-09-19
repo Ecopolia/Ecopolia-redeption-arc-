@@ -148,9 +148,20 @@ end
 
 local cols = { 3, 29, 11, 24, 32 }
 
---- Generates a text report.
+--- Generates a text report and writes it to a file with a timestamp using Love2D's filesystem.
 -- @tparam[opt] number limit Maximum number of rows
 function profile.report(n)
+  -- Ensure ./.profile directory exists
+  local dir = ".profile"
+  if not love.filesystem.getInfo(dir) then
+    love.filesystem.createDirectory(dir)
+  end
+
+  -- Generate the timestamped filename
+  local timestamp = os.date("%Y-%m-%d_%H-%M-%S")
+  local filepath = string.format("%s/profile_%s.txt", dir, timestamp)
+
+  -- Create the report output
   local out = {}
   local report = profile.query(n)
   for i, row in ipairs(report) do
@@ -175,7 +186,16 @@ function profile.report(n)
   if #out > 0 then
     sz = sz..' | '..table.concat(out, ' | \n | ')..' | \n'
   end
-  return '\n'..sz..row
+
+  sz = '\n'..sz..row
+
+  -- Write the report to the file using Love2D filesystem
+  local success, message = love.filesystem.write(filepath, sz)
+  if success then
+    print("Profile report written to: " .. filepath)
+  else
+    print("Failed to write profile report: " .. message)
+  end
 end
 
 -- store all internal profiler functions
