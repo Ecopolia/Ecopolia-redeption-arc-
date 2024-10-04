@@ -6,6 +6,7 @@ Timer = require 'libs/hump/timer'
 Text = require("libs/text")
 sti = require 'libs/sti'
 push = require "libs/push"
+debugGraph = require 'libs/debugGraph'
 
 -- Require necessary modules
 require 'version'
@@ -26,6 +27,7 @@ Window = require('objects/components/window')
 Button = require('objects/components/button')
 Freeform = require('objects/components/freeform')
 Card = require('objects/components/card')
+NpcElement = require('objects/components/npc')
 
 -- LoveDialogue for handling dialogue
 LoveDialogue = require "libs/LoveDialogue"
