@@ -22,3 +22,8 @@ function ManualtransitionIn()
       G.TRANSITION = 1
   end)
 end
+
+function math.round(n, deci)
+  deci = 10^(deci or 0)
+  return math.floor(n*deci+.5)/deci
+end
