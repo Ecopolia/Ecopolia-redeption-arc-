@@ -6,63 +6,62 @@ on:
       - main
 
 jobs:
-  pack:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-
-      - name: Compress files
-        run: |
-          rm version.lua
-          echo "version = '$(git rev-parse HEAD | cut -c1-5)'" > version.lua
-          zip -9 -r ecopolia.love .
-          mv ecopolia.love build/
-
-      - name: Upload .love file as artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: ecopolia-love-file
-          path: build/ecopolia.love
-
   build:
-    runs-on: windows-latest
-    needs: pack
+    runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Download .love file artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: ecopolia-love-file
+      - name: Install Python 3 and dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y python3 python3-pip
+          pip3 install makelove
 
-      - name: Create executable
+      - name: Initialize makelove (if not already configured)
+        run: |
+          if [ ! -f makelove.toml ]; then
+            makelove --init
+          fi
+
+      - name: Build the game using makelove
+        run: |
+          COMMIT_HASH=$(git rev-parse --short HEAD)
+          makelove --version-name $COMMIT_HASH
+
+      - name: Package AppImage, win32, win64, and buildlog
         run: |
           cd build
-          move ..\ecopolia.love .
-          cmd /c copy /b love.exe+ecopolia.love ecopolia.exe
+          COMMIT_HASH=$(git rev-parse --short HEAD)
+          zip -r ecopolia_appimage_$COMMIT_HASH.zip $COMMIT_HASH/appimage/
+          zip -r ecopolia_win32_$COMMIT_HASH.zip $COMMIT_HASH/win32/
+          zip -r ecopolia_win64_$COMMIT_HASH.zip $COMMIT_HASH/win64/
+          zip -r ecopolia_buildlog_$COMMIT_HASH.zip .makelove-buildlog $COMMIT_HASH/
 
-      - name: Package executable and DLLs
-        run: |
-          cd build
-          mkdir release
-          move ecopolia.exe release/
-          copy SDL2.dll release/
-          copy OpenAL32.dll release/
-          copy love.dll release/
-          copy lua51.dll release/
-          copy mpg123.dll release/
-          copy msvcp120.dll release/
-          copy msvcr120.dll release/
-          cd release
-          powershell -Command "Compress-Archive -Path * -DestinationPath ../ecopolia_release.zip"
-
-      - name: Upload release artifact
+      - name: Upload AppImage artifact
         uses: actions/upload-artifact@v3
         with:
-          name: ecopolia-release-zip
-          path: build/ecopolia_release.zip
+          name: ecopolia-appimage
+          path: build/ecopolia_appimage_*.zip
+
+      - name: Upload win32 artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: ecopolia-win32
+          path: build/ecopolia_win32_*.zip
+
+      - name: Upload win64 artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: ecopolia-win64
+          path: build/ecopolia_win64_*.zip
+
+      - name: Upload buildlog artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: ecopolia-buildlog
+          path: build/ecopolia_buildlog_*.zip
 
   release:
     permissions: write-all
@@ -72,14 +71,18 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
       
-      - name: Download .love file artifact
+      - name: Download artifacts
         uses: actions/download-artifact@v3
         with:
-          name: ecopolia-release-zip
+          name: |
+            ecopolia-appimage
+            ecopolia-win32
+            ecopolia-win64
+            ecopolia-buildlog
 
       - name: Get latest commit hash
         id: get_commit
-        run: echo "::set-output name=commit_hash::$(git rev-parse HEAD | cut -c1-5)"
+        run: echo "::set-output name=commit_hash::$(git rev-parse --short HEAD)"
 
       - name: Create GitHub Release
         id: create_release
@@ -92,12 +95,42 @@ jobs:
           draft: false
           prerelease: false
 
-      - name: Upload release asset
+      - name: Upload AppImage release asset
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ecopolia_release.zip
-          asset_name: ecopolia_release.zip
+          asset_path: build/ecopolia_appimage_*.zip
+          asset_name: ecopolia_appimage.zip
+          asset_content_type: application/zip
+
+      - name: Upload win32 release asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: build/ecopolia_win32_*.zip
+          asset_name: ecopolia_win32.zip
+          asset_content_type: application/zip
+
+      - name: Upload win64 release asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: build/ecopolia_win64_*.zip
+          asset_name: ecopolia_win64.zip
+          asset_content_type: application/zip
+
+      - name: Upload buildlog release asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: build/ecopolia_buildlog_*.zip
+          asset_name: ecopolia_buildlog.zip
           asset_content_type: application/zip
