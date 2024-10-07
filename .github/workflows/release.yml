@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
 
     steps:
       - name: Checkout repository
@@ -16,7 +16,7 @@ jobs:
       - name: Install Python 3 and dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y python3 python3-pip
+          sudo apt-get install -y python3 python3-pip wine-stable wine64
           pip3 install makelove
 
       - name: Initialize makelove (if not already configured)
@@ -24,6 +24,10 @@ jobs:
           if [ ! -f makelove.toml ]; then
             makelove --init
           fi
+      - name: Populate version number
+        run: |
+          rm version.lua
+          echo "version = '$(git rev-parse HEAD | cut -c1-5)'" > version.lua
 
       - name: Build the game using makelove
         run: |
@@ -34,34 +38,27 @@ jobs:
         run: |
           cd build
           COMMIT_HASH=$(git rev-parse --short HEAD)
-          zip -r ecopolia_appimage_$COMMIT_HASH.zip $COMMIT_HASH/appimage/
-          zip -r ecopolia_win32_$COMMIT_HASH.zip $COMMIT_HASH/win32/
-          zip -r ecopolia_win64_$COMMIT_HASH.zip $COMMIT_HASH/win64/
-          zip -r ecopolia_buildlog_$COMMIT_HASH.zip .makelove-buildlog $COMMIT_HASH/
+          zip -r ecopolia_appimage.zip $COMMIT_HASH/appimage/
+          zip -r ecopolia_win32.zip $COMMIT_HASH/win32/
+          zip -r ecopolia_win64.zip $COMMIT_HASH/win64/
 
       - name: Upload AppImage artifact
         uses: actions/upload-artifact@v3
         with:
           name: ecopolia-appimage
-          path: build/ecopolia_appimage_*.zip
+          path: build/ecopolia_appimage.zip
 
       - name: Upload win32 artifact
         uses: actions/upload-artifact@v3
         with:
           name: ecopolia-win32
-          path: build/ecopolia_win32_*.zip
+          path: build/ecopolia_win32.zip
 
       - name: Upload win64 artifact
         uses: actions/upload-artifact@v3
         with:
           name: ecopolia-win64
-          path: build/ecopolia_win64_*.zip
-
-      - name: Upload buildlog artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: ecopolia-buildlog
-          path: build/ecopolia_buildlog_*.zip
+          path: build/ecopolia_win64.zip
 
   release:
     permissions: write-all
@@ -71,14 +68,20 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
       
-      - name: Download artifacts
+      - name: Download artifact Appimage
         uses: actions/download-artifact@v3
         with:
-          name: |
-            ecopolia-appimage
-            ecopolia-win32
-            ecopolia-win64
-            ecopolia-buildlog
+          name: ecopolia-appimage
+      
+      - name: Download artifact Win32
+        uses: actions/download-artifact@v3
+        with:
+          name: ecopolia-win32
+
+      - name: Download artifact Win64
+        uses: actions/download-artifact@v3
+        with:
+          name: ecopolia-win64
 
       - name: Get latest commit hash
         id: get_commit
@@ -101,7 +104,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: build/ecopolia_appimage_*.zip
+          asset_path: ecopolia_appimage.zip
           asset_name: ecopolia_appimage.zip
           asset_content_type: application/zip
 
@@ -111,7 +114,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: build/ecopolia_win32_*.zip
+          asset_path: ecopolia_win32.zip
           asset_name: ecopolia_win32.zip
           asset_content_type: application/zip
 
@@ -121,16 +124,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: build/ecopolia_win64_*.zip
+          asset_path: ecopolia_win64.zip
           asset_name: ecopolia_win64.zip
-          asset_content_type: application/zip
-
-      - name: Upload buildlog release asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: build/ecopolia_buildlog_*.zip
-          asset_name: ecopolia_buildlog.zip
           asset_content_type: application/zip
