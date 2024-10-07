@@ -104,7 +104,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: build/ecopolia_appimage_*.zip
+          asset_path: ecopolia_appimage_*.zip
           asset_name: ecopolia_appimage.zip
           asset_content_type: application/zip
 
@@ -114,7 +114,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: build/ecopolia_win32_*.zip
+          asset_path: ecopolia_win32_*.zip
           asset_name: ecopolia_win32.zip
           asset_content_type: application/zip
 
@@ -124,6 +124,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: build/ecopolia_win64_*.zip
+          asset_path: ecopolia_win64_*.zip
           asset_name: ecopolia_win64.zip
           asset_content_type: application/zip
