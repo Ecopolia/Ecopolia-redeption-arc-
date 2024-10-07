@@ -6,6 +6,7 @@ Timer = require 'libs/hump/timer'
 Text = require("libs/text")
 sti = require 'libs/sti'
 push = require "libs/push"
+debugGraph = require 'libs/debugGraph'
 
 -- Require necessary modules
 require 'version'
@@ -26,6 +27,7 @@ Window = require('objects/components/window')
 Button = require('objects/components/button')
 Freeform = require('objects/components/freeform')
 Card = require('objects/components/card')
+NpcElement = require('objects/components/npc')
 
 -- LoveDialogue for handling dialogue
 LoveDialogue = require "libs/LoveDialogue"
@@ -36,7 +38,7 @@ profile.start()
 
 -- Scenery initialization
 local SceneryInit = require("libs/scenery")
-local scenery = SceneryInit("main_menu")
+local scenery = SceneryInit("npc_test")
 
 -- NPC objects
 NPC = require 'objects/npc'
@@ -60,7 +62,7 @@ function love.load()
 
     -- Setup screen resolution
     local FSWidth, FSHeight = love.window.getDesktopDimensions()
-    push:setupScreen(G.WINDOW.WIDTH, G.WINDOW.HEIGHT, FSWidth, FSHeight, {fullscreen = true, resizable = true})
+    push:setupScreen(G.WINDOW.WIDTH, G.WINDOW.HEIGHT, FSWidth, FSHeight, {fullscreen = false, resizable = true})
 
     -- Load scenery
     scenery:load()
