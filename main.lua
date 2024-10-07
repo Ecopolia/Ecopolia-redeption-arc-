@@ -42,6 +42,10 @@ local scenery = SceneryInit("npc_test")
 
 -- NPC objects
 NPC = require 'objects/npc'
+LoveDialogue = require "libs/LoveDialogue"
+
+sti = require 'libs/sti'
+Camera = require("libs/hump/camera")
 
 -- love.load is called once at the beginning of the game
 function love.load()
