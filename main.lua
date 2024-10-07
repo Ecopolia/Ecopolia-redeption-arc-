@@ -38,7 +38,7 @@ profile.start()
 
 -- Scenery initialization
 local SceneryInit = require("libs/scenery")
-local scenery = SceneryInit("npc_test")
+local scenery = SceneryInit("main_menu")
 
 LoveDialogue = require "libs/LoveDialogue"
 
