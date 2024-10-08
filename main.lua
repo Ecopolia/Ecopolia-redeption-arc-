@@ -7,7 +7,7 @@ Text = require("libs/text")
 sti = require 'libs/sti'
 push = require "libs/push"
 debugGraph = require 'libs/debugGraph'
-
+bump = require 'libs/bump'
 -- Require necessary modules
 require 'version'
 require 'misc/commons'
@@ -38,10 +38,8 @@ profile.start()
 
 -- Scenery initialization
 local SceneryInit = require("libs/scenery")
-local scenery = SceneryInit("main_menu")
+local scenery = SceneryInit("npc_test")
 
--- NPC objects
-NPC = require 'objects/npc'
 
 -- love.load is called once at the beginning of the game
 function love.load()
