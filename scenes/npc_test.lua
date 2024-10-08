@@ -1,6 +1,4 @@
 local npc_test = {}
--- Global NPC table for the scene
-npcs = {}
 
 -- Initialize debug graphs
 local fpsGraph, memGraph, dtGraph
@@ -26,7 +24,7 @@ function npc_test:load(args)
     ManualtransitionIn()
 
     -- Load the NPC data
-    local npcCount = 5  -- Number of NPCs to spawn
+    local npcCount = 2  -- Number of NPCs to spawn
 
     -- Create multiple NPC UI elements
     for i = 1, npcCount do
@@ -40,17 +38,52 @@ function npc_test:load(args)
             radius = 100,
             clickableRadius = 50,
             speed = 30,
-            onClick = function() print('clicked npc_' .. i) end
+            onClick = function() print('clicked npc_' .. i) end,
+            debug = true
         }
 
         -- Create NPC as a UI element
         local npcElement = NpcElement.new(npcConfig)
-        table.insert(npcs, npcElement)
         uiManager:registerElement("npc_test",'npc_' .. i, npcElement)
     end
 
+    local npc_path = NpcElement.new({
+        x = 100,
+        y = 100,
+        w = 50,
+        h = 50,
+        scale = 2,
+        speed = 30,
+        radius = 0,
+        clickableRadius = 30,
+        mode = "predefined-path", -- or "random-in-area" or "predefined-roundtour"
+        path = {{x = 200, y = 150}, {x = 300, y = 200}, {x = 250, y = 100}},
+        debug = true,
+        onClick = function() print("NPC clicked!") end
+    })
+
+    uiManager:registerElement("npc_test", "npc_path", npc_path)
+
+    local npc_roundtour = NpcElement.new({
+        x = 400,
+        y = 300,
+        w = 50,
+        h = 50,
+        scale = 2,
+        speed = 30,
+        radius = 0,
+        clickableRadius = 30,
+        mode = "predefined-roundtour",
+        path = {{x = 450, y = 350}, {x = 550, y = 400}, {x = 500, y = 300}},
+        debug = true,
+        onClick = function() print("Roundtour NPC clicked!") end,
+        waitInterval = 3
+    })
+    
+    uiManager:registerElement("npc_test", "npc_roundtour", npc_roundtour)
+
     self.pipeline = setupPipeline()
-    self.timer = Timer.new()  -- Initialize the HUMP timer
+    self.timer = Timer.new()
 
     -- Initialize debug graphs
     fpsGraph = debugGraph:new('fps', 0, 0, 50, 30, 0.5, 'fps', love.graphics.newFont(16))
@@ -62,10 +95,6 @@ function npc_test:update(dt)
     -- Update the HUMP timer
     self.timer:update(dt)
 
-    -- Update NPCs
-    for _, npc in ipairs(npcs) do
-        npc:update(dt)
-    end
 
     -- Update the UI (if needed)
     uiManager:update("npc_test", dt)

@@ -22,36 +22,72 @@ function NpcElement.new(config)
     self.hovered = false
     self.onClick = config.onClick or function() end
     self.color = {love.math.random(), love.math.random(), love.math.random(), 1}
+    self.debug = config.debug or false
+    self.mode = config.mode or "random-in-area"
+    self.path = config.path or {}
+    self.pathIndex = 1
+    self.forward = true
 
-    NpcElement.setRandomTarget(self)
+    -- New variable for wait interval
+    self.waitInterval = config.waitInterval or 0 -- Default wait time of 1 second
+    self.isWaiting = false -- Flag to indicate if the NPC is waiting
+
+    -- Set initial target based on mode
+    if self.mode == "random-in-area" then
+        NpcElement.setRandomTarget(self)
+    elseif (self.mode == "predefined-path" or self.mode == "predefined-roundtour") and #self.path > 0 then
+        self.target = self.path[self.pathIndex]
+    end
 
     return self
 end
 
 function NpcElement:draw()
-    love.graphics.setColor(1, 1, 1, 0.1)
-    love.graphics.circle("line", self.center.x, self.center.y, self.radius)
-    if self.hovered then
-        love.graphics.setColor(0, 1, 0, 0.3)
-        love.graphics.circle("fill", self.position.x, self.position.y, self.clickableRadius)
-    else
-        love.graphics.setColor(0, 1, 0, 0.1)
-        love.graphics.circle("line", self.position.x, self.position.y, self.clickableRadius)
+    if self.debug then
+        -- Draw area and clickable zone in debug mode
+        love.graphics.setColor(1, 1, 1, 0.1)
+        love.graphics.circle("line", self.center.x, self.center.y, self.radius)
+        if self.hovered then
+            love.graphics.setColor(0, 1, 0, 0.3)
+            love.graphics.circle("fill", self.position.x, self.position.y, self.clickableRadius)
+        else
+            love.graphics.setColor(0, 1, 0, 0.1)
+            love.graphics.circle("line", self.position.x, self.position.y, self.clickableRadius)
+        end
+
+        -- Draw predefined path if in 'predefined-path' or 'predefined-roundtour' mode
+        if (self.mode == "predefined-path" or self.mode == "predefined-roundtour") and #self.path > 0 then
+            love.graphics.setColor(0, 0, 1, 0.5) -- Line color for the path
+            for i = 1, #self.path - 1 do
+                love.graphics.line(self.path[i].x, self.path[i].y, self.path[i + 1].x, self.path[i + 1].y)
+            end
+
+            -- Only connect the last point back to the first in "predefined-roundtour" mode
+            if self.mode == "predefined-roundtour" then
+                love.graphics.line(self.path[#self.path].x, self.path[#self.path].y, self.path[1].x, self.path[1].y)
+            end
+
+            -- Draw the current target with a distinct color
+            love.graphics.setColor(1, 0, 0, 0.8) -- Red for current target
+            love.graphics.circle("fill", self.target.x, self.target.y, 5)
+        end
     end
+
+    -- Draw the NPC sprite
     love.graphics.setColor(self.color)
-    local anim = self.moving and self.animations.walk or self.animations.idle
+    local anim = self.isWaiting and self.animations.idle or self.animations.walk
     anim:draw(self.spritesheet, self.position.x, self.position.y, 0, self.scale * self.direction, self.scale, 12, 12)
     love.graphics.setColor(1, 1, 1, 1)
 end
 
 function NpcElement:update(dt)
-    if self.moving and self.target then
+    if self.moving and self.target and not self.isWaiting then -- Only move if not waiting
         local dx = self.target.x - self.position.x
         local dy = self.target.y - self.position.y
         local distance = math.sqrt(dx * dx + dy * dy)
 
         if distance < 2 then
-            NpcElement.setRandomTarget(self)
+            self:startWaiting() -- Start waiting when reaching the target
         else
             local dirX = dx / distance
             local dirY = dy / distance
@@ -64,10 +100,52 @@ function NpcElement:update(dt)
         self.animations.idle:update(dt)
     end
 
+    -- Check for mouse hover
     local mx, my = love.mouse.getPosition()
     mx, my = push:toGame(mx, my)
     if mx and my then
         self.hovered = NpcElement.isInClickableZone(self, mx, my)
+    end
+end
+
+function NpcElement:startWaiting()
+    if self.waitInterval > 0 then
+        self.isWaiting = true
+        -- Schedule the action to move to the next target after the wait time
+        Timer.after(self.waitInterval, function()
+            self.isWaiting = false
+            self:nextTarget() -- Move to the next target after waiting
+        end)
+    else
+        self.isWaiting = false
+        self:nextTarget() -- Move to the next target immediately if wait interval is 0
+    end
+end
+
+function NpcElement:nextTarget()
+    if self.mode == "random-in-area" then
+        self:setRandomTarget()
+    elseif self.mode == "predefined-path" then
+        if self.forward then
+            self.pathIndex = self.pathIndex + 1
+            if self.pathIndex > #self.path then
+                self.pathIndex = #self.path -- Stay at the last point if out of bounds
+                self.forward = false
+            end
+        else
+            self.pathIndex = self.pathIndex - 1
+            if self.pathIndex < 1 then
+                self.pathIndex = 1 -- Stay at the first point if out of bounds
+                self.forward = true
+            end
+        end
+        self.target = self.path[self.pathIndex] -- Set the target to the current path index
+    elseif self.mode == "predefined-roundtour" then
+        self.pathIndex = self.pathIndex + 1
+        if self.pathIndex > #self.path then
+            self.pathIndex = 1 -- Loop back to the first point
+        end
+        self.target = self.path[self.pathIndex]
     end
 end
 
