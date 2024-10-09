@@ -32,7 +32,7 @@ function testcharacter:load()
 
     -- Définir les animations (ex : 3 frames pour "down" sur la 1ère ligne)
     player.animations = {}
-    player.animations.down = anim8.newAnimation(player.grid('1-8', 6), 0.1) -- 0.1 sec par frame
+    player.animations.down = anim8.newAnimation(player.grid('1-8', 7), 0.1) -- 0.1 sec par frame
 
     -- Activer l'animation par défaut
     player.currentAnimation = player.animations.down
