@@ -10,8 +10,7 @@ function NpcElement.new(config)
         idle = anim8.newAnimation(self.grid('1-2', 1), 0.2),
         walk = anim8.newAnimation(self.grid('1-4', 2), 0.2)
     }
-    self.center = {x = config.x + config.w / 2, y = config.y + config.h / 2}
-    self.position = {x = self.center.x, y = self.center.y}
+
     self.scale = config.scale or 2
     self.radius = config.radius or 100
     self.clickableRadius = config.clickableRadius or 50
@@ -29,18 +28,26 @@ function NpcElement.new(config)
     self.forward = true
 
     -- New variable for wait interval
-    self.waitInterval = config.waitInterval or 0 -- Default wait time of 1 second
-    self.isWaiting = false -- Flag to indicate if the NPC is waiting
+    self.waitInterval = config.waitInterval or 0
+    self.isWaiting = false
+
+    -- Calculate the center of the NPC based on its width and height
+    self.center = {x = config.x + config.w / 2, y = config.y + config.h / 2}
 
     -- Set initial target based on mode
-    if self.mode == "random-in-area" then
-        NpcElement.setRandomTarget(self)
-    elseif (self.mode == "predefined-path" or self.mode == "predefined-roundtour") and #self.path > 0 then
-        self.target = self.path[self.pathIndex]
+    if (self.mode == "predefined-path" or self.mode == "predefined-roundtour") and #self.path > 0 then
+        -- Set the initial position to the first point in the path
+        self.position = {x = self.path[1].x, y = self.path[1].y}
+        self.target = self.path[self.pathIndex] -- Set the target as the first point in the path
+    else
+        -- Default position when not using a predefined path
+        self.position = {x = self.center.x, y = self.center.y}
     end
 
     return self
 end
+
+
 
 function NpcElement:draw()
     if self.debug then

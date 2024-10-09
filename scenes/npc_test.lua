@@ -20,35 +20,36 @@ local function setupPipeline()
     return pipeline
 end
 
+
 function npc_test:load(args)
     ManualtransitionIn()
 
-    -- Load the NPC data
-    local npcCount = 2  -- Number of NPCs to spawn
+    -- -- Load the NPC data
+    -- local npcCount = 2  -- Number of NPCs to spawn
 
-    -- Create multiple NPC UI elements
-    for i = 1, npcCount do
-        local npcConfig = {
-            x = love.math.random(200, G.WINDOW.WIDTH - 200),
-            y = love.math.random(200, G.WINDOW.HEIGHT - 200),
-            w = 100,
-            h = 100,
-            spritesheet = "assets/spritesheets/placeholder_npc.png",
-            scale = 2,
-            radius = 100,
-            clickableRadius = 50,
-            speed = 30,
-            onClick = function() print('clicked npc_' .. i) end,
-            debug = true
-        }
+    -- -- Create multiple NPC UI elements
+    -- for i = 1, npcCount do
+    --     local npcConfig = {
+    --         x = love.math.random(200, G.WINDOW.WIDTH - 200),
+    --         y = love.math.random(200, G.WINDOW.HEIGHT - 200),
+    --         w = 100,
+    --         h = 100,
+    --         spritesheet = "assets/spritesheets/placeholder_npc.png",
+    --         scale = 2,
+    --         radius = 100,
+    --         clickableRadius = 50,
+    --         speed = 30,
+    --         onClick = function() print('clicked npc_' .. i) end,
+    --         debug = true
+    --     }
 
-        -- Create NPC as a UI element
-        local npcElement = NpcElement.new(npcConfig)
-        uiManager:registerElement("npc_test",'npc_' .. i, npcElement)
-    end
+    --     -- Create NPC as a UI element
+    --     local npcElement = NpcElement.new(npcConfig)
+    --     uiManager:registerElement("npc_test",'npc_' .. i, npcElement)
+    -- end
 
     local npc_path = NpcElement.new({
-        x = 100,
+        x = 200,
         y = 100,
         w = 50,
         h = 50,
@@ -57,30 +58,36 @@ function npc_test:load(args)
         radius = 0,
         clickableRadius = 30,
         mode = "predefined-path", -- or "random-in-area" or "predefined-roundtour"
-        path = {{x = 200, y = 150}, {x = 300, y = 200}, {x = 250, y = 100}},
+        path = {{x = 200, y = 100}, {x = 300, y = 100}, {x = 400, y = 100}, {x = 500, y = 100}, {x = 600, y = 100}, {x = 700, y = 100}},
         debug = true,
         onClick = function() print("NPC clicked!") end
     })
 
     uiManager:registerElement("npc_test", "npc_path", npc_path)
 
-    local npc_roundtour = NpcElement.new({
-        x = 400,
-        y = 300,
-        w = 50,
-        h = 50,
-        scale = 2,
-        speed = 30,
-        radius = 0,
-        clickableRadius = 30,
-        mode = "predefined-roundtour",
-        path = {{x = 450, y = 350}, {x = 550, y = 400}, {x = 500, y = 300}},
-        debug = true,
-        onClick = function() print("Roundtour NPC clicked!") end,
-        waitInterval = 3
-    })
+    -- local npc_roundtour = NpcElement.new({
+    --     x = 400,
+    --     y = 300,
+    --     w = 50,
+    --     h = 50,
+    --     scale = 2,
+    --     speed = 30,
+    --     radius = 0,
+    --     clickableRadius = 30,
+    --     mode = "predefined-roundtour",
+    --     path = {{x = 450, y = 350}, {x = 550, y = 400}, {x = 500, y = 300}},
+    --     debug = true,
+    --     onClick = function() print("Roundtour NPC clicked!") end,
+    --     waitInterval = 3
+    -- })
     
-    uiManager:registerElement("npc_test", "npc_roundtour", npc_roundtour)
+    -- uiManager:registerElement("npc_test", "npc_roundtour", npc_roundtour)
+
+    local midpointX = (200 + 700) / 2
+    local midpointY = (100 + 100) / 2 -- Assuming all y-coordinates are the same
+    local collisionEntity = CollisionEntity.new(midpointX - 25, midpointY - 25, 50, 50)
+
+    uiManager:registerElement("npc_test", "collision_midpoint", collisionEntity)
 
     self.pipeline = setupPipeline()
     self.timer = Timer.new()
