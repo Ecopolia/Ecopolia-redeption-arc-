@@ -27,31 +27,34 @@ function NpcElement.new(config)
     self.pathIndex = 1
     self.forward = true
 
-    -- New variable for wait interval
+    self._world = config.world
+
     self.waitInterval = config.waitInterval or 0
     self.isWaiting = false
 
-    -- Calculate the center of the NPC based on its width and height
     self.center = {x = config.x + config.w / 2, y = config.y + config.h / 2}
 
-    -- Set initial target based on mode
-    if (self.mode == "predefined-path" or self.mode == "predefined-roundtour") and #self.path > 0 then
-        -- Set the initial position to the first point in the path
-        self.position = {x = self.path[1].x, y = self.path[1].y}
-        self.target = self.path[self.pathIndex] -- Set the target as the first point in the path
+    self.hitzoneWidth = 24
+    self.hitzoneHeight = 36
+
+    self.position = {x = self.center.x, y = self.center.y}
+    if self.mode == "predefined-path" or self.mode == "predefined-roundtour" then
+        self.position.x = self.path[1].x
+        self.position.y = self.path[1].y
     else
-        -- Default position when not using a predefined path
         self.position = {x = self.center.x, y = self.center.y}
     end
+
+    self.collider = config.world:newCollider('Rectangle', {self.position.x, self.position.y, self.hitzoneWidth , self.hitzoneHeight})
+
+    self:nextTarget()
 
     return self
 end
 
 
-
 function NpcElement:draw()
     if self.debug then
-        -- Draw area and clickable zone in debug mode
         love.graphics.setColor(1, 1, 1, 0.1)
         love.graphics.circle("line", self.center.x, self.center.y, self.radius)
         if self.hovered then
@@ -62,25 +65,24 @@ function NpcElement:draw()
             love.graphics.circle("line", self.position.x, self.position.y, self.clickableRadius)
         end
 
-        -- Draw predefined path if in 'predefined-path' or 'predefined-roundtour' mode
         if (self.mode == "predefined-path" or self.mode == "predefined-roundtour") and #self.path > 0 then
-            love.graphics.setColor(0, 0, 1, 0.5) -- Line color for the path
+            love.graphics.setColor(0, 0, 1, 0.5)
             for i = 1, #self.path - 1 do
                 love.graphics.line(self.path[i].x, self.path[i].y, self.path[i + 1].x, self.path[i + 1].y)
             end
 
-            -- Only connect the last point back to the first in "predefined-roundtour" mode
             if self.mode == "predefined-roundtour" then
                 love.graphics.line(self.path[#self.path].x, self.path[#self.path].y, self.path[1].x, self.path[1].y)
             end
 
-            -- Draw the current target with a distinct color
-            love.graphics.setColor(1, 0, 0, 0.8) -- Red for current target
+            love.graphics.setColor(1, 0, 0, 0.8)
             love.graphics.circle("fill", self.target.x, self.target.y, 5)
         end
+
+        love.graphics.setColor(1, 0, 0, 1)
+        love.graphics.rectangle("line", self.position.x - self.hitzoneWidth / 2, self.position.y - self.hitzoneHeight / 2, self.hitzoneWidth, self.hitzoneHeight)
     end
 
-    -- Draw the NPC sprite
     love.graphics.setColor(self.color)
     local anim = self.isWaiting and self.animations.idle or self.animations.walk
     anim:draw(self.spritesheet, self.position.x, self.position.y, 0, self.scale * self.direction, self.scale, 12, 12)
@@ -88,73 +90,140 @@ function NpcElement:draw()
 end
 
 function NpcElement:update(dt)
-    if self.moving and self.target and not self.isWaiting then -- Only move if not waiting
+    if self.moving and self.target and not self.isWaiting then
         local dx = self.target.x - self.position.x
         local dy = self.target.y - self.position.y
         local distance = math.sqrt(dx * dx + dy * dy)
 
         if distance < 2 then
-            self:startWaiting() -- Start waiting when reaching the target
+            self:startWaiting()
         else
             local dirX = dx / distance
             local dirY = dy / distance
-            self.position.x = self.position.x + dirX * self.speed * dt
-            self.position.y = self.position.y + dirY * self.speed * dt
-            self.direction = dirX >= 0 and 1 or -1
-            self.animations.walk:update(dt)
+
+            local newX = self.position.x + dirX * self.speed * dt
+            local newY = self.position.y + dirY * self.speed * dt
+
+            self.collider:setPosition(newX, newY)
+
+            local colliders = self._world:queryCircleArea(newX, newY, self.hitzoneWidth / 2)
+            local isColliding = false
+            
+            for _, collider in ipairs(colliders) do
+                if collider ~= self.collider then
+                    isColliding = true
+                    break
+                end
+            end
+
+            if not isColliding then
+                self.position.x = newX
+                self.position.y = newY
+                self.direction = dirX >= 0 and 1 or -1
+                self.animations.walk:update(dt)
+            else
+                self:nextTarget()
+            end
         end
     else
         self.animations.idle:update(dt)
     end
 
-    -- Check for mouse hover
     local mx, my = love.mouse.getPosition()
     mx, my = push:toGame(mx, my)
     if mx and my then
-        self.hovered = NpcElement.isInClickableZone(self, mx, my)
+        self.hovered = self:isInClickableZone(mx, my)
     end
+end
+
+function NpcElement:isColliding()
+
+    local colliders = self._world:queryCircleArea(self.position.x, self.position.y, self.hitzoneWidth / 2)
+    for _, collider in ipairs(colliders) do
+        if collider ~= self.collider then
+            return true
+        end
+    end
+    return false
+end
+
+function NpcElement:isInCollisionZone(collider)
+    local colliderX, colliderY = collider:getPosition()
+    local distance = math.sqrt((self.position.x - colliderX)^2 + (self.position.y - colliderY)^2)
+    return distance < (self.hitzoneWidth / 2 + collider:getRadius())
 end
 
 function NpcElement:startWaiting()
     if self.waitInterval > 0 then
         self.isWaiting = true
-        -- Schedule the action to move to the next target after the wait time
         Timer.after(self.waitInterval, function()
             self.isWaiting = false
-            self:nextTarget() -- Move to the next target after waiting
+            self:nextTarget()
         end)
     else
         self.isWaiting = false
-        self:nextTarget() -- Move to the next target immediately if wait interval is 0
+        self:nextTarget()
     end
 end
 
 function NpcElement:nextTarget()
-    if self.mode == "random-in-area" then
-        self:setRandomTarget()
-    elseif self.mode == "predefined-path" then
-        if self.forward then
+    local attemptedTargets = {}
+
+    while true do
+        if self.mode == "random-in-area" then
+            self:setRandomTarget()
+        elseif self.mode == "predefined-path" then
+            if self.forward then
+                self.pathIndex = self.pathIndex + 1
+                if self.pathIndex > #self.path then
+                    self.pathIndex = #self.path
+                    self.forward = false
+                end
+            else
+                self.pathIndex = self.pathIndex - 1
+                if self.pathIndex < 1 then
+                    self.pathIndex = 1
+                    self.forward = true
+                end
+            end
+            self.target = self.path[self.pathIndex]
+        elseif self.mode == "predefined-roundtour" then
             self.pathIndex = self.pathIndex + 1
             if self.pathIndex > #self.path then
-                self.pathIndex = #self.path -- Stay at the last point if out of bounds
-                self.forward = false
+                self.pathIndex = 1
             end
+            self.target = self.path[self.pathIndex]
+        end
+
+        local targetOffsetX = self.target.x - self.position.x
+        local targetOffsetY = self.target.y - self.position.y
+        
+        if not self:isColliding(targetOffsetX, targetOffsetY, 0) then
+            break
         else
-            self.pathIndex = self.pathIndex - 1
-            if self.pathIndex < 1 then
-                self.pathIndex = 1 -- Stay at the first point if out of bounds
-                self.forward = true
+            for angleOffset = -math.pi / 4, math.pi / 4, math.pi / 16 do
+                local newAngle = math.atan2(targetOffsetY, targetOffsetX) + angleOffset
+                local r = 50
+                local newX = self.position.x + math.cos(newAngle) * r
+                local newY = self.position.y + math.sin(newAngle) * r
+
+                self.target = { x = newX, y = newY }
+
+                if not self:isColliding(newX - self.position.x, newY - self.position.y, 0) then
+                    print("New target found at: ", newX, newY) -- Debug output
+                    return
+                end
+            end
+            
+            table.insert(attemptedTargets, {x = self.target.x, y = self.target.y})
+            if #attemptedTargets >= 10 then
+                print("No valid target found after 10 attempts, staying at current position.")
+                break
             end
         end
-        self.target = self.path[self.pathIndex] -- Set the target to the current path index
-    elseif self.mode == "predefined-roundtour" then
-        self.pathIndex = self.pathIndex + 1
-        if self.pathIndex > #self.path then
-            self.pathIndex = 1 -- Loop back to the first point
-        end
-        self.target = self.path[self.pathIndex]
     end
 end
+
 
 function NpcElement:isInClickableZone(x, y)
     local dx = x - self.position.x
@@ -175,6 +244,20 @@ function NpcElement:mousepressed(x, y, button)
     if button == 1 and self.hovered then
         self.onClick()
     end
+end
+
+function NpcElement:getDirection()
+    if self.target then
+        local dx = self.target.x - self.position.x
+        local dy = self.target.y - self.position.y
+        local distance = math.sqrt(dx * dx + dy * dy)
+        
+        if distance > 0 then
+            return dx / distance, dy / distance
+        end
+    end
+
+    return 0, 0
 end
 
 return NpcElement

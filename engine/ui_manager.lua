@@ -63,6 +63,14 @@ function UiManager:mousepressed(x, y, button)
     end
 end
 
+-- Retrieve a UI element from a specific scope by name
+function UiManager:getElement(scope, name)
+    if self.scopedElements[scope] then
+        return self.scopedElements[scope][name] and self.scopedElements[scope][name].element
+    end
+    return nil
+end
+
 -- Remove a UI element from a specific scope
 function UiManager:removeElement(scope, name)
     if self.scopedElements[scope] then

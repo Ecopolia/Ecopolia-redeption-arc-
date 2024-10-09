@@ -8,6 +8,8 @@ sti = require 'libs/sti'
 push = require "libs/push"
 debugGraph = require 'libs/debugGraph'
 bump = require 'libs/bump'
+bf = require("libs/breezefield")
+
 -- Require necessary modules
 require 'version'
 require 'misc/commons'
