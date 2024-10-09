@@ -1,5 +1,12 @@
 local npc_test = {}
 
+local mapLoaded = false
+local loadingCoroutine = nil
+local gamemap = nil
+local camera = nil
+local zoomFactor = 100
+local mapscale = 0.5
+
 -- Initialize debug graphs and grid manager
 local fpsGraph, memGraph, dtGraph
 
@@ -9,85 +16,97 @@ local function setupPipeline()
 
     -- Clear screen
     pipeline:addStage(nil, function()
-        love.graphics.clear(0, 0, 0)
-        world:draw()
+        love.graphics.clear(0.1, 0.1, 0.1, 1)
+        if not mapLoaded then
+            love.graphics.print("Chargement de la carte...", 400, 300)
+        end
     end)
 
-    -- Stage for UI (like NPCs) using PXL shader (if any)
+    -- Stage to draw the map directly without using a camera
+    pipeline:addStage(nil, function()
+        if mapLoaded and gamemap then
+            -- Draw the entire map without scaling or zoom
+            gamemap:draw(0, 0, nil, nil, mapscale, mapscale)
+        end
+    end)
+
+    -- Stage for UI (like NPCs)
     pipeline:addStage(nil, function()
         -- Draw the rest of the UI elements
         uiManager:draw("npc_test")
-        
+            
+        -- world:draw()
     end)
-    
-        
 
     return pipeline
 end
 
-
 function npc_test:load(args)
     ManualtransitionIn()
 
+    loadingCoroutine = coroutine.create(function()
+        -- Simulate loading delay
+        love.timer.sleep(2)
+        -- Load the map
+       gamemap = sti('assets/maps/MainMap.lua')
+
+        -- Create and center the camera on an initial position
+        camera = Camera(0, 0)
+        mapLoaded = true
+    end)
+
     world = bf.newWorld(0, 90.81, true)
 
-    world:newCollider("Rectangle", {250, 100, 50, 50})
 
-    -- Create an NPC that moves along a predefined path
-    local npc_path = NpcElement.new({
-        x = 200,
-        y = 100,
-        w = 50,
-        h = 50,
-        scale = 2,
-        speed = 60,
-        radius = 0,
-        clickableRadius = 20,
-        mode = "predefined-path", 
-        path = {{x = 200, y = 100}, {x = 300, y = 100}, {x = 400, y = 100}, {x = 500, y = 100}, {x = 600, y = 100}, {x = 700, y = 100}},
-        debug = true,
-        onClick = function() print("NPC clicked!") end,
-        world = world
-    })
+    -- -- Create an NPC that moves along a predefined path
+    -- local npc_path = NpcElement.new({
+    --     x = 200,
+    --     y = 100,
+    --     w = 50,
+    --     h = 50,
+    --     scale = 2,
+    --     speed = 60,
+    --     radius = 0,
+    --     clickableRadius = 20,
+    --     mode = "predefined-path", 
+    --     path = {{x = 200, y = 100}, {x = 300, y = 100}, {x = 400, y = 100}, {x = 500, y = 100}, {x = 600, y = 100}, {x = 700, y = 100}},
+    --     onClick = function() print("NPC clicked!") end,
+    --     world = world
+    -- })
 
-    local npc_tour = NpcElement.new({
-        x = 400,
-        y = 300,
-        w = 50,
-        h = 50,
-        scale = 2,
-        speed = 60,
-        radius = 0,
-        clickableRadius = 20,
-        mode = "predefined-roundtour",
-        path = {{x = 400, y = 300}, {x = 500, y = 300}, {x = 500, y = 400}, {x = 400, y = 400}},
-        debug = true,
-        onClick = function() print("NPC clicked!") end,
-        world = world
-    })
+    -- local npc_tour = NpcElement.new({
+    --     x = 400,
+    --     y = 300,
+    --     w = 50,
+    --     h = 50,
+    --     scale = 2,
+    --     speed = 60,
+    --     radius = 0,
+    --     clickableRadius = 20,
+    --     mode = "predefined-roundtour",
+    --     path = {{x = 400, y = 300}, {x = 500, y = 300}, {x = 500, y = 400}, {x = 400, y = 400}},
+    --     onClick = function() print("NPC clicked!") end,
+    --     world = world
+    -- })
 
     local npc_random = NpcElement.new({
-        x = 700,
-        y = 300,
+        x = 485,
+        y = 170,
         w = 50,
         h = 50,
         scale = 2,
-        speed = 60,
+        speed = 30,
         radius = 100,
         clickableRadius = 20,
-        debug = true,
         onClick = function() print("NPC clicked!") end,
         world = world
     })
 
-    world:newCollider("Rectangle", {780, 300, 50, 50})
-    world:newCollider("Rectangle", {780, 400, 50, 50})
+    world:newCollider("Rectangle", {512, 190, 50, 60})
 
-    world:newCollider("Rectangle", {680, 300, 50, 50})
-    world:newCollider("Rectangle", {680, 400, 50, 50})
 
-    uiManager:registerElement("npc_test", "npc_path", npc_path)
-    uiManager:registerElement("npc_test", "npc_tour", npc_tour)
+    -- uiManager:registerElement("npc_test", "npc_path", npc_path)
+    -- uiManager:registerElement("npc_test", "npc_tour", npc_tour)
     uiManager:registerElement("npc_test", "npc_random", npc_random)
 
     -- Set up the pipeline and debug graphs
@@ -100,6 +119,16 @@ function npc_test:load(args)
 end
 
 function npc_test:update(dt)
+    if loadingCoroutine and coroutine.status(loadingCoroutine) ~= "dead" then
+        coroutine.resume(loadingCoroutine)
+    end
+
+    if mapLoaded and gamemap then
+        -- Mettre à jour la carte (par exemple, si elle contient des éléments interactifs ou de la physique)
+        gamemap:update(dt)
+
+    end
+
     -- Update the HUMP timer
     self.timer:update(dt)
 

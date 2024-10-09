@@ -5,7 +5,7 @@ NpcElement.__index = NpcElement
 function NpcElement.new(config)
     local self = setmetatable(UiElement.new(config.x or 0, config.y or 0, config.w or 100, config.h or 100, config.z or 0), NpcElement)
     self.spritesheet = love.graphics.newImage(config.spritesheet or "assets/spritesheets/placeholder_npc.png")
-    self.grid = anim8.newGrid(24, 24, self.spritesheet:getWidth(), self.spritesheet:getHeight())
+    self.grid = anim8.newGrid(25, 25, self.spritesheet:getWidth(), self.spritesheet:getHeight())
     self.animations = {
         idle = anim8.newAnimation(self.grid('1-2', 1), 0.2),
         walk = anim8.newAnimation(self.grid('1-4', 2), 0.2)

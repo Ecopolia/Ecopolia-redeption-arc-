@@ -9,7 +9,7 @@ push = require "libs/push"
 debugGraph = require 'libs/debugGraph'
 bump = require 'libs/bump'
 bf = require("libs/breezefield")
-
+Camera = require("libs/hump/camera")
 -- Require necessary modules
 require 'version'
 require 'misc/commons'

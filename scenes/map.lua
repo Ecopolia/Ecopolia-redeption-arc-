@@ -5,7 +5,6 @@ local gamemap = nil
 local camera = nil
 local zoomFactor = 40
 local mapscale = 0.5
-local mapCanvas = love.graphics.newCanvas(love.graphics.getWidth(), love.graphics.getHeight())
 
 local function setupMapPipeline()
     local pipeline = Pipeline.new(love.graphics.getWidth(), love.graphics.getHeight())
