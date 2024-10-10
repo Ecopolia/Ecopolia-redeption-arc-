@@ -2,13 +2,13 @@ Player = {}
 Player.__index = Player
 
 -- Fonction de création d'un nouveau joueur
-function Player:new(x, y, speed,spriteSheet,grid)
+function Player:new(x, y, speed, spriteSheet, grid)
     local instance = {
-        grid= nil,
-        x = x or 400,  -- Utiliser les paramètres ou valeurs par défaut
-        y = y or 200,
+        grid = grid,
+        x = x or 20,  -- Utiliser les paramètres ou valeurs par défaut
+        y = y or 20,
         speed = speed or 20,
-        spriteSheet = nil,
+        spriteSheet = spriteSheet,
         animations = {},
         currentAnimation = nil,
     }
@@ -28,6 +28,8 @@ function Player:update(dt)
     local isMoving = false
 
     if love.keyboard.isDown("d") then
+        print(self.x)
+        print(self.y)
         self.x = self.x + self.speed * dt
         self.anim = self.animations.right -- Changer l'animation si nécessaire
         isMoving = true
@@ -59,7 +61,7 @@ end
 function Player:draw()
     if self.anim then
         -- Dessiner l'animation actuelle à la position du joueur
-        self.anim:draw(self.spriteSheet, self.x, self.y, nil, 2)
+        self.anim:draw(self.spriteSheet, self.x, self.y, nil, 1)
     end
 end
 

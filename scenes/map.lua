@@ -2,13 +2,15 @@ local map = {}
 local mapLoaded = false
 local loadingCoroutine = nil
 local gamemap = nil
-local camera = nil
+local cam = camera()
 local zoomFactor = 40
 local mapscale = 0.5
 
-local function setupMapPipeline()
-    local pipeline = Pipeline.new(love.graphics.getWidth(), love.graphics.getHeight())
+screenWidth = G.WINDOW.WIDTH
+screenHeight = G.WINDOW.HEIGHT
 
+local function setupMapPipeline()
+    local pipeline = Pipeline.new(G.WINDOW.WIDTH, G.WINDOW.HEIGHT)
     -- Stage 1: Clear the screen and handle the loading screen
     pipeline:addStage(nil, function()
         love.graphics.clear(0.1, 0.1, 0.1, 1)
@@ -20,51 +22,43 @@ local function setupMapPipeline()
     -- Stage 2: Apply the camera transformation and draw the map
     pipeline:addStage(nil, function()
         if mapLoaded and gamemap then
-            camera:zoomTo(zoomFactor)
-            camera:attach()
-
-            -- Calculate visible boundaries
-            local screen_width = love.graphics.getWidth() / zoomFactor
-            local screen_height = love.graphics.getHeight() / zoomFactor
-
-            local cam_x, cam_y = camera:position()
-
-            local start_x = math.floor((cam_x - screen_width / 2) / gamemap.tilewidth)
-            local start_y = math.floor((cam_y - screen_height / 2) / gamemap.tileheight)
-            local end_x = math.ceil((cam_x + screen_width / 2) / gamemap.tilewidth)
-            local end_y = math.ceil((cam_y + screen_height / 2) / gamemap.tileheight)
-
-            -- Draw the visible portion of the map
-            gamemap:draw(start_x, start_y, end_x, end_y)
-
-            camera:detach()
+            gamemap:draw()
         end
     end)
 
     -- Stage 3: Draw the UI layer on top of the map
     pipeline:addStage(nil, function()
         if mapLoaded then
-            -- Draw the map-specific UI
-            uiManager:draw("map")
+            if player then
+                player:draw()
+            end
         end
     end)
-
     return pipeline
 end
 
 function map:load(args)
     -- Initialize the map loading coroutine
+    love.graphics.setDefaultFilter('nearest', 'nearest') -- Activer le rendu pixelisé
+    
     loadingCoroutine = coroutine.create(function()
         -- Simulate loading delay
         love.timer.sleep(2)
         -- Load the map
         gamemap = sti('assets/maps/MainMap.lua')
 
-        -- Create and center the camera on an initial position
-        camera = Camera(0, 0)
         mapLoaded = true
     end)
 
+    spriteSheet = love.graphics.newImage("assets/spritesheets/character/maincharacter.png")
+
+    -- Créer une grille de sprites (64x128 pour chaque sprite)
+    grid = anim8.newGrid(64, 64, spriteSheet:getWidth(), spriteSheet:getHeight())
+    -- Créer une instance du joueur avec position et vitesse initiales
+    player = Player:new(700, 300, 100, spriteSheet, grid)
+    player.anim = player.animations.down
+
+    cam:lookAt(player.x, player.y)
     -- Setup the render pipeline
     self.pipeline = setupMapPipeline()
 end
@@ -77,6 +71,15 @@ function map:draw()
 end
 
 function map:update(dt)
+
+    if player then
+        player:update(dt)
+
+        -- Mettre à jour l'animation actuelle du joueur
+        if player.anim then
+            player.anim:update(dt)
+        end
+    end
     -- Resume loading coroutine if it's still active
     if loadingCoroutine and coroutine.status(loadingCoroutine) ~= "dead" then
         coroutine.resume(loadingCoroutine)
@@ -86,29 +89,9 @@ function map:update(dt)
     if mapLoaded and gamemap then
         -- Mettre à jour la carte (par exemple, si elle contient des éléments interactifs ou de la physique)
         gamemap:update(dt)
-
     end
+
+    cam:lookAt(player.x, player.y)
 end
-
--- -- Gestion du zoom avec la molette de la souris
--- function love.wheelmoved(x, y)
---     if y < 0 then
---         -- DéZoomer
---         zoomFactor = zoomFactor * 1.1
---     elseif y > 0 then
---         -- Zoomer
---         zoomFactor = zoomFactor * 0.9
---     end
-
---     if(zoomFactor > 40) then
---         zoomFactor = 40
---     end
-
---     if(zoomFactor < 1) then
---         zoomFactor = 1
---     end
-
---     print(zoomFactor)
--- end
 
 return map
