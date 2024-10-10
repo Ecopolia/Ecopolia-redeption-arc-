@@ -30,6 +30,7 @@ Button = require('objects/components/button')
 Freeform = require('objects/components/freeform')
 Card = require('objects/components/card')
 NpcElement = require('objects/components/npc')
+ATB = require('objects/components/atb')
 
 -- LoveDialogue for handling dialogue
 LoveDialogue = require "libs/LoveDialogue"
@@ -42,6 +43,12 @@ profile.start()
 local SceneryInit = require("libs/scenery")
 local scenery = SceneryInit("npc_test")
 
+
+NPC = require 'objects/npc'
+
+sti = require 'libs/sti'
+
+Player = require("engine/player")
 
 -- love.load is called once at the beginning of the game
 function love.load()
