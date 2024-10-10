@@ -22,7 +22,7 @@ function testcharacter:load()
     love.graphics.setDefaultFilter('nearest', 'nearest') -- Activer le rendu pixelisé
 
     -- Créer une instance du joueur avec position et vitesse initiales
-    player = Player:new(400, 200, 2)
+    player = Player:new(400, 200, 20)
 
     -- Charger la feuille de sprites pour les animations
     player.spriteSheet = love.graphics.newImage("assets/spritesheets/character/maincharacter.png")
@@ -32,10 +32,17 @@ function testcharacter:load()
 
     -- Définir les animations (ex : 3 frames pour "down" sur la 1ère ligne)
     player.animations = {}
-    player.animations.down = anim8.newAnimation(player.grid('1-8', 7), 0.1) -- 0.1 sec par frame
+    player.animations.up = anim8.newAnimation(player.grid('1-9', 9), 0.2)
+    player.animations.left = anim8.newAnimation(player.grid('1-9', 10), 0.2)
+    player.animations.idledown = anim8.newAnimation(player.grid(1, 7), 0.1)
+    player.animations.right = anim8.newAnimation(player.grid('1-9', 12), 0.2)
+    player.animations.down = anim8.newAnimation(player.grid('1-9', 11), 0.2) -- 0.1 sec par frame
 
     -- Activer l'animation par défaut
+    player.anim = player.animations.down
+
     player.currentAnimation = player.animations.down
+    player.idleAnimation = player.animations.idledown
 
     -- Setup the rendering pipeline
     self.pipeline = setupPipeline()
@@ -46,8 +53,8 @@ function testcharacter:update(dt)
         player:update(dt)
 
         -- Mettre à jour l'animation actuelle du joueur
-        if player.currentAnimation then
-            player.currentAnimation:update(dt)
+        if player.anim then
+            player.anim:update(dt)
         end
     end
 end

@@ -12,6 +12,17 @@ function map:load(args)
         -- Indiquer que la carte est chargée
         mapLoaded = true
     end)
+    love.graphics.setDefaultFilter('nearest', 'nearest') -- Activer le rendu pixelisé
+
+    spriteSheet = love.graphics.newImage("assets/spritesheets/character/maincharacter.png")
+
+    -- Créer une grille de sprites (64x128 pour chaque sprite)
+    grid = anim8.newGrid(64, 64, spriteSheet:getWidth(), spriteSheet:getHeight())
+    -- Créer une instance du joueur avec position et vitesse initiales
+    player = Player:new(400, 200, 20, spriteSheet, grid)
+    player.anim = player.animations.down
+
+
 end
 
 function map:draw()
@@ -41,6 +52,14 @@ function map:update(dt)
     -- Logique supplémentaire pour l'update une fois que la carte est chargée
     if mapLoaded and gamemap then
         gamemap:update(dt)
+    end
+    if player then
+        player:update(dt)
+
+        -- Mettre à jour l'animation actuelle du joueur
+        if player.anim then
+            player.anim:update(dt)
+        end
     end
 end
 
