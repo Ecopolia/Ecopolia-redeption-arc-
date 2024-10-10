@@ -1,37 +1,48 @@
+-- Libraries
+deep = require 'libs/deep'
+anim8 = require 'libs/anim8'
+ripple = require 'libs/ripple'
+Timer = require 'libs/hump/timer'
+Text = require("libs/text")
+sti = require 'libs/sti'
+push = require "libs/push"
+debugGraph = require 'libs/debugGraph'
+bump = require 'libs/bump'
+bf = require("libs/breezefield")
+Camera = require("libs/hump/camera")
 -- Require necessary modules
 require 'version'
 require 'misc/commons'
 require 'engine/object'
-
-Pipeline = require 'engine/render_pipeline'
-
-anim8 = require 'libs/anim8'
-ripple = require 'libs/ripple'
-
-local profile = require("engine/profile")
-profile.start()
-
-Inky = require("libs/inky")
-local scene = Inky.scene()
-local pointer = Inky.pointer(scene)
-
 require 'objects/Game'
-Timer = require 'libs/hump/timer'
 
-Text = require("libs/text")
+-- Configuration
 Text.configure.function_command_enable(true)
 
-uiManager = require("engine/ui_manager")
+-- Rendering pipeline
+Pipeline = require 'engine/render_pipeline'
 
+-- UI and UI components
+uiManager = require("engine/ui_manager")
 UiElement = require("objects/ui_element")
 Window = require('objects/components/window')
 Button = require('objects/components/button')
+Freeform = require('objects/components/freeform')
+Card = require('objects/components/card')
+NpcElement = require('objects/components/npc')
 ATB = require('objects/components/atb')
 
-local SceneryInit = require("libs/scenery")
-local scenery = SceneryInit("main_menu")
-
+-- LoveDialogue for handling dialogue
 LoveDialogue = require "libs/LoveDialogue"
+
+-- Profile for performance analysis
+local profile = require("engine/profile")
+profile.start()
+
+-- Scenery initialization
+local SceneryInit = require("libs/scenery")
+local scenery = SceneryInit("npc_test")
+
 
 NPC = require 'objects/npc'
 
@@ -41,6 +52,7 @@ Player = require("engine/player")
 
 -- love.load is called once at the beginning of the game
 function love.load()
+    -- Set window title based on version
     if version == 'dev-mode' then
         local os = love.system.getOS()
         if os ~= 'Linux' then
@@ -50,59 +62,60 @@ function love.load()
     else
         love.window.setTitle("Ecopolia (redemption arc) - " .. version)
     end
-    love.window.setMode(G.WINDOW.WIDTH, G.WINDOW.HEIGHT)
+
+    -- Setup screen resolution
+    local FSWidth, FSHeight = love.window.getDesktopDimensions()
+    push:setupScreen(G.WINDOW.WIDTH, G.WINDOW.HEIGHT, FSWidth, FSHeight, {fullscreen = false, resizable = true})
+
+    -- Load scenery
     scenery:load()
 end
 
 -- love.update is called continuously and is used to update the game state
--- dt is the time elapsed since the last update
 function love.update(dt)
-    local mx, my = love.mouse.getX(), love.mouse.getY()
-    pointer:setPosition(mx, my)
     scenery:update(dt)
     G:update(dt)
 end
 
+-- love.draw is called to render everything
 function love.draw()
-    scene:beginFrame()
     scenery:draw()
-    scene:finishFrame()
 end
 
 -- love.keypressed is called whenever a key is pressed
--- key is the key that was pressed
 function love.keypressed(key)
-    -- Add key press handling logic here
     scenery:keypressed(key)
 end
 
 -- love.keyreleased is called whenever a key is released
--- key is the key that was released
 function love.keyreleased(key)
-    -- Add key release handling logic here
+    -- Add key release handling logic here (if needed)
 end
 
 -- love.mousemoved is called whenever the mouse is moved
--- x, y are the new coordinates of the mouse
 function love.mousemoved(x, y)
-    scenery:mousemoved(x,y)
+    x, y = push:toReal(x, y)
+    scenery:mousemoved(x, y)
 end
 
--- love.mousereleased is called whenever a mouse button is released
--- x, y are the coordinates of the mouse
--- button is the mouse button that was released
-function love.mousereleased(x, y, button)
-    if button == 1 then
-        pointer:raise("release")
-    end
-end
-
+-- love.mousepressed is called when a mouse button is pressed
 function love.mousepressed(x, y, button)
     uiManager:mousepressed(x, y, button)
     -- scenery:mousepressed(x, y, button)
 end
 
+-- love.mousereleased is called when a mouse button is released
+function love.mousereleased(x, y, button)
+
+end
+
+-- love.resize is called when the window is resized
+function love.resize(w, h)
+    return push:resize(w, h)
+end
+
 -- love.quit is called when the game is closed
 function love.quit()
+    profile.report()
     profile.stop()
 end

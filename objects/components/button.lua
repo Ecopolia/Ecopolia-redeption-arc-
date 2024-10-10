@@ -3,7 +3,7 @@ Button = setmetatable({}, { __index = UiElement })
 Button.__index = Button
 
 function Button.new(config)
-    local self = setmetatable(UiElement.new(config.x or 0, config.y or 0, config.w or 100, config.h or 50), Button)
+    local self = setmetatable(UiElement.new(config.x or 0, config.y or 0, config.w or 100, config.h or 50, config.z or 0), Button)
     self.text = config.text or "Button"
     self.dsfull = config.dsfull or true
     self.hovered = false
@@ -71,21 +71,46 @@ function Button:draw()
 end
 
 function Button:update(dt)
+    -- Get the current mouse position in screen coordinates
     local mx, my = love.mouse.getPosition()
-    local isHovered = mx >= self.x and mx <= self.x + self.width and my >= self.y and my <= self.y + self.height
+    
+    -- Convert mouse position from screen to game coordinates
+    mx, my = push:toGame(mx, my) 
+    
+    -- Check if mouse coordinates are valid
+    if mx and my then
+        -- Check if the mouse position is within the button's bounds
+        local isHovered = mx >= self.x and mx <= self.x + self.width and my >= self.y and my <= self.y + self.height
 
-    if isHovered and not self.hovered then
-        self.hovered = true
-        self.onHover(self)
-    elseif not isHovered and self.hovered then
-        self.hovered = false
-        self.onUnhover(self)
+        -- Update hover state and call hover/unhover callbacks if needed
+        if isHovered and not self.hovered then
+            self.hovered = true
+            if self.onHover then
+                self.onHover(self)
+            end
+        elseif not isHovered and self.hovered then
+            self.hovered = false
+            if self.onUnhover then
+                self.onUnhover(self)
+            end
+        end
+    else
+        -- If mouse coordinates are invalid, ensure hover state is false
+        if self.hovered then
+            self.hovered = false
+            if self.onUnhover then
+                self.onUnhover(self)
+            end
+        end
     end
 
+    -- Update button text if it exists
     if self.button_text then
         self.button_text:update(dt)
     end
 end
+
+
 
 function Button:mousepressed(x, y, button)
     if button == 1 and self.hovered then

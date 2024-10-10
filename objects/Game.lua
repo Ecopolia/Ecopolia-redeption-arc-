@@ -22,7 +22,8 @@ function Game:set_globals()
             texture_scaling = 2,
             shadows = 'On',
             crt = 70,
-            bloom = 1
+            bloom = 1,
+            glitch_intensity = 1
         }
     }
     self.TIMERS = {
@@ -46,7 +47,9 @@ function Game:set_globals()
     self.Fonts = {
         default = love.graphics.newFont(16),
         m6x11plus = love.graphics.newFont("resources/fonts/m6x11plus.ttf", 72),
-        m6x11plus_medium = love.graphics.newFont("resources/fonts/m6x11plus.ttf", 24)
+        m6x11plus_medium = love.graphics.newFont("resources/fonts/m6x11plus.ttf", 24),
+        m6x11plus_small = love.graphics.newFont("resources/fonts/m6x11plus.ttf", 12),
+        m6x11plus_verysmall = love.graphics.newFont("resources/fonts/m6x11plus.ttf", 6)
     }
 
     self.ACTIVATE_SHADER = true
@@ -134,7 +137,7 @@ function Game:updateShaders(dt)
     self.SHADERS['CRT']:send('time', 400 + self.TIMERS.REAL)
     self.SHADERS['CRT']:send('noise_fac', 0.001 * self.SETTINGS.GRAPHICS.crt / 100)
     self.SHADERS['CRT']:send('crt_intensity', 0.16 * self.SETTINGS.GRAPHICS.crt / 100)
-    self.SHADERS['CRT']:send('glitch_intensity', 1)
+    self.SHADERS['CRT']:send('glitch_intensity', self.SETTINGS.GRAPHICS.glitch_intensity)
     self.SHADERS['CRT']:send('scanlines', self.canvasPixelHeight * 0.75 / 1)
     self.SHADERS['CRT']:send('screen_scale', self.TILESCALE * self.TILESIZE)
     self.SHADERS['CRT']:send('hovering', 1)
