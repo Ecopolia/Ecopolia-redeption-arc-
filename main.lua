@@ -10,6 +10,9 @@ debugGraph = require 'libs/debugGraph'
 bump = require 'libs/bump'
 bf = require("libs/breezefield")
 Camera = require("libs/hump/camera")
+json = require 'libs/json'
+ldtk = require 'libs/ldtk'
+
 -- Require necessary modules
 require 'version'
 require 'misc/commons'

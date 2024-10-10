@@ -23,7 +23,8 @@ function Game:set_globals()
             shadows = 'On',
             crt = 70,
             bloom = 1,
-            glitch_intensity = 1
+            glitch_intensity = 1,
+            fog_light = {200, 200},
         }
     }
     self.TIMERS = {
@@ -146,6 +147,13 @@ function Game:updateShaders(dt)
 
     self.SHADERS['PXL']:send('pixel_size', G.PIXEL_SIZE)
     self.SHADERS['CEL']:send('pixel_size', G.PIXEL_SIZE)
+    -- Update Fog shader parameters
+    self.SHADERS['FOG']:send('resolution', {love.graphics.getWidth(), love.graphics.getHeight()})
+    self.SHADERS['FOG']:send('light_position', G.SETTINGS.GRAPHICS.fog_light or {200, 200}) -- Assuming you have a camera object
+    self.SHADERS['FOG']:send('fog_density', self.SETTINGS.GRAPHICS.fog_density or 3) -- Density can be controlled via settings
+    self.SHADERS['FOG']:send('fog_color', {0.5, 0.5, 0.5}) -- Example fog color, can make this customizable in SETTINGS
+    -- self.SHADERS['FOG']:send('time', self.TIMERS.REAL)  -- Send time for animated fog
+    -- self.SHADERS['FOG']:send('noise_intensity', 0.4) -- Control the intensity of the noise in the fog
 end
 
 function Game:updateTimers(dt)

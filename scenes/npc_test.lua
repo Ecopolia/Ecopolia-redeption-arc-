@@ -35,7 +35,10 @@ local function setupPipeline()
         -- Draw the rest of the UI elements
         uiManager:draw("npc_test")
             
-        -- world:draw()
+        world:draw()
+    end)
+
+    pipeline:addStage(G.SHADERS['FOG'], function()
     end)
 
     return pipeline
@@ -48,7 +51,7 @@ function npc_test:load(args)
         -- Simulate loading delay
         love.timer.sleep(2)
         -- Load the map
-       gamemap = sti('assets/maps/MainMap.lua')
+       gamemap = sti('assets/maps/Level_0.lua')
 
         -- Create and center the camera on an initial position
         camera = Camera(0, 0)
@@ -89,7 +92,7 @@ function npc_test:load(args)
     --     world = world
     -- })
 
-    local npc_random = NpcElement.new({
+    npc_random = NpcElement.new({
         x = 485,
         y = 170,
         w = 50,
@@ -98,11 +101,13 @@ function npc_test:load(args)
         speed = 30,
         radius = 100,
         clickableRadius = 20,
+        mode = "predefined-path", 
+        path = {{x = 200, y = 600}, {x = 300, y = 600}, {x = 400, y = 600}, {x = 500, y = 600}, {x = 600, y = 600}, {x = 700, y = 600}},
         onClick = function() print("NPC clicked!") end,
         world = world
     })
 
-    world:newCollider("Rectangle", {512, 190, 50, 60})
+    -- world:newCollider("Rectangle", {512, 190, 50, 60})
 
 
     -- uiManager:registerElement("npc_test", "npc_path", npc_path)
@@ -133,6 +138,7 @@ function npc_test:update(dt)
     self.timer:update(dt)
 
     -- Update the UI
+    G.SETTINGS.GRAPHICS.fog_light = {npc_random.position.x, npc_random.position.y}
     uiManager:update("npc_test", dt)
 
     -- Update the graphs
