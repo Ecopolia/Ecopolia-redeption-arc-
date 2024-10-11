@@ -2,52 +2,56 @@ local map = {}
 local mapLoaded = false
 local loadingCoroutine = nil
 local gamemap = nil
-local cam = nil
+local cam = camera()
 local zoomFactor = 40
 local mapscale = 0.5
+local collision = nil
 
 screenWidth = G.WINDOW.WIDTH
 screenHeight = G.WINDOW.HEIGHT
 
-local function setupMapPipeline()
-    local pipeline = Pipeline.new(G.WINDOW.WIDTH, G.WINDOW.HEIGHT)
-    -- Stage 1: Clear the screen and handle the loading screen
-    pipeline:addStage(nil, function()
-        
-        love.graphics.clear(0.1, 0.1, 0.1, 1)
-        if not mapLoaded then
-            love.graphics.print("Chargement de la carte...", 400, 300)
-        end
-    end)
+-- local function setupMapPipeline()
+--     local pipeline = Pipeline.new(G.WINDOW.WIDTH, G.WINDOW.HEIGHT)
+--     -- Stage 1: Clear the screen and handle the loading screen
+--     pipeline:addStage(nil, function()
+--         cam:attach()
+--         love.graphics.clear(0.1, 0.1, 0.1, 1)
+--         if not mapLoaded then
+--             love.graphics.print("Chargement de la carte...", 400, 300)
+--         end
+--     end)
     
-    -- Stage 2: Apply the camera transformation and draw the map
-    pipeline:addStage(nil, function()
-        if mapLoaded and gamemap then
-            cam:attach()
-            gamemap:draw()
-        end
-    end)
+--     -- Stage 2: Apply the camera transformation and draw the map
+--     pipeline:addStage(nil, function()
+--         if mapLoaded and gamemap then
+            
+--             -- gamemap:drawWorldCollision(collision)
+--         end
+--     end, gamemap.width*16, gamemap.height*16)
 
-    -- Stage 3: Draw the UI layer on top of the map
-    pipeline:addStage(nil, function()
-        if mapLoaded then
-            if player then
-                player:draw()
-                world:draw()
-            end
-        end
-        cam:detach()
-    end)
-    return pipeline
-end
+--     -- Stage 3: Draw the UI layer on top of the map
+--     pipeline:addStage(nil, function()
+--         cam:attach()
+--         if mapLoaded then
+            
+--         end
+--         cam:detach()
+--     end)
+--     return pipeline
+-- end
 
 function map:load(args)
-    -- Initialize the map loading coroutine
-    
-    gamemap = sti('assets/maps/MainMap.lua')
 
+    gamemap = sti('assets/maps/MainMap.lua')
     mapLoaded = true
+
+    -- love.physics.setMeter(32)
+    -- world = love.physics.newWorld(0*love.physics.getMeter(), 0*love.physics.getMeter())
+    -- if gamemap then
+    --     collision = gamemap:initWorldCollision(world)
+    -- end
     
+
     world = bf.newWorld(0, 90.81, true)
     world:newCollider('Rectangle',{600, 200, 50, 50})
     spriteSheet = love.graphics.newImage("assets/spritesheets/character/maincharacter.png")
@@ -57,32 +61,35 @@ function map:load(args)
     -- Créer une instance du joueur avec position et vitesse initiales
     player = Player:new(700, 300, 100, spriteSheet, grid, world)
     player.anim = player.animations.down
-
-    cam = camera(player.x, player.y)
-    -- Setup the render pipeline
-    self.pipeline = setupMapPipeline()
 end
 
 function map:draw()
-    if self.pipeline then
-        -- Run the pipeline for the map rendering
-        self.pipeline:run()
-    end
+    cam:attach()
+    gamemap:drawLayer(gamemap.layers["Ground"])
+    gamemap:drawLayer(gamemap.layers["tronc"])
+    gamemap:drawLayer(gamemap.layers["Roc"])
+    gamemap:drawLayer(gamemap.layers["Batiment"])
+    gamemap:drawLayer(gamemap.layers["feuille1"])
+    gamemap:drawLayer(gamemap.layers["feuille2"])
+    gamemap:drawLayer(gamemap.layers["feuille3"])
+    gamemap:drawLayer(gamemap.layers["feuille4"])
+    gamemap:drawLayer(gamemap.layers["feuille5"])
+    player:draw()
+    world:draw()
+    cam:detach()
 end
 
 function map:update(dt)
 
     if player then
+        cam:lookAt(player.position.x , player.position.y)
         player:update(dt)
 
         -- Mettre à jour l'animation actuelle du joueur
         if player.anim then
             player.anim:update(dt)
         end
-    end
-    -- Resume loading coroutine if it's still active
-    if loadingCoroutine and coroutine.status(loadingCoroutine) ~= "dead" then
-        coroutine.resume(loadingCoroutine)
+        
     end
 
     -- Update logic for the map once it is loaded
@@ -91,7 +98,16 @@ function map:update(dt)
         gamemap:update(dt)
     end
     
-    cam:lookAt(player.x +32 , player.y +32)
+    -- local mapWidth = gamemap.width * gamemap.tilewidth
+    -- local mapHeight = gamemap.height * gamemap.tileheight
+
+    -- if cam.x > (mapWidth - screenWidth/2)  then
+    --     cam.x = (mapWidth - screenWidth/2)
+    -- end
+
+    -- if cam.y > (mapHeight - screenHeight/2)  then
+    --     cam.y = (mapHeight - screenHeight/2)
+    -- end
 end
 
 return map

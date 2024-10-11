@@ -47,7 +47,7 @@ Player = require("engine/player")
 
 -- Scenery initialization
 local SceneryInit = require("libs/scenery")
-local scenery = SceneryInit("main_menu")
+local scenery = SceneryInit("map")
 
 -- love.load is called once at the beginning of the game
 function love.load()
