@@ -19,7 +19,7 @@ local function setupMapPipeline()
             love.graphics.print("Chargement de la carte...", 400, 300)
         end
     end)
-
+    
     -- Stage 2: Apply the camera transformation and draw the map
     pipeline:addStage(nil, function()
         if mapLoaded and gamemap then
@@ -33,6 +33,7 @@ local function setupMapPipeline()
         if mapLoaded then
             if player then
                 player:draw()
+                world:draw()
             end
         end
         cam:detach()
@@ -46,13 +47,15 @@ function map:load(args)
     gamemap = sti('assets/maps/MainMap.lua')
 
     mapLoaded = true
-
+    
+    world = bf.newWorld(0, 90.81, true)
+    world:newCollider('Rectangle',{600, 200, 50, 50})
     spriteSheet = love.graphics.newImage("assets/spritesheets/character/maincharacter.png")
 
     -- Créer une grille de sprites (64x128 pour chaque sprite)
     grid = anim8.newGrid(64, 64, spriteSheet:getWidth(), spriteSheet:getHeight())
     -- Créer une instance du joueur avec position et vitesse initiales
-    player = Player:new(700, 300, 100, spriteSheet, grid)
+    player = Player:new(700, 300, 100, spriteSheet, grid, world)
     player.anim = player.animations.down
 
     cam = camera(player.x, player.y)
