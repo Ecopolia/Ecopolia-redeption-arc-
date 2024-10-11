@@ -60,7 +60,7 @@ function map:load(args)
 
     spriteSheet = love.graphics.newImage("assets/spritesheets/character/maincharacter.png")
     grid = anim8.newGrid(64, 64, spriteSheet:getWidth(), spriteSheet:getHeight())
-    player = Player:new(700, 300, 100, spriteSheet, grid, world)
+    player = Player:new(600, 300, 100, spriteSheet, grid, world)
     player.anim = player.animations.down
 
     self.pipeline = setupMapPipeline()
