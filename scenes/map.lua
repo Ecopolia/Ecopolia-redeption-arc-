@@ -10,35 +10,42 @@ local collision = nil
 screenWidth = G.WINDOW.WIDTH
 screenHeight = G.WINDOW.HEIGHT
 
--- local function setupMapPipeline()
---     local pipeline = Pipeline.new(G.WINDOW.WIDTH, G.WINDOW.HEIGHT)
---     -- Stage 1: Clear the screen and handle the loading screen
---     pipeline:addStage(nil, function()
---         cam:attach()
---         love.graphics.clear(0.1, 0.1, 0.1, 1)
---         if not mapLoaded then
---             love.graphics.print("Chargement de la carte...", 400, 300)
---         end
---     end)
+local function setupMapPipeline()
+    local pipeline = Pipeline.new(G.WINDOW.WIDTH, G.WINDOW.HEIGHT)
+    -- Stage 1: Clear the screen and handle the loading screen
+    pipeline:addStage(nil, function()
+        love.graphics.clear(0.1, 0.1, 0.1, 1)
+        if not mapLoaded then
+            love.graphics.print("Chargement de la carte...", 400, 300)
+        end
+    end)
     
---     -- Stage 2: Apply the camera transformation and draw the map
---     pipeline:addStage(nil, function()
---         if mapLoaded and gamemap then
+    -- Stage 2: Apply the camera transformation and draw the map
+    pipeline:addStage(nil, function()
+        if mapLoaded and gamemap then
             
---             -- gamemap:drawWorldCollision(collision)
---         end
---     end, gamemap.width*16, gamemap.height*16)
+            -- gamemap:drawWorldCollision(collision)
+        end
+    end, gamemap.width*16, gamemap.height*16)
 
---     -- Stage 3: Draw the UI layer on top of the map
---     pipeline:addStage(nil, function()
---         cam:attach()
---         if mapLoaded then
-            
---         end
---         cam:detach()
---     end)
---     return pipeline
--- end
+    -- Stage 3: Draw the UI layer on top of the map
+    pipeline:addStage(nil, function()
+        cam:attach()
+        gamemap:drawLayer(gamemap.layers["Ground"])
+        gamemap:drawLayer(gamemap.layers["tronc"])
+        gamemap:drawLayer(gamemap.layers["Roc"])
+        gamemap:drawLayer(gamemap.layers["Batiment"])
+        gamemap:drawLayer(gamemap.layers["feuille1"])
+        gamemap:drawLayer(gamemap.layers["feuille2"])
+        gamemap:drawLayer(gamemap.layers["feuille3"])
+        gamemap:drawLayer(gamemap.layers["feuille4"])
+        gamemap:drawLayer(gamemap.layers["feuille5"])
+        player:draw()
+        world:draw()
+        cam:detach()
+    end)
+    return pipeline
+end
 
 function map:load(args)
 
@@ -61,22 +68,15 @@ function map:load(args)
     -- Créer une instance du joueur avec position et vitesse initiales
     player = Player:new(700, 300, 100, spriteSheet, grid, world)
     player.anim = player.animations.down
+
+    self.pipeline = setupMapPipeline()
 end
 
 function map:draw()
-    cam:attach()
-    gamemap:drawLayer(gamemap.layers["Ground"])
-    gamemap:drawLayer(gamemap.layers["tronc"])
-    gamemap:drawLayer(gamemap.layers["Roc"])
-    gamemap:drawLayer(gamemap.layers["Batiment"])
-    gamemap:drawLayer(gamemap.layers["feuille1"])
-    gamemap:drawLayer(gamemap.layers["feuille2"])
-    gamemap:drawLayer(gamemap.layers["feuille3"])
-    gamemap:drawLayer(gamemap.layers["feuille4"])
-    gamemap:drawLayer(gamemap.layers["feuille5"])
-    player:draw()
-    world:draw()
-    cam:detach()
+    if self.pipeline then
+        self.pipeline:run()
+    end
+
 end
 
 function map:update(dt)
