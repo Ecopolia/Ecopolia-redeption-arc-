@@ -15,7 +15,8 @@ function Player:new(x, y, speed, spriteSheet, grid)
         collider = nil,
         center = nil,
         position = nil,
-        isColliding = false
+        isColliding = false,
+        direction = "down"
     }
     
     if instance.grid ~= nil then
@@ -38,61 +39,93 @@ end
 -- Fonction de mise à jour du joueur
 function Player:update(dt)
     local isMoving = false
-    self.isColliding = self:Colliding()
+    self.isColliding, collisionSide = self:Colliding()
+
+    -- Check movement directions based on collisions
     if love.keyboard.isDown("d") then
-        if self.isColliding == false then
+        self.direction = "right" -- Set the direction to right
+        if self.isColliding == false or collisionSide ~= "right" then
             self.position.x = self.position.x + self.speed * dt
-            self.anim = self.animations.right -- Changer l'animation si nécessaire
+            self.anim = self.animations.right
             isMoving = true
         else
-            self.position.x = self.position.x - 2
+            -- Prevent movement to the right
         end
     end
 
     if love.keyboard.isDown("q") then
-        if self.isColliding == false then
+        self.direction = "left" -- Set the direction to left
+        if self.isColliding == false or collisionSide ~= "left" then
             self.position.x = self.position.x - self.speed * dt
-            self.anim = self.animations.left -- Changer l'animation si nécessaire
+            self.anim = self.animations.left
             isMoving = true
         else
-            self.position.x = self.position.x + 2
+            -- Prevent movement to the left
         end
     end
 
     if love.keyboard.isDown("s") then
-        if self.isColliding == false then  
+        self.direction = "down" -- Set the direction to down
+        if self.isColliding == false or collisionSide ~= "down" then  
             self.position.y = self.position.y + self.speed * dt
-            self.anim = self.animations.down -- Exemple : assigner l'animation "down"
+            self.anim = self.animations.down
             isMoving = true
         else
-            self.position.y = self.position.y - 2
+            -- Prevent movement downward
         end
     end
 
     if love.keyboard.isDown("z") then
-        if self.isColliding == false then
+        self.direction = "up" -- Set the direction to up
+        if self.isColliding == false or collisionSide ~= "up" then
             self.position.y = self.position.y - self.speed * dt
-            self.anim = self.animations.up -- Changer l'animation si nécessaire
+            self.anim = self.animations.up
             isMoving = true
         else
-            self.position.y = self.position.y + 2
+            -- Prevent movement upward
         end
     end
+
     if isMoving == false and self.anim ~= nil then
         self.anim:gotoFrame(1) 
     end
+    
+    -- Update collider position
     self.collider:setPosition(self.position.x + 32, self.position.y + 32)
 end
+
+-- Fonction pour détecter les collisions
 function Player:Colliding()
+    local x, y = self.position.x, self.position.y
+    local vertices = {
+        x, y,
+        x + 64, y,
+        x + 64, y + 64,
+        x, y + 64
+    }
     
-    local colliders = self.world:queryCircleArea(self.position.x + 32, self.position.y + 32, 16)
+    local colliders = self.world:queryPolygonArea(vertices)
+    
     for _, collider in ipairs(colliders) do
         if collider ~= self.collider then
-            return true
+
+            local collX, collY = collider:getX(), collider:getY()
+            
+            if collX > x + 64 then
+                return true, "right"
+            elseif collX < x then
+                return true, "left"
+            elseif collY > y + 64 then
+                return true, "down"
+            elseif collY < y then
+                return true, "up"
+            end
         end
     end
-    return false
+    return false, nil -- No collision
 end
+
+
 -- Fonction pour dessiner le joueur
 function Player:draw()
     if self.anim then
