@@ -41,7 +41,7 @@ local function setupMapPipeline()
         gamemap:drawLayer(gamemap.layers["feuille4"])
         gamemap:drawLayer(gamemap.layers["feuille5"])
         player:draw()
-        world:draw()
+        -- world:draw()
         cam:detach()
     end)
     return pipeline
@@ -60,7 +60,7 @@ function map:load(args)
 
     spriteSheet = love.graphics.newImage("assets/spritesheets/character/maincharacter.png")
     grid = anim8.newGrid(64, 64, spriteSheet:getWidth(), spriteSheet:getHeight())
-    player = Player:new(600, 300, 100, spriteSheet, grid, world)
+    player = Player:new(570, 200, 100, spriteSheet, grid, world)
     player.anim = player.animations.down
 
     self.pipeline = setupMapPipeline()
@@ -76,7 +76,7 @@ end
 function map:update(dt)
 
     if player then
-        cam:lookAt(player.position.x , player.position.y)
+        cam:lookAt(player.x + 64 , player.y + 64)
         player:update(dt)
 
         -- Mettre à jour l'animation actuelle du joueur

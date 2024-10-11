@@ -2,7 +2,7 @@ Player = {}
 Player.__index = Player
 
 -- Fonction de création d'un nouveau joueur
-function Player:new(x, y, speed, spriteSheet, grid)
+function Player:new(x, y, speed, spriteSheet, grid, world)
     local instance = {
         grid = grid,
         x = x or 20,  -- Utiliser les paramètres ou valeurs par défaut
@@ -12,13 +12,17 @@ function Player:new(x, y, speed, spriteSheet, grid)
         animations = {},
         currentAnimation = nil,
         world = world,
-        collider = nil,
-        center = nil,
-        position = nil,
+        colliders = {
+            top = nil,
+            bottom = nil,
+            left = nil,
+            right = nil, 
+        },
         isColliding = false,
         direction = "down"
     }
     
+    -- Configuring the animations if grid is available
     if instance.grid ~= nil then
         instance.animations.up = anim8.newAnimation(instance.grid('1-9', 9), 0.2)
         instance.animations.left = anim8.newAnimation(instance.grid('1-9', 10), 0.2)
@@ -27,110 +31,135 @@ function Player:new(x, y, speed, spriteSheet, grid)
         instance.animations.down = anim8.newAnimation(instance.grid('1-9', 11), 0.2)
     end
     
+    -- Creating colliders for each side of the player if the world is defined
     if instance.world ~= nil then 
-        instance.center = {x = instance.x + 64/2, y = instance.y + 64/2}
-        instance.position = {x = instance.center.x, y = instance.center.y}
-        instance.collider = instance.world:newCollider('Rectangle', {instance.position.x, instance.position.y, 64, 64})
+        local colliderSize = 16  -- Smaller size for individual side colliders
+        local playerWidth, playerHeight = 64, 64
+
+        -- Create four colliders: top, bottom, left, and right
+        instance.colliders.top = instance.world:newCollider('Rectangle', {instance.x, instance.y - colliderSize, 32, 1})
+        instance.colliders.bottom = instance.world:newCollider('Rectangle', {instance.x, instance.y + playerHeight, 32, 1})
+        instance.colliders.left = instance.world:newCollider('Rectangle', {instance.x - colliderSize, instance.y, 1, 48})
+        instance.colliders.right = instance.world:newCollider('Rectangle', {instance.x + playerWidth, instance.y, 1, 48})
     end
+
     setmetatable(instance, Player)
     return instance
 end
 
--- Fonction de mise à jour du joueur
 function Player:update(dt)
     local isMoving = false
-    self.isColliding, collisionSide = self:Colliding()
+    self.isColliding, collisionSides = self:checkCollisions()
 
-    -- Check movement directions based on collisions
+    -- Handling player movement and animation based on input
     if love.keyboard.isDown("d") then
-        self.direction = "right" -- Set the direction to right
-        if self.isColliding == false or collisionSide ~= "right" then
-            self.position.x = self.position.x + self.speed * dt
+        self.direction = "right"
+        if not collisionSides.right then -- Only move if not colliding on the right
+            self.x = self.x + self.speed * dt
             self.anim = self.animations.right
             isMoving = true
-        else
-            -- Prevent movement to the right
         end
     end
 
     if love.keyboard.isDown("q") then
-        self.direction = "left" -- Set the direction to left
-        if self.isColliding == false or collisionSide ~= "left" then
-            self.position.x = self.position.x - self.speed * dt
+        self.direction = "left"
+        if not collisionSides.left then -- Only move if not colliding on the left
+            self.x = self.x - self.speed * dt
             self.anim = self.animations.left
             isMoving = true
-        else
-            -- Prevent movement to the left
         end
     end
 
     if love.keyboard.isDown("s") then
-        self.direction = "down" -- Set the direction to down
-        if self.isColliding == false or collisionSide ~= "down" then  
-            self.position.y = self.position.y + self.speed * dt
+        self.direction = "down"
+        if not collisionSides.bottom then -- Only move if not colliding at the bottom
+            self.y = self.y + self.speed * dt
             self.anim = self.animations.down
             isMoving = true
-        else
-            -- Prevent movement downward
         end
     end
 
     if love.keyboard.isDown("z") then
-        self.direction = "up" -- Set the direction to up
-        if self.isColliding == false or collisionSide ~= "up" then
-            self.position.y = self.position.y - self.speed * dt
+        self.direction = "up"
+        if not collisionSides.top then -- Only move if not colliding at the top
+            self.y = self.y - self.speed * dt
             self.anim = self.animations.up
             isMoving = true
-        else
-            -- Prevent movement upward
         end
     end
 
-    if isMoving == false and self.anim ~= nil then
-        self.anim:gotoFrame(1) 
+    if not isMoving and self.anim ~= nil then
+        self.anim:gotoFrame(1)
     end
-    
-    -- Update collider position
-    self.collider:setPosition(self.position.x + 32, self.position.y + 32)
+
+    -- Update colliders' positions based on player's position
+    self:updateColliders()
 end
 
--- Fonction pour détecter les collisions
-function Player:Colliding()
-    local x, y = self.position.x, self.position.y
-    local vertices = {
-        x, y,
-        x + 64, y,
-        x + 64, y + 64,
-        x, y + 64
+
+
+
+-- Function to update collider positions based on player position
+function Player:updateColliders()
+    local colliderSize = 16
+    local playerWidth, playerHeight = 64, 64
+
+    -- Adjusting each collider's position based on the player's position
+    self.colliders.top:setPosition(self.x + playerWidth / 2, self.y + 15)
+    self.colliders.bottom:setPosition(self.x + playerWidth / 2, self.y + 64)
+    self.colliders.left:setPosition(self.x + 8, self.y + 40)
+    self.colliders.right:setPosition(self.x + 55, self.y + 40)
+end
+
+-- Function to check for collisions using the player's four colliders
+-- Function to check for collisions using the player's four colliders
+function Player:checkCollisions()
+    local collisionSides = {
+        top = false,
+        bottom = false,
+        left = false,
+        right = false
     }
-    
-    local colliders = self.world:queryPolygonArea(vertices)
-    
-    for _, collider in ipairs(colliders) do
-        if collider ~= self.collider then
 
-            local collX, collY = collider:getX(), collider:getY()
+    for side, collider in pairs(self.colliders) do
+        -- Get the bounding box for each collider
+        local x1, y1, x2, y2 = collider:getBoundingBox()
+
+        -- Create an empty table to collect colliders inside the bounding box
+        local colliders = {}
+
+        -- Query the world for collisions within the bounding box
+        self.world:queryBoundingBox(x1, y1, x2, y2, function(fixture)
+            -- Get the collider from the fixture
+            local otherCollider = fixture:getUserData()
             
-            if collX > x + 64 then
-                return true, "right"
-            elseif collX < x then
-                return true, "left"
-            elseif collY > y + 64 then
-                return true, "down"
-            elseif collY < y then
-                return true, "up"
+            -- Ensure it's not the player's own collider
+            if otherCollider ~= collider then
+                table.insert(colliders, otherCollider)
             end
+
+            -- Continue checking other colliders
+            return true
+        end)
+
+        -- Check if any colliders were found that aren't the player itself
+        if #colliders > 0 then
+            collisionSides[side] = true
         end
     end
-    return false, nil -- No collision
+
+    -- Return true if any side is colliding, along with the collision sides
+    local isColliding = collisionSides.top or collisionSides.bottom or collisionSides.left or collisionSides.right
+    return isColliding, collisionSides
 end
+
 
 
 -- Fonction pour dessiner le joueur
 function Player:draw()
     if self.anim then
-        -- Dessiner l'animation actuelle à la position du joueur
-        self.anim:draw(self.spriteSheet, self.position.x, self.position.y, nil, 1)
+        -- Draw the current animation at the player's position
+        self.anim:draw(self.spriteSheet, self.x, self.y)
     end
 end
 

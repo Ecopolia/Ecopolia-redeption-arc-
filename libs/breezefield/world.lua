@@ -330,4 +330,23 @@ function World:newCollider(collider_type, shape_arguments, table_to_use)
    return o
 end
 
+function World:queryBoundingBox(x1, y1, x2, y2, callback)
+   -- Query the world for fixtures within the axis-aligned bounding box
+   -- Inputs:
+   -- x1, y1: the first corner of the bounding box
+   -- x2, y2: the opposite corner of the bounding box
+   -- callback: a function that will be called for every fixture found
+   -- The callback function should return `true` to continue searching or `false` to stop
+
+   -- Love2D physics function to query the world
+   return self._world:queryBoundingBox(x1, y1, x2, y2, function(fixture)
+      -- Retrieve the user data (Collider object) attached to the fixture
+      local collider = fixture:getUserData()
+
+      -- Call the callback with the Collider object, and continue if it returns true
+      return callback(fixture)
+   end)
+end
+
+
 return World
