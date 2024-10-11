@@ -6,6 +6,7 @@ local cam = camera()
 local zoomFactor = 40
 local mapscale = 0.5
 local collision = nil
+local save_and_load = require 'engine/save_and_load'
 
 screenWidth = G.WINDOW.WIDTH
 screenHeight = G.WINDOW.HEIGHT
@@ -88,6 +89,13 @@ function map:update(dt)
         -- Mettre à jour l'animation actuelle du joueur
         if player.anim then
             player.anim:update(dt)
+        end
+
+        if love.keyboard.isDown("t") then
+            save_and_load.save(player)
+        end
+        if love.keyboard.isDown("y") then
+            save_and_load.load()
         end
         
     end

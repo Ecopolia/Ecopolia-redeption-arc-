@@ -55,7 +55,7 @@ function love.load()
     -- Set window title based on version
     if version == 'dev-mode' then
         local os = love.system.getOS()
-        if os ~= 'Linux' then
+        if os ~= 'Linux' and os ~= 'OS X' then
             love._openConsole()
         end
         love.window.setTitle("Ecopolia (redemption arc) - Dev Mode")
