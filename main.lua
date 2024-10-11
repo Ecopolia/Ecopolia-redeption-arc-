@@ -47,10 +47,11 @@ Player = require("engine/player")
 
 -- Scenery initialization
 local SceneryInit = require("libs/scenery")
-local scenery = SceneryInit("map")
+local scenery = SceneryInit("main_menu")
 
 -- love.load is called once at the beginning of the game
 function love.load()
+    love.graphics.setDefaultFilter("nearest", "nearest")
     -- Set window title based on version
     if version == 'dev-mode' then
         local os = love.system.getOS()
