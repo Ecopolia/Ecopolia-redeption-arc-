@@ -42,25 +42,20 @@ screenHeight = G.WINDOW.HEIGHT
 
 function map:load(args)
 
-    gamemap = sti('assets/maps/MainMap.lua')
+    gamemap = sti('assets/maps/MainMap.lua' , { "box2d" })
+    world = bf.newWorld(0, 90.81, true)
+    if gamemap.layers["Wall"] then 
+        for i, obj in pairs(gamemap.layers["Wall"].objects) do
+            world:newCollider('Rectangle',{obj.x + obj.width/2, obj.y + obj.height/2, obj.width, obj.height})
+        end
+    end
     mapLoaded = true
 
-    -- love.physics.setMeter(32)
-    -- world = love.physics.newWorld(0*love.physics.getMeter(), 0*love.physics.getMeter())
-    -- if gamemap then
-    --     collision = gamemap:initWorldCollision(world)
-    -- end
-    
-
-    world = bf.newWorld(0, 90.81, true)
-    world:newCollider('Rectangle',{600, 200, 50, 50})
     spriteSheet = love.graphics.newImage("assets/spritesheets/character/maincharacter.png")
-
-    -- Créer une grille de sprites (64x128 pour chaque sprite)
     grid = anim8.newGrid(64, 64, spriteSheet:getWidth(), spriteSheet:getHeight())
-    -- Créer une instance du joueur avec position et vitesse initiales
     player = Player:new(700, 300, 100, spriteSheet, grid, world)
     player.anim = player.animations.down
+
 end
 
 function map:draw()
@@ -74,6 +69,7 @@ function map:draw()
     gamemap:drawLayer(gamemap.layers["feuille3"])
     gamemap:drawLayer(gamemap.layers["feuille4"])
     gamemap:drawLayer(gamemap.layers["feuille5"])
+
     player:draw()
     world:draw()
     cam:detach()
@@ -98,16 +94,26 @@ function map:update(dt)
         gamemap:update(dt)
     end
     
-    -- local mapWidth = gamemap.width * gamemap.tilewidth
-    -- local mapHeight = gamemap.height * gamemap.tileheight
+    local w = love.graphics.getWidth()
+    local h = love.graphics.getHeight()
+    local mapWidth = gamemap.width * gamemap.tilewidth
+    local mapHeight = gamemap.height * gamemap.tileheight
 
-    -- if cam.x > (mapWidth - screenWidth/2)  then
-    --     cam.x = (mapWidth - screenWidth/2)
-    -- end
+    if cam.x < w/2 then
+        cam.x = w/2
+    end
 
-    -- if cam.y > (mapHeight - screenHeight/2)  then
-    --     cam.y = (mapHeight - screenHeight/2)
-    -- end
+    if cam.y < (h/2)  then
+        cam.y = (h/2)
+    end
+
+    if cam.x > (mapWidth - w/2)  then
+        cam.x = (mapWidth - w/2)
+    end
+
+    if cam.y > (mapHeight - h/2)  then
+        cam.y = (mapHeight - h/2)
+    end
 end
 
 return map
