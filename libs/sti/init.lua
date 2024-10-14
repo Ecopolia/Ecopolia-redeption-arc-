@@ -962,6 +962,13 @@ function Map.drawLayer(_, layer)
 	lg.setColor(r,g,b,a)
 end
 
+-- This require breezefield collision system
+function Map.initWalls(_, _layer, _world)
+	for i, obj in pairs(_layer.objects) do
+		_world:newCollider('Rectangle',{obj.x + obj.width/2, obj.y + obj.height/2, obj.width, obj.height})
+	end
+end
+
 --- Default draw function for Tile Layers
 -- @param layer The Tile Layer to draw
 function Map:drawTileLayer(layer)
