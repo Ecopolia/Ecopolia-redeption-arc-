@@ -9,9 +9,7 @@ push = require "libs/push"
 debugGraph = require 'libs/debugGraph'
 bump = require 'libs/bump'
 bf = require("libs/breezefield")
-Camera = require("libs/hump/camera")
-json = require 'libs/json'
-ldtk = require 'libs/ldtk'
+camera = require("libs/hump/camera")
 
 -- Require necessary modules
 require 'version'
@@ -42,19 +40,19 @@ LoveDialogue = require "libs/LoveDialogue"
 local profile = require("engine/profile")
 profile.start()
 
--- Scenery initialization
-local SceneryInit = require("libs/scenery")
-local scenery = SceneryInit("npc_test")
-
-
 NPC = require 'objects/npc'
 
 sti = require 'libs/sti'
 
 Player = require("engine/player")
 
+-- Scenery initialization
+local SceneryInit = require("libs/scenery")
+local scenery = SceneryInit("main_menu")
+
 -- love.load is called once at the beginning of the game
 function love.load()
+    love.graphics.setDefaultFilter("nearest", "nearest")
     -- Set window title based on version
     if version == 'dev-mode' then
         local os = love.system.getOS()

@@ -59,6 +59,60 @@ function Collider:getSpatialIdentity()
    end
 end
 
+function Collider:getWidth()
+   if self.collider_type == 'Circle' then
+      return self:getRadius() * 2 -- The width of a circle is its diameter
+   elseif self.collider_type == 'Polygon' then
+      local x1, y1, x2, y2 = self:getWorldPoints(self:getPoints())
+      return math.abs(x2 - x1) -- Width is the difference between the x-coordinates of the rectangle
+   elseif self.collider_type == 'Edge' or self.collider_type == 'Chain' then
+      local x1, y1, x2, y2 = self:getWorldPoints(self:getPoints())
+      return math.abs(x2 - x1) -- Width is the distance between the two endpoints of the edge/chain
+   else
+      return 0 -- Default case for unsupported types
+   end
+end
+
+function Collider:getHeight()
+   if self.collider_type == 'Circle' then
+      return self:getRadius() * 2 -- The height of a circle is its diameter
+   elseif self.collider_type == 'Polygon' then
+      local _, _, _, y1, _, y2 = self:getWorldPoints(self:getPoints())
+      return math.abs(y2 - y1) -- Height is the difference between the y-coordinates of the rectangle
+   elseif self.collider_type == 'Edge' or self.collider_type == 'Chain' then
+      local _, _, _, y1, _, y2 = self:getWorldPoints(self:getPoints())
+      return math.abs(y2 - y1) -- Height is the distance between the y-coordinates of the two endpoints of the edge/chain
+   else
+      return 0 -- Default case for unsupported types
+   end
+end
+
+function Collider:getBoundingBox()
+   if self.collider_type == 'Circle' then
+      local x, y = self:getX(), self:getY()
+      local r = self:getRadius()
+      return x - r, y - r, x + r, y + r
+   elseif self.collider_type == 'Polygon' then
+      local vertices = {self:getWorldPoints(self:getPoints())}
+      local min_x, min_y = vertices[1], vertices[2]
+      local max_x, max_y = vertices[1], vertices[2]
+      for i = 3, #vertices, 2 do
+         min_x = math.min(min_x, vertices[i])
+         min_y = math.min(min_y, vertices[i+1])
+         max_x = math.max(max_x, vertices[i])
+         max_y = math.max(max_y, vertices[i+1])
+      end
+      return min_x, min_y, max_x, max_y
+   elseif self.collider_type == 'Edge' or self.collider_type == 'Chain' then
+      local x1, y1, x2, y2 = self:getWorldPoints(self:getPoints())
+      return math.min(x1, x2), math.min(y1, y2), math.max(x1, x2), math.max(y1, y2)
+   else
+      error('Collider type not supported for bounding box')
+   end
+end
+
+
+
 function Collider:collider_contacts()
    local contacts = self:getContacts()
    local colliders = {}

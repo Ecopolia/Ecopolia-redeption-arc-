@@ -9,19 +9,24 @@ function Pipeline.new(width, height)
     return self
 end
 
-function Pipeline:addStage(shader, drawFunc)
+function Pipeline:addStage(shader, drawFunc, stageWidth, stageHeight)
     if not drawFunc then
         error("drawFunc is required for a pipeline stage")
     end
+
+    -- Use custom stage dimensions if provided, otherwise default to pipeline width/height
+    local canvasWidth = stageWidth or self.width
+    local canvasHeight = stageHeight or self.height
     
     local stage = {
-        canvas = love.graphics.newCanvas(self.width, self.height),
+        canvas = love.graphics.newCanvas(canvasWidth, canvasHeight),
         shader = shader,
         drawFunc = drawFunc
     }
     
     table.insert(self.stages, stage)
 end
+
 
 function Pipeline:run()
     if #self.stages == 0 then

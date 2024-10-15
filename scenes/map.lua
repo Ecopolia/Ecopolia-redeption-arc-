@@ -2,13 +2,16 @@ local map = {}
 local mapLoaded = false
 local loadingCoroutine = nil
 local gamemap = nil
-local camera = nil
+local cam = camera()
 local zoomFactor = 40
 local mapscale = 0.5
+local collision = nil
+
+screenWidth = G.WINDOW.WIDTH
+screenHeight = G.WINDOW.HEIGHT
 
 local function setupMapPipeline()
-    local pipeline = Pipeline.new(love.graphics.getWidth(), love.graphics.getHeight())
-
+    local pipeline = Pipeline.new(G.WINDOW.WIDTH, G.WINDOW.HEIGHT)
     -- Stage 1: Clear the screen and handle the loading screen
     pipeline:addStage(nil, function()
         love.graphics.clear(0.1, 0.1, 0.1, 1)
@@ -16,99 +19,129 @@ local function setupMapPipeline()
             love.graphics.print("Chargement de la carte...", 400, 300)
         end
     end)
-
+    
     -- Stage 2: Apply the camera transformation and draw the map
     pipeline:addStage(nil, function()
         if mapLoaded and gamemap then
-            camera:zoomTo(zoomFactor)
-            camera:attach()
-
-            -- Calculate visible boundaries
-            local screen_width = love.graphics.getWidth() / zoomFactor
-            local screen_height = love.graphics.getHeight() / zoomFactor
-
-            local cam_x, cam_y = camera:position()
-
-            local start_x = math.floor((cam_x - screen_width / 2) / gamemap.tilewidth)
-            local start_y = math.floor((cam_y - screen_height / 2) / gamemap.tileheight)
-            local end_x = math.ceil((cam_x + screen_width / 2) / gamemap.tilewidth)
-            local end_y = math.ceil((cam_y + screen_height / 2) / gamemap.tileheight)
-
-            -- Draw the visible portion of the map
-            gamemap:draw(start_x, start_y, end_x, end_y)
-
-            camera:detach()
+            
+            -- gamemap:drawWorldCollision(collision)
         end
-    end)
+    end, gamemap.width*16, gamemap.height*16)
 
     -- Stage 3: Draw the UI layer on top of the map
     pipeline:addStage(nil, function()
-        if mapLoaded then
-            -- Draw the map-specific UI
-            uiManager:draw("map")
-        end
+        cam:attach()
+        gamemap:drawLayer(gamemap.layers["Ground"])
+        gamemap:drawLayer(gamemap.layers["tronc"])
+        gamemap:drawLayer(gamemap.layers["Roc"])
+        gamemap:drawLayer(gamemap.layers["Batiment"])
+        gamemap:drawLayer(gamemap.layers["feuille1"])
+        gamemap:drawLayer(gamemap.layers["feuille2"])
+        gamemap:drawLayer(gamemap.layers["feuille3"])
+        gamemap:drawLayer(gamemap.layers["feuille4"])
+        gamemap:drawLayer(gamemap.layers["feuille5"])
+        player:draw()
+        uiManager:draw("map")
+        -- world:draw()
+        cam:detach()
     end)
-
     return pipeline
 end
 
 function map:load(args)
-    -- Initialize the map loading coroutine
-    loadingCoroutine = coroutine.create(function()
-        -- Simulate loading delay
-        love.timer.sleep(2)
-        -- Load the map
-        gamemap = sti('assets/maps/MainMap.lua')
+    love.graphics.setDefaultFilter("nearest", "nearest")
+    gamemap = sti('assets/maps/MainMap.lua' , { "box2d" })
+    world = bf.newWorld(0, 90.81, true)
+    if gamemap.layers["Wall"] then 
+        gamemap:initWalls(gamemap.layers["Wall"], world)
+    end
+    
 
-        -- Create and center the camera on an initial position
-        camera = Camera(0, 0)
-        mapLoaded = true
-    end)
+    spriteSheet = love.graphics.newImage("assets/spritesheets/character/maincharacter.png")
+    grid = anim8.newGrid(64, 64, spriteSheet:getWidth(), spriteSheet:getHeight())
+    player = Player:new(570, 200, 100, spriteSheet, grid, world)
+    player.anim = player.animations.down
 
-    -- Setup the render pipeline
+    local npc_random = NpcElement.new({
+        x = 515,
+        y = 260,
+        w = 50,
+        h = 50,
+        scale = 2,
+        speed = 30,
+        radius = 50,
+        clickableRadius = 20,
+        onClick = function() print("NPC clicked!") end,
+        world = world
+    })
+
+    -- uiManager:registerElement("npc_test", "npc_path", npc_path)
+    -- uiManager:registerElement("npc_test", "npc_tour", npc_tour)
+    uiManager:registerElement("map", "npc_random", npc_random)
+    self.timer = Timer.new()
     self.pipeline = setupMapPipeline()
+
+    mapLoaded = true
 end
 
 function map:draw()
     if self.pipeline then
-        -- Run the pipeline for the map rendering
         self.pipeline:run()
     end
+
 end
 
 function map:update(dt)
-    -- Resume loading coroutine if it's still active
-    if loadingCoroutine and coroutine.status(loadingCoroutine) ~= "dead" then
-        coroutine.resume(loadingCoroutine)
-    end
 
-    -- Update logic for the map once it is loaded
-    if mapLoaded and gamemap then
-        -- Mettre à jour la carte (par exemple, si elle contient des éléments interactifs ou de la physique)
-        gamemap:update(dt)
-
+    if mapLoaded then 
+        if player then
+            cam:lookAt(player.x + 64 , player.y + 64)
+            player:update(dt)
+    
+            -- Mettre à jour l'animation actuelle du joueur
+            if player.anim then
+                player.anim:update(dt)
+            end
+            
+        end
+    
+        -- Update logic for the map once it is loaded
+        if mapLoaded and gamemap then
+            -- Mettre à jour la carte (par exemple, si elle contient des éléments interactifs ou de la physique)
+            gamemap:update(dt)
+        end
+        
+        local w = love.graphics.getWidth()
+        local h = love.graphics.getHeight()
+    
+        if gamemap ~= nil then
+            local mapWidth = gamemap.width * gamemap.tilewidth
+            local mapHeight = gamemap.height * gamemap.tileheight
+        end
+    
+        if cam.x < w/2 then
+            cam.x = w/2
+        end
+    
+        if cam.y < (h/2)  then
+            cam.y = (h/2)
+        end
+    
+        if mapHeight ~= nil then
+            if cam.x > (mapWidth - w/2)  then
+                cam.x = (mapWidth - w/2)
+            end
+        
+            if cam.y > (mapHeight - h/2)  then
+                cam.y = (mapHeight - h/2)
+            end
+        end
+    
+        self.timer:update(dt)
+    
+        -- Update the UI
+        uiManager:update("map", dt)
     end
 end
-
--- -- Gestion du zoom avec la molette de la souris
--- function love.wheelmoved(x, y)
---     if y < 0 then
---         -- DéZoomer
---         zoomFactor = zoomFactor * 1.1
---     elseif y > 0 then
---         -- Zoomer
---         zoomFactor = zoomFactor * 0.9
---     end
-
---     if(zoomFactor > 40) then
---         zoomFactor = 40
---     end
-
---     if(zoomFactor < 1) then
---         zoomFactor = 1
---     end
-
---     print(zoomFactor)
--- end
 
 return map
