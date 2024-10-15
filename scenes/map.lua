@@ -53,9 +53,7 @@ function map:load(args)
     gamemap = sti('assets/maps/MainMap.lua' , { "box2d" })
     world = bf.newWorld(0, 90.81, true)
     if gamemap.layers["Wall"] then 
-        for i, obj in pairs(gamemap.layers["Wall"].objects) do
-            world:newCollider('Rectangle',{obj.x + obj.width/2, obj.y + obj.height/2, obj.width, obj.height})
-        end
+        gamemap:initWalls(gamemap.layers["Wall"], world)
     end
     
 

@@ -118,7 +118,6 @@ function Player:updateColliders()
 end
 
 -- Function to check for collisions using the player's four colliders
--- Function to check for collisions using the player's four colliders
 function Player:checkCollisions()
     local collisionSides = {
         top = false,
@@ -128,33 +127,25 @@ function Player:checkCollisions()
     }
 
     for side, collider in pairs(self.colliders) do
-        -- Get the bounding box for each collider
         local x1, y1, x2, y2 = collider:getBoundingBox()
 
-        -- Create an empty table to collect colliders inside the bounding box
         local colliders = {}
 
-        -- Query the world for collisions within the bounding box
         self.world:queryBoundingBox(x1, y1, x2, y2, function(fixture)
-            -- Get the collider from the fixture
             local otherCollider = fixture:getUserData()
             
-            -- Ensure it's not the player's own collider
             if otherCollider ~= collider then
                 table.insert(colliders, otherCollider)
             end
 
-            -- Continue checking other colliders
             return true
         end)
 
-        -- Check if any colliders were found that aren't the player itself
         if #colliders > 0 then
             collisionSides[side] = true
         end
     end
 
-    -- Return true if any side is colliding, along with the collision sides
     local isColliding = collisionSides.top or collisionSides.bottom or collisionSides.left or collisionSides.right
     return isColliding, collisionSides
 end
