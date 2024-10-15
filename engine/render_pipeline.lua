@@ -35,9 +35,9 @@ function Pipeline:run()
 
     -- Iterate over all stages and apply them
     for i, stage in ipairs(self.stages) do
-        -- Set the canvas for this stage
-        love.graphics.setCanvas(stage.canvas)
-        love.graphics.clear()
+        -- Set the canvas for this stage with stencil support
+        love.graphics.setCanvas({stage.canvas, stencil = true})
+        love.graphics.clear()  -- Clear canvas before drawing
 
         -- Apply shader if it exists
         if stage.shader then
@@ -49,12 +49,14 @@ function Pipeline:run()
             love.graphics.draw(self.stages[i - 1].canvas, 0, 0)
         end
 
-        -- Execute the drawing function
+        -- Execute the drawing function for this stage
         stage.drawFunc()
 
         -- Reset the shader
         love.graphics.setShader()
-        love.graphics.setCanvas()  -- Reset the canvas
+
+        -- Reset the canvas after drawing, preserving stencil buffer
+        love.graphics.setCanvas()
     end
 
     -- Start push for resolution handling

@@ -32,6 +32,7 @@ Freeform = require('objects/components/freeform')
 Card = require('objects/components/card')
 NpcElement = require('objects/components/npc')
 ATB = require('objects/components/atb')
+Minimap = require('objects/components/hud_minimap')
 
 -- LoveDialogue for handling dialogue
 LoveDialogue = require "libs/LoveDialogue"

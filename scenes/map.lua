@@ -45,6 +45,12 @@ local function setupMapPipeline()
         -- world:draw()
         cam:detach()
     end)
+
+    pipeline:addStage(nil, function()
+        uiManager:draw("hud_map")
+    end)
+    
+
     return pipeline
 end
 
@@ -78,15 +84,35 @@ function map:load(args)
     -- uiManager:registerElement("npc_test", "npc_path", npc_path)
     -- uiManager:registerElement("npc_test", "npc_tour", npc_tour)
     uiManager:registerElement("map", "npc_random", npc_random)
+    
     self.timer = Timer.new()
     self.pipeline = setupMapPipeline()
 
-    mapLoaded = true
+    if gamemap and player then
+        mapLoaded = true
+    end
+
+    hud_map = Minimap.new({
+        x = 120,
+        y = 120,
+        radius = 100,
+        scale = 0.1,
+        borderThickness = 2,
+        mapColor = {0.5, 0.5, 0.5},
+        borderColor = {0, 0, 0},
+        player = player
+    })
+
+    -- uiManager:registerElement("hud_map", "hudmap", hud_map)
+
 end
 
 function map:draw()
     if self.pipeline then
         self.pipeline:run()
+    end
+    if hud_map then
+        hud_map:draw()
     end
 
 end
@@ -141,6 +167,7 @@ function map:update(dt)
     
         -- Update the UI
         uiManager:update("map", dt)
+        uiManager:update("hud_map", dt)
     end
 end
 
