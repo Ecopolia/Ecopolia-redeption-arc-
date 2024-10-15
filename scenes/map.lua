@@ -46,11 +46,15 @@ local function setupMapPipeline()
         cam:detach()
     end)
 
-    pipeline:addStage(nil, function()
-        uiManager:draw("hud_map")
+    
+    pipeline:addScaledStage(nil, function()
+        local stage3Canvas = pipeline.stages[3].canvas
+        if stage3Canvas then
+            love.graphics.draw(stage3Canvas, 800, 50, 0, 0.25, 0.25)
+        end
     end)
     
-
+    
     return pipeline
 end
 
@@ -92,29 +96,12 @@ function map:load(args)
         mapLoaded = true
     end
 
-    hud_map = Minimap.new({
-        x = 120,
-        y = 120,
-        radius = 100,
-        scale = 0.1,
-        borderThickness = 2,
-        mapColor = {0.5, 0.5, 0.5},
-        borderColor = {0, 0, 0},
-        player = player
-    })
-
-    -- uiManager:registerElement("hud_map", "hudmap", hud_map)
-
 end
 
 function map:draw()
     if self.pipeline then
         self.pipeline:run()
     end
-    if hud_map then
-        hud_map:draw()
-    end
-
 end
 
 function map:update(dt)

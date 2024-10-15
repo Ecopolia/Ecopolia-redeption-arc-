@@ -21,9 +21,28 @@ function Pipeline:addStage(shader, drawFunc, stageWidth, stageHeight)
     local stage = {
         canvas = love.graphics.newCanvas(canvasWidth, canvasHeight),
         shader = shader,
-        drawFunc = drawFunc
+        drawFunc = drawFunc,
+        scale = nil,  -- Default scale is nil for regular stages
+        offset = {0, 0}  -- Default offset is (0, 0)
     }
     
+    table.insert(self.stages, stage)
+end
+
+function Pipeline:addScaledStage(shader, drawFunc, scaleX, scaleY, offsetX, offsetY)
+    if not drawFunc then
+        error("drawFunc is required for a pipeline stage")
+    end
+
+
+    local stage = {
+        canvas = love.graphics.newCanvas(self.width, self.height),
+        shader = shader,
+        drawFunc = drawFunc,
+        scale = {scaleX or 1, scaleY or 1},  -- Store scale
+        offset = {offsetX or 0, offsetY or 0}  -- Store offset
+    }
+
     table.insert(self.stages, stage)
 end
 
@@ -46,7 +65,25 @@ function Pipeline:run()
 
         -- Draw the previous stage's canvas if it exists
         if i > 1 then
-            love.graphics.draw(self.stages[i - 1].canvas, 0, 0)
+            local previousCanvas = self.stages[i - 1].canvas
+            
+            -- If the current stage is a scaled stage, apply transformations
+            if stage.scale then
+                local scaleX = stage.scale[1]
+                local scaleY = stage.scale[2]
+                local offsetX = stage.offset[1]
+                local offsetY = stage.offset[2]
+
+                -- Apply transformations for scaling and offset
+                love.graphics.push()  -- Save the current transformation
+                love.graphics.translate(offsetX, offsetY)  -- Apply the offset
+                love.graphics.scale(scaleX, scaleY)  -- Apply the scale
+                love.graphics.draw(previousCanvas, 0, 0)  -- Draw the previous canvas
+                love.graphics.pop()  -- Restore the previous transformation
+            else
+                -- Draw normally if it's not a scaled stage
+                love.graphics.draw(previousCanvas, 0, 0)
+            end
         end
 
         -- Execute the drawing function for this stage
