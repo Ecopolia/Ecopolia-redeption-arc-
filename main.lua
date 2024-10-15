@@ -10,6 +10,7 @@ debugGraph = require 'libs/debugGraph'
 bump = require 'libs/bump'
 bf = require("libs/breezefield")
 camera = require("libs/hump/camera")
+
 -- Require necessary modules
 require 'version'
 require 'misc/commons'
@@ -47,7 +48,7 @@ Player = require("engine/player")
 
 -- Scenery initialization
 local SceneryInit = require("libs/scenery")
-local scenery = SceneryInit("map")
+local scenery = SceneryInit("main_menu")
 
 -- love.load is called once at the beginning of the game
 function love.load()

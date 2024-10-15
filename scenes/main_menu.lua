@@ -52,10 +52,10 @@ local function setupMainMenuPipeline()
         uiManager:draw("main_menu")
     end)
 
-    -- Stage 4: Apply CRT shader
-    pipeline:addStage(G.SHADERS['CRT'], function()
-        -- The pipeline will automatically handle canvas switching, so you just draw
-    end)
+    -- -- Stage 4: Apply CRT shader
+    -- pipeline:addStage(G.SHADERS['CRT'], function()
+    --     -- The pipeline will automatically handle canvas switching, so you just draw
+    -- end)
 
     return pipeline
 end
