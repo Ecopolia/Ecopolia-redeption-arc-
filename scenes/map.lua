@@ -10,6 +10,8 @@ local collision = nil
 screenWidth = G.WINDOW.WIDTH
 screenHeight = G.WINDOW.HEIGHT
 
+local minimapScale = 0.1 
+
 local function setupMapPipeline()
     local pipeline = Pipeline.new(G.WINDOW.WIDTH, G.WINDOW.HEIGHT)
     -- Stage 1: Clear the screen and handle the loading screen
@@ -22,11 +24,8 @@ local function setupMapPipeline()
     
     -- Stage 2: Apply the camera transformation and draw the map
     pipeline:addStage(nil, function()
-        if mapLoaded and gamemap then
-            
-            -- gamemap:drawWorldCollision(collision)
-        end
-    end, gamemap.width*16, gamemap.height*16)
+
+    end)
 
     -- Stage 3: Draw the UI layer on top of the map
     pipeline:addStage(nil, function()
@@ -46,14 +45,65 @@ local function setupMapPipeline()
         cam:detach()
     end)
 
-    
-    pipeline:addScaledStage(nil, function()
-        local stage3Canvas = pipeline.stages[3].canvas
-        if stage3Canvas then
-            love.graphics.draw(stage3Canvas, 800, 50, 0, 0.25, 0.25)
-        end
+    -- Stage 3: Minimap rendering stage
+    pipeline:addStage(nil, function()
+        -- Minimap dimensions and position on the screen
+        local minimapWidth, minimapHeight = 150, 150  -- Set a fixed size for the minimap
+        local minimapX, minimapY = G.WINDOW.WIDTH - minimapWidth - 10, G.WINDOW.HEIGHT - minimapHeight - 10  -- Bottom-right corner
+
+        -- Set the size of the minimap "camera" view (the visible area of the map on the minimap)
+        local mapViewWidth = minimapWidth / minimapScale
+        local mapViewHeight = minimapHeight / minimapScale
+
+        -- Calculate the top-left corner of the visible map area in the minimap, so the player is centered
+        local mapMinX = player.x - mapViewWidth / 2
+        local mapMinY = player.y - mapViewHeight / 2
+
+        -- Clamp mapMinX and mapMinY to prevent showing areas outside the map
+        mapMinX = math.max(0, math.min(mapMinX, gamemap.width * gamemap.tilewidth - mapViewWidth))
+        mapMinY = math.max(0, math.min(mapMinY, gamemap.height * gamemap.tileheight - mapViewHeight))
+
+        -- Draw the minimap with scissor (only draw within minimap bounds)
+        love.graphics.setScissor(minimapX, minimapY, minimapWidth, minimapHeight)  -- Limit drawing to minimap area
+        love.graphics.push()
+
+        -- Translate the minimap to its on-screen position and scale
+        love.graphics.translate(minimapX, minimapY)
+        love.graphics.scale(minimapScale, minimapScale)
+
+        -- Move the map so the player is centered in the minimap
+        love.graphics.translate(-mapMinX, -mapMinY)
+
+        -- Draw the relevant map layers (scaled down)
+        gamemap:drawLayer(gamemap.layers["Ground"])
+        gamemap:drawLayer(gamemap.layers["tronc"])
+        gamemap:drawLayer(gamemap.layers["Roc"])
+        gamemap:drawLayer(gamemap.layers["Batiment"])
+        gamemap:drawLayer(gamemap.layers["feuille1"])
+        gamemap:drawLayer(gamemap.layers["feuille2"])
+        gamemap:drawLayer(gamemap.layers["feuille3"])
+        gamemap:drawLayer(gamemap.layers["feuille4"])
+        gamemap:drawLayer(gamemap.layers["feuille5"])
+
+        -- Draw the player as a small red circle at the center of the minimap
+        love.graphics.setColor(1, 0, 0)  -- Red color for the player
+        local playerMinimapX = player.x  -- The player should remain centered, so no further translation
+        local playerMinimapY = player.y
+        love.graphics.circle("fill", playerMinimapX, playerMinimapY, 5 / minimapScale)  -- Small circle for the player
+        love.graphics.setColor(1, 1, 1)  -- Reset color
+
+        love.graphics.pop()
+        love.graphics.setScissor()  -- Reset scissor
+
+        -- Draw the minimap's border
+        love.graphics.setColor(1, 1, 1)
+        love.graphics.rectangle("line", minimapX, minimapY, minimapWidth, minimapHeight)
+        love.graphics.setColor(1, 1, 1)  -- Reset color
     end)
-    
+
+
+
+
     
     return pipeline
 end

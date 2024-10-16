@@ -29,24 +29,6 @@ function Pipeline:addStage(shader, drawFunc, stageWidth, stageHeight)
     table.insert(self.stages, stage)
 end
 
-function Pipeline:addScaledStage(shader, drawFunc, scaleX, scaleY, offsetX, offsetY)
-    if not drawFunc then
-        error("drawFunc is required for a pipeline stage")
-    end
-
-
-    local stage = {
-        canvas = love.graphics.newCanvas(self.width, self.height),
-        shader = shader,
-        drawFunc = drawFunc,
-        scale = {scaleX or 1, scaleY or 1},  -- Store scale
-        offset = {offsetX or 0, offsetY or 0}  -- Store offset
-    }
-
-    table.insert(self.stages, stage)
-end
-
-
 function Pipeline:run()
     if #self.stages == 0 then
         error("Pipeline has no stages to run")
@@ -67,23 +49,8 @@ function Pipeline:run()
         if i > 1 then
             local previousCanvas = self.stages[i - 1].canvas
             
-            -- If the current stage is a scaled stage, apply transformations
-            if stage.scale then
-                local scaleX = stage.scale[1]
-                local scaleY = stage.scale[2]
-                local offsetX = stage.offset[1]
-                local offsetY = stage.offset[2]
-
-                -- Apply transformations for scaling and offset
-                love.graphics.push()  -- Save the current transformation
-                love.graphics.translate(offsetX, offsetY)  -- Apply the offset
-                love.graphics.scale(scaleX, scaleY)  -- Apply the scale
-                love.graphics.draw(previousCanvas, 0, 0)  -- Draw the previous canvas
-                love.graphics.pop()  -- Restore the previous transformation
-            else
-                -- Draw normally if it's not a scaled stage
-                love.graphics.draw(previousCanvas, 0, 0)
-            end
+            love.graphics.draw(previousCanvas, 0, 0)
+        
         end
 
         -- Execute the drawing function for this stage
