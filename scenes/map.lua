@@ -56,7 +56,6 @@ function map:load(args)
         gamemap:initWalls(gamemap.layers["Wall"], world)
     end
     
-
     spriteSheet = love.graphics.newImage("assets/spritesheets/character/maincharacter.png")
     grid = anim8.newGrid(64, 64, spriteSheet:getWidth(), spriteSheet:getHeight())
     player = Player:new(570, 200, 100, spriteSheet, grid, world)
@@ -92,54 +91,49 @@ function map:draw()
 end
 
 function map:update(dt)
+    local w = love.graphics.getWidth()
+    local h = love.graphics.getHeight()
 
     if mapLoaded then 
         if player then
-            cam:lookAt(player.x + 64 , player.y + 64)
             player:update(dt)
-    
-            -- Mettre à jour l'animation actuelle du joueur
+            
             if player.anim then
                 player.anim:update(dt)
             end
-            
+
+            if gamemap ~= nil then
+                local mapWidth = gamemap.width * gamemap.tilewidth
+                local mapHeight = gamemap.height * gamemap.tileheight
+
+                local zoom = cam.scale or 1
+                local viewWidth = w / zoom
+                local viewHeight = h / zoom
+                local halfViewWidth = viewWidth / 2
+                local halfViewHeight = viewHeight / 2
+
+                px, py = push:toReal(player.x, player.y) -- pushtoreal c'est de la merde, il est le problème comme la pipeline 
+                -- Calculer la position cible de la caméra
+                local targetCamX = px - halfViewWidth
+                local targetCamY = py - halfViewHeight
+
+                -- Limiter la caméra aux bords de la carte
+                targetCamX = math.max(halfViewWidth, math.min(mapWidth - halfViewWidth, px))
+                targetCamY = math.max(halfViewHeight, math.min(mapHeight - halfViewHeight, py))
+
+                -- Appliquer la position de la caméra
+                cam:lockPosition(targetCamX, targetCamY)
+
+                -- Afficher les coordonnées pour le débogage
+                print("Caméra - Position:", cam.x, cam.y, " | Joueur - Position (écran):", playerScreenX, playerScreenY)
+            end
         end
     
-        -- Update logic for the map once it is loaded
         if mapLoaded and gamemap then
-            -- Mettre à jour la carte (par exemple, si elle contient des éléments interactifs ou de la physique)
             gamemap:update(dt)
         end
-        
-        local w = love.graphics.getWidth()
-        local h = love.graphics.getHeight()
-    
-        if gamemap ~= nil then
-            local mapWidth = gamemap.width * gamemap.tilewidth
-            local mapHeight = gamemap.height * gamemap.tileheight
-        end
-    
-        if cam.x < w/2 then
-            cam.x = w/2
-        end
-    
-        if cam.y < (h/2)  then
-            cam.y = (h/2)
-        end
-    
-        if mapHeight ~= nil then
-            if cam.x > (mapWidth - w/2)  then
-                cam.x = (mapWidth - w/2)
-            end
-        
-            if cam.y > (mapHeight - h/2)  then
-                cam.y = (mapHeight - h/2)
-            end
-        end
-    
+
         self.timer:update(dt)
-    
-        -- Update the UI
         uiManager:update("map", dt)
     end
 end
