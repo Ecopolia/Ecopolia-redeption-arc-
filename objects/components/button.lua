@@ -15,6 +15,9 @@ function Button.new(config)
     self.button_text = nil
     self.anim8 = config.anim8 or false
     self.image = config.image or nil
+    self.customDraw = config.draw  -- Store the custom draw function
+    self.customUpdate = config.update  -- Store the custom draw function
+
 
     -- Initialize button_text
     self.button_text = Text.new("left", {
@@ -55,8 +58,8 @@ function Button:draw()
     local textHeight = love.graphics.getFont():getHeight(strippedText)
 
     -- Calculate text position
-    local textX = self.x + (self.width - textWidth) / 2
-    local textY = self.y + (self.height - textHeight) / 2
+    local textX = (self.css.textX and (self.x + self.css.textX)) or (self.x + (self.width - textWidth) / 2)
+    local textY = (self.css.textY and (self.y + self.css.textY)) or (self.y + (self.height - textHeight) / 2)
 
     -- Draw button_text with tags
     self.button_text:draw(textX, textY)
@@ -64,6 +67,11 @@ function Button:draw()
     -- Draw anim8 animation if available
     if self.anim8 then
         self.anim8:draw(self.image, self.x, self.y, 0, self.width / self.anim8:getDimensions(), self.height / self.anim8:getDimensions(), 0, 0)
+    end
+
+    -- Call the custom draw function if it exists
+    if self.customDraw then
+        self.customDraw(self)
     end
 
     -- Reset color
@@ -107,6 +115,10 @@ function Button:update(dt)
     -- Update button text if it exists
     if self.button_text then
         self.button_text:update(dt)
+    end
+
+    if self.customUpdate then
+        self.customUpdate(self, dt)
     end
 end
 

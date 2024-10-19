@@ -4,6 +4,8 @@ Game = Object:extend()
 function Game:init()
     G = self
     self:set_globals()
+    self.playtime = {0, 0, 0}  -- Initialize playtime for three slots
+    self.currentSlot = nil  -- Track the current slot
     print('Game object initialized')
 end
 
@@ -160,6 +162,9 @@ function Game:updateTimers(dt)
     self.TIMERS.REAL = self.TIMERS.REAL + dt
     self.TIMERS.REAL_SHADER = self.TIMERS.REAL
     self.TIMERS.UPTIME = self.TIMERS.UPTIME + dt
+    if self.currentSlot then
+        self.playtime[self.currentSlot] = self.playtime[self.currentSlot] + dt  -- Update playtime for the current slot
+    end
     self.real_dt = dt
     Timer.update(dt)
 end
@@ -178,6 +183,18 @@ function Game:update(dt)
     self:updateAnimation(dt)
     self:updateTimers(dt)
     self:updateShaders(dt)
+end
+
+function Game:setCurrentSlot(slot)
+    self.currentSlot = slot
+end
+
+function Game:getPlaytime(slot)
+    return self.playtime[slot]
+end
+
+function Game:setPlaytime(slot, playtime)
+    self.playtime[slot] = playtime
 end
 
 G = Game()

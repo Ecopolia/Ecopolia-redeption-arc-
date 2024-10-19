@@ -7,6 +7,8 @@ local zoomFactor = 40
 local mapscale = 0.5
 local collision = nil
 
+local save_and_load = require 'engine/save_and_load'
+
 screenWidth = G.WINDOW.WIDTH
 screenHeight = G.WINDOW.HEIGHT
 
@@ -115,11 +117,24 @@ function map:load(args)
     if gamemap.layers["Wall"] then 
         gamemap:initWalls(gamemap.layers["Wall"], world)
     end
-    
 
     spriteSheet = love.graphics.newImage("assets/spritesheets/character/maincharacter.png")
     grid = anim8.newGrid(64, 64, spriteSheet:getWidth(), spriteSheet:getHeight())
-    player = Player:new(570, 200, 100, spriteSheet, grid, world)
+
+    local playerData = nil
+    if args and args.slot then
+        print("Loaded with slot:", args.slot)
+        G:setCurrentSlot(args.slot)  -- Set the current slot
+        playerData = save_and_load.load(args.slot)
+    end
+
+    if playerData then
+        player = Player:new(playerData.x, playerData.y, playerData.speed, spriteSheet, grid, world)
+        player.health = playerData.health
+    else
+        player = Player:new(570, 200, 100, spriteSheet, grid, world)
+    end
+
     player.anim = player.animations.down
 
     local npc_random = NpcElement.new({
@@ -131,12 +146,12 @@ function map:load(args)
         speed = 30,
         radius = 50,
         clickableRadius = 20,
-        onClick = function() print("NPC clicked!") end,
+        onClick = function()
+            save_and_load.save(player, args.slot, G:getPlaytime(args.slot), "Zone du début")
+        end,
         world = world
     })
 
-    -- uiManager:registerElement("npc_test", "npc_path", npc_path)
-    -- uiManager:registerElement("npc_test", "npc_tour", npc_tour)
     uiManager:registerElement("map", "npc_random", npc_random)
     
     self.timer = Timer.new()
@@ -145,8 +160,8 @@ function map:load(args)
     if gamemap and player then
         mapLoaded = true
     end
-
 end
+
 
 function map:draw()
     if self.pipeline then
