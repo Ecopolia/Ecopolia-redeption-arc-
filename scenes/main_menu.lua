@@ -13,6 +13,8 @@ local transition_timer = 0
 local transition_duration = 2
 local mainMenuCanvas = love.graphics.newCanvas(G.WINDOW.WIDTH, G.WINDOW.HEIGHT)
 
+local save_and_load = require 'engine/save_and_load'
+
 local function setupMainMenuPipeline()
     local pipeline = Pipeline.new(G.WINDOW.WIDTH, G.WINDOW.HEIGHT)
 
@@ -59,6 +61,62 @@ local function setupMainMenuPipeline()
 
     return pipeline
 end
+
+local function createSaveSlotButton(slot, x, y)
+    local saveData = save_and_load.load(slot)
+    local text = "Empty Slot"
+    local sprite = nil
+    local playtime = "00:00:00"
+    local zone = "Unknown"
+
+    if saveData then
+        text = "Save Slot " .. slot
+        if saveData.sprite then
+            spriteSheet = love.graphics.newImage(saveData.sprite)  -- Load the sprite sheet from the file path
+            grid = anim8.newGrid(64, 64, spriteSheet:getWidth(), spriteSheet:getHeight())
+            animation = anim8.newAnimation(grid('1-9', 11), 0.2)  -- Create a walking down animation
+        end
+
+        playtime = formatPlaytime(saveData.playtime)
+        zone = saveData.zone
+    end
+    
+    
+ return Button.new({
+        text = text,
+        x = x,
+        y = y,
+        w = 800,
+        h = 100,
+        onClick = function()
+            G:setCurrentSlot(slot)
+            main_menu.setScene('map', { slot = slot })
+            G:setPlaytime(slot,saveData.playtime)
+        end,
+        css = {
+            backgroundColor = {0.5, 0.5, 0.5},
+            hoverBackgroundColor = {0.7, 0.7, 0.7},
+            textColor = {1, 1, 1},
+            borderColor = {1, 1, 1},
+            font = love.graphics.newFont(16),
+            textX = 10,
+            textY = 10,
+        },
+        update = function(self, dt)
+            if animation then
+                animation:update(dt)  -- Update the animation
+            end
+        end,
+        draw = function(self)
+            if animation then
+                animation:draw(spriteSheet, self.x + self.width - 74, self.y + 10, 0, 0.5, 0.5)  -- Top-right
+            end
+            love.graphics.print("Playtime: " .. playtime, self.x + 10, self.y + self.height - 30)  -- Bottom-left
+            love.graphics.print("Zone: " .. zone, self.x + self.width - 200, self.y + self.height - 30)  -- Bottom-right
+        end
+    })
+end
+
 
 
 function main_menu:load()
@@ -218,40 +276,46 @@ function main_menu:load()
         image = G.METAL_BUTTONS_ICONS_IMAGE
     })
 
-    local map = Button.new({
-        text = "[shake=0.4][breathe=0.2]Map Dev[/shake][/breathe]",
-        dsfull = false,
-        x = 500,
-        y = G.WINDOW.HEIGHT - 150,
-        w = 200,
-        h = 60,
-        onClick = function()
-            -- transitionOut()
-            -- Timer.after(2, function()
-            --     transitionIn()
-            -- end)
-            -- stop the music
-            menu_theme:stop(G.TRANSITION_DURATION)
-            self.setScene('map')
-        end,
-        onHover = function(button)
-            -- button.text = "[shake=0.4][breathe=0.2][blink]Go[/blink][/shake][/breathe]"
-            -- button.button_text:send(button.text, 320, button.dsfull)
-        end,
-        onUnhover = function(button)
-            -- button.text = "[shake=0.4][breathe=0.2]Play[/shake][/breathe]"
-            -- button.button_text:send(button.text, 320, button.dsfull)
-        end,
-        css = {
-            backgroundColor = {0, 0.5, 0},
-            hoverBackgroundColor = {0, 1, 0},
-            textColor = {1, 1, 1},
-            hoverTextColor = {0, 0, 0},
-            borderColor = {1, 1, 1},
-            borderRadius = 10,
-            font = G.Fonts.m6x11plus
-        }
-    })
+   local map = Button.new({
+    text = "[shake=0.4][breathe=0.2]Map Dev[/shake][/breathe]",
+    dsfull = false,
+    x = 500,
+    y = G.WINDOW.HEIGHT - 150,
+    w = 200,
+    h = 60,
+    onClick = function()
+        -- Hide existing buttons
+        local playButton = uiManager:getElement("main_menu", "play")
+        local quitButton = uiManager:getElement("main_menu", "quit")
+        local settingsButton = uiManager:getElement("main_menu", "settings")
+        local musicButton = uiManager:getElement("main_menu", "music")
+        local mapButton = uiManager:getElement("main_menu", "map")
+        
+        -- To fix 
+        playButton.visible = false
+        quitButton.visible = false
+        mapButton.visible = false
+
+        -- Create save slot buttons
+        local saveSlot1 = createSaveSlotButton(1, 300, 200)
+        local saveSlot2 = createSaveSlotButton(2, 300, 300)
+        local saveSlot3 = createSaveSlotButton(3, 300, 400)
+
+        -- Register save slot buttons
+        uiManager:registerElement("main_menu", "saveSlot1", saveSlot1)
+        uiManager:registerElement("main_menu", "saveSlot2", saveSlot2)
+        uiManager:registerElement("main_menu", "saveSlot3", saveSlot3)
+    end,
+    css = {
+        backgroundColor = {0, 0.5, 0},
+        hoverBackgroundColor = {0, 1, 0},
+        textColor = {1, 1, 1},
+        hoverTextColor = {0, 0, 0},
+        borderColor = {1, 1, 1},
+        borderRadius = 10,
+        font = G.Fonts.m6x11plus
+    }
+})
 
     local file = io.open(G.ROOT_PATH .. "/version", "r")
     version_text = Text.new("left", { color = {0.9,0.9,0.9,0.95}, shadow_color = {0.5,0.5,1,0.4}, font = G.Fonts.default, keep_space_on_line_break=true,})

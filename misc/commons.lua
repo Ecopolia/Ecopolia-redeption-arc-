@@ -27,3 +27,26 @@ function math.round(n, deci)
   deci = 10^(deci or 0)
   return math.floor(n*deci+.5)/deci
 end
+
+function printTable(t, indent)
+    indent = indent or ""
+    for k, v in pairs(t) do
+        if type(v) == "table" then
+            print(indent .. k .. ":")
+            printTable(v, indent .. "  ")
+        else
+            print(indent .. k .. ": " .. tostring(v))
+        end
+    end
+end
+
+function formatPlaytime(seconds)
+    if not seconds then
+        return "00:00:00"
+    end
+    local minutes = math.floor(seconds / 60)
+    local hours = math.floor(minutes / 60)
+    minutes = minutes % 60
+    seconds = math.floor(seconds % 60)
+    return string.format("%02d:%02d:%02d", hours, minutes, seconds)
+end
