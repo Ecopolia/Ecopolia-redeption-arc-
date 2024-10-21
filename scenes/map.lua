@@ -43,7 +43,7 @@ local function setupMapPipeline()
         gamemap:drawLayer(gamemap.layers["feuille5"])
         player:draw()
         uiManager:draw("map")
-        -- world:draw()
+        world:draw()
         cam:detach()
     end)
 
@@ -137,6 +137,7 @@ function map:load(args)
 
     player.anim = player.animations.down
 
+
     local npc_random = NpcElement.new({
         x = 515,
         y = 260,
@@ -146,10 +147,23 @@ function map:load(args)
         speed = 30,
         radius = 50,
         clickableRadius = 20,
-        onClick = function()
-            save_and_load.save(player, args.slot, G:getPlaytime(args.slot), "Zone du début")
-        end,
-        world = world
+        world = world,
+        button = Button.new({
+            text = "",
+            x = 0,
+            y = 0,
+            w = 50,
+            h = 50,
+            onClick = function()
+                print("NPC CLICKED")
+                save_and_load.save(player, args.slot, G:getPlaytime(args.slot), "Zone du début")
+            end,
+            css = {
+                backgroundColor = {0, 0, 0, 0},
+                hoverBackgroundColor = {0, 0, 0,0},
+                borderColor = {0,0,0,0}
+            }
+        })
     })
 
     uiManager:registerElement("map", "npc_random", npc_random)

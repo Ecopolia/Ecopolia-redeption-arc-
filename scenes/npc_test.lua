@@ -38,7 +38,7 @@ local function setupPipeline()
         world:draw()
     end)
 
-    pipeline:addStage(G.SHADERS['FOG'], function()
+    pipeline:addStage(nil, function()
     end)
 
     return pipeline
@@ -102,6 +102,7 @@ function npc_test:load(args)
         radius = 100,
         clickableRadius = 20,
         mode = "predefined-path", 
+        debug = true,
         path = {{x = 200, y = 600}, {x = 300, y = 600}, {x = 400, y = 600}, {x = 500, y = 600}, {x = 600, y = 600}, {x = 700, y = 600}},
         onClick = function() print("NPC clicked!") end,
         world = world

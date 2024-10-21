@@ -83,7 +83,7 @@ function Button:update(dt)
     local mx, my = love.mouse.getPosition()
     
     -- Convert mouse position from screen to game coordinates
-    mx, my = push:toGame(mx, my) 
+    -- mx, my = push:toGame(mx, my) 
     
     -- Check if mouse coordinates are valid
     if mx and my then

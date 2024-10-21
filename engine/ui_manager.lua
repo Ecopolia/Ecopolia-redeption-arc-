@@ -78,4 +78,10 @@ function UiManager:removeElement(scope, name)
     end
 end
 
+function UiManager:hideElement(scope, name)
+    if self.scopedElements[scope] and self.scopedElements[scope][name] then
+        self.scopedElements[scope][name].element.visible = false
+    end
+end
+
 return UiManager.new()

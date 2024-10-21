@@ -1,4 +1,3 @@
--- Define the NpcElement class
 NpcElement = setmetatable({}, { __index = UiElement })
 NpcElement.__index = NpcElement
 
@@ -13,12 +12,10 @@ function NpcElement.new(config)
 
     self.scale = config.scale or 2
     self.radius = config.radius or 100
-    self.clickableRadius = config.clickableRadius or 50
     self.speed = config.speed or 60
     self.direction = 1
     self.target = nil
     self.moving = true
-    self.hovered = false
     self.onClick = config.onClick or function() end
     self.color = {love.math.random(), love.math.random(), love.math.random(), 1}
     self.debug = config.debug or false
@@ -47,23 +44,17 @@ function NpcElement.new(config)
 
     self.collider = config.world:newCollider('Rectangle', {self.position.x, self.position.y, self.hitzoneWidth , self.hitzoneHeight})
 
+    self.button = config.button or nil  -- Adding a button slot here
+
     self:nextTarget()
 
     return self
 end
 
-
 function NpcElement:draw()
     if self.debug then
         love.graphics.setColor(1, 1, 1, 0.1)
         love.graphics.circle("line", self.center.x, self.center.y, self.radius)
-        if self.hovered then
-            love.graphics.setColor(0, 1, 0, 0.3)
-            love.graphics.circle("fill", self.position.x, self.position.y, self.clickableRadius)
-        else
-            love.graphics.setColor(0, 1, 0, 0.1)
-            love.graphics.circle("line", self.position.x, self.position.y, self.clickableRadius)
-        end
 
         if (self.mode == "predefined-path" or self.mode == "predefined-roundtour") and #self.path > 0 then
             love.graphics.setColor(0, 0, 1, 0.5)
@@ -87,9 +78,15 @@ function NpcElement:draw()
     local anim = self.isWaiting and self.animations.idle or self.animations.walk
     anim:draw(self.spritesheet, self.position.x, self.position.y, 0, self.scale * self.direction, self.scale, 12, 12)
     love.graphics.setColor(1, 1, 1, 1)
+
+    -- Draw button if it exists
+    if self.button then
+        self.button:draw()
+    end
 end
 
 function NpcElement:update(dt)
+    -- Handle movement and other updates...
     if self.moving and self.target and not self.isWaiting then
         local dx = self.target.x - self.position.x
         local dy = self.target.y - self.position.y
@@ -129,28 +126,13 @@ function NpcElement:update(dt)
         self.animations.idle:update(dt)
     end
 
-    local mx, my = love.mouse.getPosition()
-    mx, my = push:toGame(mx, my)
-    if mx and my then
-        self.hovered = self:isInClickableZone(mx, my)
+    -- Update button if it exists
+    if self.button then
+        self.button.x = self.position.x - self.button.width / 2
+        self.button.y = self.position.y - self.button.height / 2
+        self.button:update(dt)
     end
-end
 
-function NpcElement:isColliding()
-
-    local colliders = self._world:queryCircleArea(self.position.x, self.position.y, self.hitzoneWidth / 2)
-    for _, collider in ipairs(colliders) do
-        if collider ~= self.collider then
-            return true
-        end
-    end
-    return false
-end
-
-function NpcElement:isInCollisionZone(collider)
-    local colliderX, colliderY = collider:getPosition()
-    local distance = math.sqrt((self.position.x - colliderX)^2 + (self.position.y - colliderY)^2)
-    return distance < (self.hitzoneWidth / 2 + collider:getRadius())
 end
 
 function NpcElement:startWaiting()
@@ -225,12 +207,6 @@ function NpcElement:nextTarget()
 end
 
 
-function NpcElement:isInClickableZone(x, y)
-    local dx = x - self.position.x
-    local dy = y - self.position.y
-    return (dx * dx + dy * dy) <= (self.clickableRadius * self.clickableRadius)
-end
-
 function NpcElement:setRandomTarget()
     local angle = love.math.random() * (2 * math.pi)
     local r = love.math.random(0, self.radius)
@@ -238,12 +214,6 @@ function NpcElement:setRandomTarget()
         x = self.center.x + math.cos(angle) * r,
         y = self.center.y + math.sin(angle) * r
     }
-end
-
-function NpcElement:mousepressed(x, y, button)
-    if button == 1 and self.hovered then
-        self.onClick()
-    end
 end
 
 function NpcElement:getDirection()
@@ -258,6 +228,23 @@ function NpcElement:getDirection()
     end
 
     return 0, 0
+end
+
+function NpcElement:isColliding()
+
+    local colliders = self._world:queryCircleArea(self.position.x, self.position.y, self.hitzoneWidth / 2)
+    for _, collider in ipairs(colliders) do
+        if collider ~= self.collider then
+            return true
+        end
+    end
+    return false
+end
+
+function NpcElement:isInCollisionZone(collider)
+    local colliderX, colliderY = collider:getPosition()
+    local distance = math.sqrt((self.position.x - colliderX)^2 + (self.position.y - colliderY)^2)
+    return distance < (self.hitzoneWidth / 2 + collider:getRadius())
 end
 
 return NpcElement

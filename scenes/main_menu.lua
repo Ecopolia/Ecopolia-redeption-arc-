@@ -284,17 +284,9 @@ function main_menu:load()
     w = 200,
     h = 60,
     onClick = function()
-        -- Hide existing buttons
-        local playButton = uiManager:getElement("main_menu", "play")
-        local quitButton = uiManager:getElement("main_menu", "quit")
-        local settingsButton = uiManager:getElement("main_menu", "settings")
-        local musicButton = uiManager:getElement("main_menu", "music")
-        local mapButton = uiManager:getElement("main_menu", "map")
-        
-        -- To fix 
-        playButton.visible = false
-        quitButton.visible = false
-        mapButton.visible = false
+        uiManager:hideElement("main_menu", "play")
+        uiManager:hideElement("main_menu", "quit")
+        uiManager:hideElement("main_menu", "map")
 
         -- Create save slot buttons
         local saveSlot1 = createSaveSlotButton(1, 300, 200)

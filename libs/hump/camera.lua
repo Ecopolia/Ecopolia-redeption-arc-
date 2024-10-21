@@ -69,7 +69,7 @@ local function new(x,y, zoom, rot, smoother)
 end
 
 function camera:lookAt(x,y)
-	mx, my = push:toReal(x, y)
+	mx, my = x , y -- push:toReal(x, y)
 	if mx and my then
 		self.x, self.y = mx, my
 	end

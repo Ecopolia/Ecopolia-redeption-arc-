@@ -5,7 +5,7 @@ ripple = require 'libs/ripple'
 Timer = require 'libs/hump/timer'
 Text = require("libs/text")
 sti = require 'libs/sti'
-push = require "libs/push"
+-- push = require "libs/push"
 debugGraph = require 'libs/debugGraph'
 bump = require 'libs/bump'
 bf = require("libs/breezefield")
@@ -41,8 +41,6 @@ LoveDialogue = require "libs/LoveDialogue"
 local profile = require("engine/profile")
 profile.start()
 
-NPC = require 'objects/npc'
-
 sti = require 'libs/sti'
 
 Player = require("engine/player")
@@ -67,7 +65,7 @@ function love.load()
 
     -- Setup screen resolution
     local FSWidth, FSHeight = love.window.getDesktopDimensions()
-    push:setupScreen(G.WINDOW.WIDTH, G.WINDOW.HEIGHT, FSWidth, FSHeight, {fullscreen = false, resizable = true})
+    -- push:setupScreen(G.WINDOW.WIDTH, G.WINDOW.HEIGHT, FSWidth, FSHeight, {fullscreen = false, resizable = true})
 
     -- Load scenery
     scenery:load()
@@ -96,7 +94,7 @@ end
 
 -- love.mousemoved is called whenever the mouse is moved
 function love.mousemoved(x, y)
-    x, y = push:toReal(x, y)
+    -- x, y = push:toReal(x, y)
     scenery:mousemoved(x, y)
 end
 
@@ -113,7 +111,7 @@ end
 
 -- love.resize is called when the window is resized
 function love.resize(w, h)
-    return push:resize(w, h)
+    -- return push:resize(w, h)
 end
 
 -- love.quit is called when the game is closed

@@ -64,7 +64,7 @@ function Pipeline:run()
     end
 
     -- Start push for resolution handling
-    push:start()
+    -- push:start()
 
     -- Draw the final result from the last stage's canvas using push scaling
     local finalCanvas = self.stages[#self.stages].canvas
@@ -75,7 +75,7 @@ function Pipeline:run()
     end
 
     -- End the push pipeline (this applies resolution scaling and renders to screen)
-    push:finish()
+    -- push:finish()
 end
 
 return Pipeline
