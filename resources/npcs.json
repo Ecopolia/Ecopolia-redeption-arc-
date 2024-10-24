@@ -1,0 +1,35 @@
+[
+    {
+        "id": 1,
+        "x": 515,
+        "y": 260,
+        "w": 50,
+        "h": 50,
+        "scale": 2,
+        "speed": 30,
+        "radius": 50,
+        "clickableRadius": 20,
+        "color": [100, 200, 100, 1],
+        "mode": "random-in-area",
+        "waitInterval": 2,
+        "path": [],
+        "debug": false,
+        "questids": [1]
+    },
+    {
+        "id": 2,
+        "x": 300,
+        "y": 400,
+        "w": 50,
+        "h": 50,
+        "scale": 2,
+        "speed": 40,
+        "radius": 60,
+        "clickableRadius": 25,
+        "color": [255, 255, 0, 1],
+        "mode": "predefined-path",
+        "path": [{"x": 300, "y": 400}, {"x": 500, "y": 500}],
+        "debug": false,
+        "questids": [2]
+    }
+]

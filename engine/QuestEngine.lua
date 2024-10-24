@@ -11,7 +11,7 @@ end
 
 -- Ajoute une quête au moteur
 function QuestEngine:addQuest(quest)
-    self.quests[quest.id] = quest
+    table.insert(self.quests, quest)
 end
 
 -- Charge les quêtes depuis un fichier JSON

@@ -45,9 +45,14 @@ sti = require 'libs/sti'
 Player = require("engine/player")
 Quest = require("objects/Quest")
 questEngine = require("engine/QuestEngine")
+
+NpcEngine = require("engine/NpcEngine")
 -- Scenery initialization
 local SceneryInit = require("libs/scenery")
 local scenery = SceneryInit("main_menu")
+
+quests = nil
+npcs = nil
 
 -- love.load is called once at the beginning of the game
 function love.load()
@@ -66,11 +71,18 @@ function love.load()
     -- Setup screen resolution
     local FSWidth, FSHeight = love.window.getDesktopDimensions()
     -- push:setupScreen(G.WINDOW.WIDTH, G.WINDOW.HEIGHT, FSWidth, FSHeight, {fullscreen = false, resizable = true})
+
     quests = questEngine:new()
     local file = io.open("resources/quests.json", "r")
     local jsonData = file:read("*a")
     file:close()
     quests:loadFromJson(jsonData)
+
+    npcs = NpcEngine:new()
+    local file = io.open("resources/npcs.json", "r")
+    local jsonData = file:read("*a")
+    file:close()
+    npcs:loadFromJson(jsonData)
     
     -- Load scenery
     scenery:load()
