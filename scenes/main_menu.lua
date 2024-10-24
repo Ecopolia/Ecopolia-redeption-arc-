@@ -140,6 +140,7 @@ function main_menu:load()
         y = G.WINDOW.HEIGHT / 2 - 250,
         w = 400,
         h = 500,
+        z = 10,
         borderThickness = 32,
         title = "Settings",
         uiAtlas = G.UiAtlas_Animation,
@@ -157,13 +158,20 @@ function main_menu:load()
         w = 200,
         h = 60,
         onClick = function()
-            -- transitionOut()
-            -- Timer.after(2, function()
-            --     transitionIn()
-            -- end)
-            -- stop the music
             menu_theme:stop(G.TRANSITION_DURATION)
-            self.setScene('intro')
+            uiManager:hideElement("main_menu", "play")
+            uiManager:hideElement("main_menu", "quit")
+            uiManager:hideElement("main_menu", "map")
+
+            -- Create save slot buttons
+            local saveSlot1 = createSaveSlotButton(1, 300, 200)
+            local saveSlot2 = createSaveSlotButton(2, 300, 300)
+            local saveSlot3 = createSaveSlotButton(3, 300, 400)
+
+            -- Register save slot buttons
+            uiManager:registerElement("main_menu", "saveSlot1", saveSlot1)
+            uiManager:registerElement("main_menu", "saveSlot2", saveSlot2)
+            uiManager:registerElement("main_menu", "saveSlot3", saveSlot3)
         end,
         onHover = function(button)
             -- button.text = "[shake=0.4][breathe=0.2][blink]Go[/blink][/shake][/breathe]"
@@ -356,7 +364,7 @@ function main_menu:load()
     uiManager:registerElement("main_menu", "quit", quit)
     uiManager:registerElement("main_menu", "settings", settings)
     uiManager:registerElement("main_menu", "music", music)
-    uiManager:registerElement("main_menu", "map", map)
+    -- uiManager:registerElement("main_menu", "map", map)
 
     self.pipeline = setupMainMenuPipeline()
 end

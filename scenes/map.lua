@@ -32,15 +32,15 @@ local function setupMapPipeline()
     -- Stage 3: Draw the UI layer on top of the map
     pipeline:addStage(nil, function()
         cam:attach()
-        gamemap:drawLayer(gamemap.layers["Ground"])
-        gamemap:drawLayer(gamemap.layers["tronc"])
-        gamemap:drawLayer(gamemap.layers["Roc"])
-        gamemap:drawLayer(gamemap.layers["Batiment"])
-        gamemap:drawLayer(gamemap.layers["feuille1"])
-        gamemap:drawLayer(gamemap.layers["feuille2"])
-        gamemap:drawLayer(gamemap.layers["feuille3"])
-        gamemap:drawLayer(gamemap.layers["feuille4"])
-        gamemap:drawLayer(gamemap.layers["feuille5"])
+        -- gamemap:drawLayer(gamemap.layers["Ground"])
+        -- gamemap:drawLayer(gamemap.layers["tronc"])
+        -- gamemap:drawLayer(gamemap.layers["Roc"])
+        -- gamemap:drawLayer(gamemap.layers["Batiment"])
+        -- gamemap:drawLayer(gamemap.layers["feuille1"])
+        -- gamemap:drawLayer(gamemap.layers["feuille2"])
+        -- gamemap:drawLayer(gamemap.layers["feuille3"])
+        -- gamemap:drawLayer(gamemap.layers["feuille4"])
+        -- gamemap:drawLayer(gamemap.layers["feuille5"])
         player:draw()
         uiManager:draw("map")
         world:draw()
@@ -137,6 +137,22 @@ function map:load(args)
     end
 
     player.anim = player.animations.down
+    local npc_button = Button.new({
+        text = "",
+        x = 0,
+        y = 0,
+        w = 50,
+        h = 50,
+        onClick = function()
+            print("NPC CLICKED")
+            save_and_load.save(player, args.slot, G:getPlaytime(args.slot), "Zone du début")
+        end,
+        css = {
+            backgroundColor = {0, 0, 0, 0},
+            hoverBackgroundColor = {0, 0, 0, 0},
+            borderColor = {0, 0, 0, 0}
+        }
+    })
 
     local npc_random = NpcElement.new({
         x = 515,
@@ -146,25 +162,14 @@ function map:load(args)
         scale = 2,
         speed = 30,
         radius = 50,
+        debug = true,
         clickableRadius = 20,
-        world = world,
-        button = Button.new({
-            text = "",
-            x = 0,
-            y = 0,
-            w = 50,
-            h = 50,
-            onClick = function()
-                print("NPC CLICKED")
-                save_and_load.save(player, args.slot, G:getPlaytime(args.slot), "Zone du début")
-            end,
-            css = {
-                backgroundColor = {0, 0, 0, 0},
-                hoverBackgroundColor = {0, 0, 0, 0},
-                borderColor = {0, 0, 0, 0}
-            }
-        })
+        onClick = function()
+            save_and_load.save(player, args.slot, G:getPlaytime(args.slot), "Zone du début")
+        end,
+        world = world
     })
+
 
     uiManager:registerElement("map", "npc_random", npc_random)
 
