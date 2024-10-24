@@ -122,6 +122,9 @@ function Game:set_globals()
         idle = anim8.newAnimation(self.MONSTERS.CROW.grids.idle('1-4', 1), 0.2):flipH()
     }
 
+    self.WORLD = bf.newWorld(0, 90.81, true)
+    self.CAMERA = camera()
+
 end
 
 function Game:updateShaders(dt)
