@@ -32,19 +32,20 @@ local function setupMapPipeline()
     -- Stage 3: Draw the UI layer on top of the map
     pipeline:addStage(nil, function()
         cam:attach()
-        -- gamemap:drawLayer(gamemap.layers["Ground"])
-        -- gamemap:drawLayer(gamemap.layers["tronc"])
-        -- gamemap:drawLayer(gamemap.layers["Roc"])
-        -- gamemap:drawLayer(gamemap.layers["Batiment"])
-        -- gamemap:drawLayer(gamemap.layers["feuille1"])
-        -- gamemap:drawLayer(gamemap.layers["feuille2"])
-        -- gamemap:drawLayer(gamemap.layers["feuille3"])
-        -- gamemap:drawLayer(gamemap.layers["feuille4"])
-        -- gamemap:drawLayer(gamemap.layers["feuille5"])
+        gamemap:drawLayer(gamemap.layers["Ground"])
+        gamemap:drawLayer(gamemap.layers["tronc"])
+        gamemap:drawLayer(gamemap.layers["Roc"])
+        gamemap:drawLayer(gamemap.layers["Batiment"])
+        gamemap:drawLayer(gamemap.layers["feuille1"])
+        gamemap:drawLayer(gamemap.layers["feuille2"])
+        gamemap:drawLayer(gamemap.layers["feuille3"])
+        gamemap:drawLayer(gamemap.layers["feuille4"])
+        gamemap:drawLayer(gamemap.layers["feuille5"])
         player:draw()
-        uiManager:draw("map")
+        uiManager:draw("npc")
         world:draw()
         cam:detach()
+        uiManager:draw("map")
         
     end)
 
@@ -92,9 +93,11 @@ local function setupMapPipeline()
         love.graphics.setColor(1, 0, 0) -- Red color for the player
         local playerMinimapX = player.x -- The player should remain centered, so no further translation
         local playerMinimapY = player.y
-        love.graphics.circle("fill", playerMinimapX, playerMinimapY, 5 / minimapScale) -- Small circle for the player
+        love.graphics.circle("fill", npc_random.position.x, npc_random.position.y, 5/minimapScale)
         love.graphics.setColor(1, 1, 1) -- Reset color
-
+        love.graphics.setColor(0, 0, 1)
+        drawArrow(playerMinimapX, playerMinimapY, 10 / minimapScale, player.direction)
+        love.graphics.setColor(1, 1, 1)
         love.graphics.pop()
         love.graphics.setScissor() -- Reset scissor
 
@@ -111,6 +114,33 @@ local function setupMapPipeline()
     return pipeline
 end
 
+function drawArrow(x, y, size, direction)
+    local arrow = {
+        0 * size, -0.6 * size,
+        0.5 * size, 0.2 * size,
+        0.35 * size, 0.4 * size,
+        -0.35 * size, 0.4 * size,
+        -0.5 * size, 0.2 * size
+    }
+
+
+    local angle = 0
+    if direction == "right" then
+        angle = math.pi / 2
+    elseif direction == "down" then
+        angle = math.pi
+    elseif direction == "left" then
+        angle = -math.pi / 2
+    end
+
+    -- Rotate and draw the polygon arrow
+    love.graphics.push()
+    love.graphics.translate(x, y)  -- Move to player's position
+    love.graphics.rotate(angle)    -- Rotate based on direction
+    love.graphics.polygon("fill", arrow)  -- Draw the arrow
+    love.graphics.pop()
+end
+
 function map:load(args)
     ManualtransitionIn()
     love.graphics.setDefaultFilter("nearest", "nearest")
@@ -122,7 +152,6 @@ function map:load(args)
 
     spriteSheet = love.graphics.newImage("assets/spritesheets/character/maincharacter.png")
     grid = anim8.newGrid(64, 64, spriteSheet:getWidth(), spriteSheet:getHeight())
-
     local playerData = nil
     if args and args.slot then
         print("Loaded with slot:", args.slot)
@@ -147,7 +176,6 @@ function map:load(args)
         scale = 2,
         speed = 30,
         radius = 50,
-        debug = true,
         clickableRadius = 20,
         onClick = function()
             save_and_load.save(player, args.slot, G:getPlaytime(args.slot), "Zone du début")
@@ -157,7 +185,7 @@ function map:load(args)
     })
 
 
-    uiManager:registerElement("map", "npc_random", npc_random)
+    uiManager:registerElement("npc", "npc_random", npc_random)
 
     self.timer = Timer.new()
     self.pipeline = setupMapPipeline()
@@ -224,7 +252,7 @@ function map:update(dt)
 
         -- Update the UI
         uiManager:update("map", dt)
-        uiManager:update("hud_map", dt)
+        uiManager:update("npc", dt)
     end
 end
 
