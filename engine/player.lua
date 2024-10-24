@@ -18,7 +18,7 @@ function Player:new(x, y, speed, spriteSheet, grid, world)
             left = nil,
             right = nil
         },
-        ecodex = {}
+        ecodex = [],
         isColliding = false,
         direction = "down"
     }
@@ -49,6 +49,14 @@ function Player:new(x, y, speed, spriteSheet, grid, world)
 
     setmetatable(instance, Player)
     return instance
+end
+
+function Player:addEcodexEntry(entry)
+    if entry ~= nil then
+        table.insert(self.ecodex, entry)
+    else
+        print("Invalid entry, cannot add to ecodex")
+    end
 end
 
 function Player:update(dt)
