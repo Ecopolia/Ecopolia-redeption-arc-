@@ -92,7 +92,9 @@ local function createSaveSlotButton(slot, x, y)
             main_menu.setScene('map', {
                 slot = slot
             })
-            G:setPlaytime(slot, saveData.playtime)
+            if saveData ~= nil then
+                G:setPlaytime(slot, saveData.playtime)
+            end
         end,
         css = {
             backgroundColor = {0.5, 0.5, 0.5},
