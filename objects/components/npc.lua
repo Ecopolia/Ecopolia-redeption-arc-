@@ -4,6 +4,7 @@ NpcElement.__index = NpcElement
 
 function NpcElement.new(config)
     local self = setmetatable(UiElement.new(config.x or 0, config.y or 0, config.w or 100, config.h or 100, config.z or 0), NpcElement)
+    self.id = config.id or uuid()
     self.spritesheet = love.graphics.newImage(config.spritesheet or "assets/spritesheets/placeholder_npc.png")
     self.grid = anim8.newGrid(25, 25, self.spritesheet:getWidth(), self.spritesheet:getHeight())
     self.animations = {
@@ -20,12 +21,13 @@ function NpcElement.new(config)
     self.moving = true
     self.hovered = false
     self.onClick = config.onClick or function() end
-    self.color = {love.math.random(), love.math.random(), love.math.random(), 1}
+    self.color = config.color or {love.math.random(), love.math.random(), love.math.random(), 1}
     self.debug = config.debug or false
     self.mode = config.mode or "random-in-area"
     self.path = config.path or {}
     self.pathIndex = 1
     self.forward = true
+    self.questids = config.questids or {}
 
     self._world = config.world
     self.camera = config.camera

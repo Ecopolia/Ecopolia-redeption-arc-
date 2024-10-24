@@ -2,7 +2,7 @@ local map = {}
 local mapLoaded = false
 local loadingCoroutine = nil
 local gamemap = nil
-local cam = camera()
+local cam = G.CAMERA
 local zoomFactor = 40
 local mapscale = 0.5
 local collision = nil
@@ -145,7 +145,8 @@ function map:load(args)
     ManualtransitionIn()
     love.graphics.setDefaultFilter("nearest", "nearest")
     gamemap = sti('assets/maps/MainMap.lua', {"box2d"})
-    world = bf.newWorld(0, 90.81, true)
+    world = G.WORLD
+
     if gamemap.layers["Wall"] then
         gamemap:initWalls(gamemap.layers["Wall"], world)
     end
@@ -169,8 +170,8 @@ function map:load(args)
     player.anim = player.animations.down
 
     npc_random = NpcElement.new({
-        x = 515,
-        y = 260,
+        x = 50,
+        y = 100,
         w = 50,
         h = 50,
         scale = 2,
@@ -183,7 +184,10 @@ function map:load(args)
         world = world,
         camera = cam
     })
-
+    
+    for key, npc in ipairs(npcs.npcs) do
+        uiManager:registerElement("npc", "npc_"..npc.id , npc)
+    end
 
     uiManager:registerElement("npc", "npc_random", npc_random)
 
