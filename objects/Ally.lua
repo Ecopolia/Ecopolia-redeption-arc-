@@ -20,6 +20,21 @@ function Ally:new(name, hp, attack, defense, speed, manaCost, spriteSheet, anima
     return instance
 end
 
+-- Fonction pour déterminer l'action de l'ennemi en fonction de sa classe
+function Ally:chooseAction(allies, enemies, player)
+    if self.classType == "warrior" then
+        if #allies > 0 then
+            self:attackTarget(enemies[math.random(#enemies)])
+        else
+            self:attackTarget(player)
+        end
+    elseif self.classType == "healer" then
+        self:healTarget(allies[math.random(#allies)])
+    elseif self.classType == "protector" then
+        self:defendTarget(allies[math.random(#allies)])
+    end
+end
+
 -- Fonction pour attaquer un ennemi
 function Ally:attackTarget(target)
     if target.hp > 0 then

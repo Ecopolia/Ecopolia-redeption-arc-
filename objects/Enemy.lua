@@ -23,7 +23,11 @@ end
 -- Fonction pour déterminer l'action de l'ennemi en fonction de sa classe
 function Enemy:chooseAction(allies, enemies)
     if self.classType == "warrior" then
-        self:attackTarget(enemies[math.random(#enemies)])
+        if #enemies > 0 then
+            self:attackTarget(enemies[math.random(#enemies)])
+        else
+            self:attackTarget(player)
+        end
     elseif self.classType == "healer" then
         self:healTarget(allies[math.random(#allies)])
     elseif self.classType == "protector" then

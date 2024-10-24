@@ -36,10 +36,10 @@ NpcElement = require('objects/components/npc')
 -- LoveDialogue for handling dialogue
 LoveDialogue = require "libs/LoveDialogue"
 
-CombatEngine = require("engine/CombatEngine")
 PlayerCombat = require("objects/PlayerCombat")
 Ally = require("objects/Ally")
 Enemy = require("objects/Enemy")
+CombatScene = require("engine/CombatScene")
 
 -- Profile for performance analysis
 local profile = require("engine/profile")
