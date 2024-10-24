@@ -14,11 +14,11 @@ function save_and_load.save(player, slot, playtime, zone)
         y = player.y,
         speed = player.speed,
         health = player.health,
-        sprite = "assets/spritesheets/character/maincharacter.png",  
-        playtime = playtime or 0, 
-        zone = zone or "Unknown" 
+        sprite = "assets/spritesheets/character/maincharacter.png",
+        playtime = playtime or 0,
+        zone = zone or "Unknown"
     }
-    
+
     local binary_data = bitser.dumps(data_collection)
     local file = io.open(savefile, "wb")
 

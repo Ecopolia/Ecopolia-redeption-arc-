@@ -101,10 +101,9 @@ function template:load(args)
             hoverBackgroundColor = hex('cb9326'),
             textColor = {1, 1, 1},
             borderColor = {1, 1, 1},
-            font = G.Fonts.m6x11plus_small,
+            font = G.Fonts.m6x11plus_small
         }
     })
-
 
     -- Register the areas with lower Z-index values
     uiManager:registerElement("template", "deck", DeckArea)
@@ -113,7 +112,7 @@ function template:load(args)
     uiManager:registerElement("template", "pb", PlacementBoard)
     uiManager:registerElement("template", "pa", PlayerArea)
     uiManager:registerElement("template", "ea", EnnemyArea)
-    uiManager:registerElement("template", "eotb", EndButton)  
+    uiManager:registerElement("template", "eotb", EndButton)
 
     -- Setup the rendering pipeline
     self.pipeline = setupPipeline()

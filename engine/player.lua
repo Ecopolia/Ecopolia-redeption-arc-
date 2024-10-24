@@ -5,7 +5,7 @@ Player.__index = Player
 function Player:new(x, y, speed, spriteSheet, grid, world)
     local instance = {
         grid = grid,
-        x = x or 20,  -- Utiliser les paramètres ou valeurs par défaut
+        x = x or 20, -- Utiliser les paramètres ou valeurs par défaut
         y = y or 20,
         speed = speed or 20,
         spriteSheet = spriteSheet,
@@ -16,12 +16,12 @@ function Player:new(x, y, speed, spriteSheet, grid, world)
             top = nil,
             bottom = nil,
             left = nil,
-            right = nil, 
+            right = nil
         },
         isColliding = false,
         direction = "down"
     }
-    
+
     -- Configuring the animations if grid is available
     if instance.grid ~= nil then
         instance.animations.up = anim8.newAnimation(instance.grid('1-9', 9), 0.2)
@@ -30,17 +30,20 @@ function Player:new(x, y, speed, spriteSheet, grid, world)
         instance.animations.right = anim8.newAnimation(instance.grid('1-9', 12), 0.2)
         instance.animations.down = anim8.newAnimation(instance.grid('1-9', 11), 0.2)
     end
-    
+
     -- Creating colliders for each side of the player if the world is defined
-    if instance.world ~= nil then 
-        local colliderSize = 16  -- Smaller size for individual side colliders
+    if instance.world ~= nil then
+        local colliderSize = 16 -- Smaller size for individual side colliders
         local playerWidth, playerHeight = 64, 64
 
         -- Create four colliders: top, bottom, left, and right
         instance.colliders.top = instance.world:newCollider('Rectangle', {instance.x, instance.y - colliderSize, 32, 1})
-        instance.colliders.bottom = instance.world:newCollider('Rectangle', {instance.x, instance.y + playerHeight, 32, 1})
-        instance.colliders.left = instance.world:newCollider('Rectangle', {instance.x - colliderSize, instance.y, 1, 48})
-        instance.colliders.right = instance.world:newCollider('Rectangle', {instance.x + playerWidth, instance.y, 1, 48})
+        instance.colliders.bottom = instance.world:newCollider('Rectangle',
+            {instance.x, instance.y + playerHeight, 32, 1})
+        instance.colliders.left =
+            instance.world:newCollider('Rectangle', {instance.x - colliderSize, instance.y, 1, 48})
+        instance.colliders.right =
+            instance.world:newCollider('Rectangle', {instance.x + playerWidth, instance.y, 1, 48})
     end
 
     setmetatable(instance, Player)
@@ -102,9 +105,6 @@ function Player:update(dt)
     self:updateColliders()
 end
 
-
-
-
 -- Function to update collider positions based on player position
 function Player:updateColliders()
     local colliderSize = 16
@@ -133,7 +133,7 @@ function Player:checkCollisions()
 
         self.world:queryBoundingBox(x1, y1, x2, y2, function(fixture)
             local otherCollider = fixture:getUserData()
-            
+
             if otherCollider ~= collider then
                 table.insert(colliders, otherCollider)
             end
@@ -149,8 +149,6 @@ function Player:checkCollisions()
     local isColliding = collisionSides.top or collisionSides.bottom or collisionSides.left or collisionSides.right
     return isColliding, collisionSides
 end
-
-
 
 -- Fonction pour dessiner le joueur
 function Player:draw()

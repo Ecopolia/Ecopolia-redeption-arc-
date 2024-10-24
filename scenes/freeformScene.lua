@@ -6,10 +6,10 @@ local function setupPipeline()
     pipeline:addStage(nil, function()
         -- Light grey background
         love.graphics.clear(hex('e0e0e0'))
-        
+
         -- Draw the vanishing point outline
         drawVanishingPoint()
-        
+
         -- Draw UI elements
         uiManager:draw("freeformScene")
     end)
@@ -30,13 +30,13 @@ function drawVanishingPoint()
     love.graphics.setLineWidth(1)
 
     -- Top left to vanishing point
-    --love.graphics.line(0, 0, vanishingPointX, vanishingPointY)
+    -- love.graphics.line(0, 0, vanishingPointX, vanishingPointY)
     -- Top right to vanishing point
-    --love.graphics.line(G.WINDOW.WIDTH, 0, vanishingPointX, vanishingPointY)
+    -- love.graphics.line(G.WINDOW.WIDTH, 0, vanishingPointX, vanishingPointY)
     -- Bottom left to vanishing point
     love.graphics.line(0, G.WINDOW.HEIGHT, vanishingPointX, vanishingPointY)
     -- Bottom right to vanishing point
-    --love.graphics.line(G.WINDOW.WIDTH, G.WINDOW.HEIGHT, vanishingPointX, vanishingPointY)
+    -- love.graphics.line(G.WINDOW.WIDTH, G.WINDOW.HEIGHT, vanishingPointX, vanishingPointY)
 
     -- Draw a marker at the vanishing point
     love.graphics.setColor(0, 0, 1) -- Blue color for marker
@@ -83,12 +83,12 @@ function freeformScene:load(args)
         if row == 3 then
             skewedX = skewedX - 80
             skewedY = skewedY - 90
-        end  
+        end
 
         -- Create the Freeform rhombus
         local rhombus = Freeform.new({
             z = 1,
-            color = {1, 0.8, 0},  -- Color for visibility
+            color = {1, 0.8, 0}, -- Color for visibility
             borderColor = {0, 0, 0}, -- Black border
             borderThickness = 2,
             visible = true
@@ -100,16 +100,11 @@ function freeformScene:load(args)
         local rhombusName = "rhombus_" .. row
         uiManager:registerElement("freeformScene", rhombusName, rhombus)
 
-
     end
 
     -- Setup the rendering pipeline
     self.pipeline = setupPipeline()
 end
-
-
-
-
 
 function freeformScene:draw()
     if not self.pipeline then

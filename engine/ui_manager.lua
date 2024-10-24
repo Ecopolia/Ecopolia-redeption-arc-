@@ -15,12 +15,17 @@ function UiManager:registerElement(scope, name, element, z)
         self.scopedElements[scope] = {}
     end
 
-    self.scopedElements[scope][name] = { element = element, z = element.z or 0 }
+    self.scopedElements[scope][name] = {
+        element = element,
+        z = element.z or 0
+    }
 end
 
 -- Draw all UI elements in a specific scope based on their Z-layer
 function UiManager:draw(scope, z_from, z_to)
-    if not self.scopedElements[scope] then return end
+    if not self.scopedElements[scope] then
+        return
+    end
 
     for _, data in pairs(self.scopedElements[scope]) do
         local element = data.element
@@ -41,7 +46,9 @@ end
 
 -- Update all UI elements in a specific scope
 function UiManager:update(scope, dt)
-    if not self.scopedElements[scope] then return end
+    if not self.scopedElements[scope] then
+        return
+    end
 
     for _, data in pairs(self.scopedElements[scope]) do
         local element = data.element

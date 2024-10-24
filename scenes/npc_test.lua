@@ -34,7 +34,7 @@ local function setupPipeline()
     pipeline:addStage(nil, function()
         -- Draw the rest of the UI elements
         uiManager:draw("npc_test")
-            
+
         world:draw()
     end)
 
@@ -51,7 +51,7 @@ function npc_test:load(args)
         -- Simulate loading delay
         love.timer.sleep(2)
         -- Load the map
-       gamemap = sti('assets/maps/Level_0.lua')
+        gamemap = sti('assets/maps/Level_0.lua')
 
         -- Create and center the camera on an initial position
         camera = Camera(0, 0)
@@ -59,7 +59,6 @@ function npc_test:load(args)
     end)
 
     world = bf.newWorld(0, 90.81, true)
-
 
     -- -- Create an NPC that moves along a predefined path
     -- local npc_path = NpcElement.new({
@@ -101,15 +100,34 @@ function npc_test:load(args)
         speed = 30,
         radius = 100,
         clickableRadius = 20,
-        mode = "predefined-path", 
+        mode = "predefined-path",
         debug = true,
-        path = {{x = 200, y = 600}, {x = 300, y = 600}, {x = 400, y = 600}, {x = 500, y = 600}, {x = 600, y = 600}, {x = 700, y = 600}},
-        onClick = function() print("NPC clicked!") end,
+        path = {{
+            x = 200,
+            y = 600
+        }, {
+            x = 300,
+            y = 600
+        }, {
+            x = 400,
+            y = 600
+        }, {
+            x = 500,
+            y = 600
+        }, {
+            x = 600,
+            y = 600
+        }, {
+            x = 700,
+            y = 600
+        }},
+        onClick = function()
+            print("NPC clicked!")
+        end,
         world = world
     })
 
     -- world:newCollider("Rectangle", {512, 190, 50, 60})
-
 
     -- uiManager:registerElement("npc_test", "npc_path", npc_path)
     -- uiManager:registerElement("npc_test", "npc_tour", npc_tour)
@@ -146,7 +164,7 @@ function npc_test:update(dt)
     fpsGraph:update(dt)
     memGraph:update(dt)
     dtGraph:update(dt, math.floor(dt * 1000))
-    dtGraph.label = 'DT: ' ..  math.round(dt, 4)
+    dtGraph.label = 'DT: ' .. math.round(dt, 4)
 end
 
 function npc_test:draw()

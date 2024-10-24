@@ -28,7 +28,7 @@ end
 function intro:load(args)
     -- Load the video
     intro_vid = love.graphics.newVideo('assets/vids/intro.ogv')
-    intro_vid:play()  -- Start playing the video
+    intro_vid:play() -- Start playing the video
 
     self.skipButton = Button.new({
         text = "[shake=0.4][breathe=0.2]Skip[/shake][/breathe]",
@@ -41,19 +41,19 @@ function intro:load(args)
             -- For example, skip the intro video or transition to another game state
             print("Skipping intro...")
             if intro_vid then
-                intro_vid = nil  -- Release the video resource
+                intro_vid = nil -- Release the video resource
             end
             self.setScene("battleground")
         end,
         css = {
-            backgroundColor = {0.5, 0.5, 0.5},  -- Grey background
-            hoverBackgroundColor = {0.7, 0.7, 0.7},  -- Lighter grey on hover
-            textColor = {1, 1, 1},  -- White text
-            borderColor = {1, 1, 1},  -- White border
-            font = G.Fonts.m6x11plus  -- Assuming this font is defined elsewhere
+            backgroundColor = {0.5, 0.5, 0.5}, -- Grey background
+            hoverBackgroundColor = {0.7, 0.7, 0.7}, -- Lighter grey on hover
+            textColor = {1, 1, 1}, -- White text
+            borderColor = {1, 1, 1}, -- White border
+            font = G.Fonts.m6x11plus -- Assuming this font is defined elsewhere
         }
     })
-    self.skipButton.visible = false 
+    self.skipButton.visible = false
 
     uiManager:registerElement("intro", "skip", self.skipButton)
 
@@ -61,7 +61,7 @@ function intro:load(args)
 end
 
 function intro:draw()
-    if intro_vid then 
+    if intro_vid then
         self.pipeline:run()
     end
 end
@@ -72,7 +72,7 @@ function intro:update(dt)
 
     -- Check if the video is still playing, and update accordingly
     if intro_vid and not intro_vid:isPlaying() then
-        intro_vid:play()  -- Ensure the video keeps playing
+        intro_vid:play() -- Ensure the video keeps playing
     end
 
     mouseMovedTimer = mouseMovedTimer + dt

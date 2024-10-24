@@ -3,9 +3,14 @@ local dialogtest = {}
 local myDialogue
 
 function dialogtest:load(args)
-    
-    myDialogue = LoveDialogue.play("dialogs/exampleDialogue.ld", {fadeInDuration = 0, fadeOutDuration = 0,enableFadeIn = false, enableFadeOut = false})
-   
+
+    myDialogue = LoveDialogue.play("dialogs/exampleDialogue.ld", {
+        fadeInDuration = 0,
+        fadeOutDuration = 0,
+        enableFadeIn = false,
+        enableFadeOut = false
+    })
+
 end
 
 function dialogtest:draw()
@@ -21,7 +26,7 @@ end
 
 function dialogtest:outsideShaderDraw()
     -- This function is currently empty
-    
+
 end
 
 function dialogtest:update(dt)
@@ -30,7 +35,7 @@ function dialogtest:update(dt)
     if myDialogue then
         myDialogue:update(dt)
     end
-    
+
 end
 
 function dialogtest:mousepressed(x, y, button)

@@ -1,5 +1,7 @@
 -- Define the Window class
-Window = setmetatable({}, { __index = UiElement })
+Window = setmetatable({}, {
+    __index = UiElement
+})
 Window.__index = Window
 
 function Window.new(css)
@@ -21,7 +23,9 @@ function Window:toggle()
 end
 
 function Window:draw()
-    if not self.visible then return end
+    if not self.visible then
+        return
+    end
 
     love.graphics.setFont(self.font)
 
@@ -37,11 +41,10 @@ function Window:draw()
     love.graphics.setColor(self.color)
     if self.borderRadius > 0 then
         love.graphics.rectangle("fill", self.x + self.borderThickness, self.y + self.borderThickness,
-                                self.width - 2 * self.borderThickness, self.height - 2 * self.borderThickness,
-                                self.borderRadius)
+            self.width - 2 * self.borderThickness, self.height - 2 * self.borderThickness, self.borderRadius)
     else
         love.graphics.rectangle("fill", self.x + self.borderThickness, self.y + self.borderThickness,
-                                self.width - 2 * self.borderThickness, self.height - 2 * self.borderThickness)
+            self.width - 2 * self.borderThickness, self.height - 2 * self.borderThickness)
     end
 
     -- Draw title if available
@@ -58,7 +61,9 @@ function Window:draw()
 end
 
 function Window:update(dt)
-    if not self.draggable then return end
+    if not self.draggable then
+        return
+    end
 
     -- Handle dragging logic
     if love.mouse.isDown(1) and self:isMouseOver() then

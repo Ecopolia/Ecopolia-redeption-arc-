@@ -1,11 +1,11 @@
 Game = Object:extend()
 
---Class Methods
+-- Class Methods
 function Game:init()
     G = self
     self:set_globals()
-    self.playtime = {0, 0, 0}  -- Initialize playtime for three slots
-    self.currentSlot = nil  -- Track the current slot
+    self.playtime = {0, 0, 0} -- Initialize playtime for three slots
+    self.currentSlot = nil -- Track the current slot
     print('Game object initialized')
 end
 
@@ -26,15 +26,15 @@ function Game:set_globals()
             crt = 70,
             bloom = 1,
             glitch_intensity = 1,
-            fog_light = {200, 200},
+            fog_light = {200, 200}
         }
     }
     self.TIMERS = {
-        TOTAL=0,
+        TOTAL = 0,
         REAL_SHADER = 0,
         BACKGROUND = 0,
         REAL = 0,
-        UPTIME = 0,
+        UPTIME = 0
     }
 
     self.SHADERS = {}
@@ -43,7 +43,7 @@ function Game:set_globals()
         local extension = string.sub(filename, -3)
         if extension == '.fs' then
             local shader_name = string.sub(filename, 1, -4)
-            self.SHADERS[shader_name] = love.graphics.newShader("resources/shaders/"..filename)
+            self.SHADERS[shader_name] = love.graphics.newShader("resources/shaders/" .. filename)
         end
     end
 
@@ -56,22 +56,23 @@ function Game:set_globals()
     }
 
     self.ACTIVATE_SHADER = true
-    
+
     self.ROOT_PATH = love.filesystem.getSource()
 
     self.TRANSITION = 0
     self.TRANSITION_DURATION = 2
 
     self.pixel_scale_factor = 2
-    self.PIXEL_SIZE = {0.005 , 0.005}
-    
-    self.METAL_BUTTONS_ICONS_IMAGE = love.graphics.newImage("assets/spritesheets/buttons/metal_buttons_icons.png")
-    self.METAL_BUTTONS_ICONS_GRID = anim8.newGrid(32, 32, self.METAL_BUTTONS_ICONS_IMAGE:getWidth(), self.METAL_BUTTONS_ICONS_IMAGE:getHeight())
+    self.PIXEL_SIZE = {0.005, 0.005}
 
-    self.METAL_BUTTONS_ICONS_ANIMATIONS ={
+    self.METAL_BUTTONS_ICONS_IMAGE = love.graphics.newImage("assets/spritesheets/buttons/metal_buttons_icons.png")
+    self.METAL_BUTTONS_ICONS_GRID = anim8.newGrid(32, 32, self.METAL_BUTTONS_ICONS_IMAGE:getWidth(),
+        self.METAL_BUTTONS_ICONS_IMAGE:getHeight())
+
+    self.METAL_BUTTONS_ICONS_ANIMATIONS = {
         settings = anim8.newAnimation(self.METAL_BUTTONS_ICONS_GRID('10-12', 2), 0.1, 'pauseAtStart'),
         music = anim8.newAnimation(self.METAL_BUTTONS_ICONS_GRID('7-9', 8), 0.1, 'pauseAtStart'),
-        close = anim8.newAnimation(self.METAL_BUTTONS_ICONS_GRID('7-9', 4), 0.1, 'pauseAtStart'),
+        close = anim8.newAnimation(self.METAL_BUTTONS_ICONS_GRID('7-9', 4), 0.1, 'pauseAtStart')
     }
 
     self.UiAtlas = love.graphics.newImage("assets/spritesheets/ui.png")
@@ -90,7 +91,7 @@ function Game:set_globals()
 
         titleWithBottomDropShadowLeftCorner = anim8.newAnimation(self.UiAtlasGrid(14, 4), 0.1, 'pauseAtStart'),
         titleWithBottomDropShadowMiddle = anim8.newAnimation(self.UiAtlasGrid(15, 4), 0.1, 'pauseAtStart'),
-        titleWithBottomDropShadowRightCorner = anim8.newAnimation(self.UiAtlasGrid(16, 4), 0.1, 'pauseAtStart'),
+        titleWithBottomDropShadowRightCorner = anim8.newAnimation(self.UiAtlasGrid(16, 4), 0.1, 'pauseAtStart')
     }
 
     self.MONSTERS = {
@@ -106,19 +107,16 @@ function Game:set_globals()
             experience = 10,
             level = 1,
             type = "flying",
-            abilities = {
-                "Peck",
-                "Fly",
-                "Screech"
-            }
+            abilities = {"Peck", "Fly", "Screech"}
         }
     }
-    
+
     -- Define the grids after the images are loaded
     self.MONSTERS.CROW.grids = {
-        idle = anim8.newGrid(64, 64, self.MONSTERS.CROW.images.idle:getWidth(), self.MONSTERS.CROW.images.idle:getHeight())
+        idle = anim8.newGrid(64, 64, self.MONSTERS.CROW.images.idle:getWidth(),
+            self.MONSTERS.CROW.images.idle:getHeight())
     }
-    
+
     -- Define the animations after the grids are created
     self.MONSTERS.CROW.animations = {
         idle = anim8.newAnimation(self.MONSTERS.CROW.grids.idle('1-4', 1), 0.2):flipH()
@@ -127,14 +125,10 @@ function Game:set_globals()
 end
 
 function Game:updateShaders(dt)
-    self.SHADERS['CRT']:send('distortion_fac', {
-        1.0 + 0.07 * self.SETTINGS.GRAPHICS.crt / 100,
-        1.0 + 0.1 * self.SETTINGS.GRAPHICS.crt / 100
-    })
-    self.SHADERS['CRT']:send('scale_fac', {
-        1.0 - 0.008 * self.SETTINGS.GRAPHICS.crt / 100,
-        1.0 - 0.008 * self.SETTINGS.GRAPHICS.crt / 100
-    })
+    self.SHADERS['CRT']:send('distortion_fac', {1.0 + 0.07 * self.SETTINGS.GRAPHICS.crt / 100,
+                                                1.0 + 0.1 * self.SETTINGS.GRAPHICS.crt / 100})
+    self.SHADERS['CRT']:send('scale_fac', {1.0 - 0.008 * self.SETTINGS.GRAPHICS.crt / 100,
+                                           1.0 - 0.008 * self.SETTINGS.GRAPHICS.crt / 100})
     self.SHADERS['CRT']:send('feather_fac', 0.01)
     self.SHADERS['CRT']:send('bloom_fac', self.SETTINGS.GRAPHICS.bloom - 1)
     self.SHADERS['CRT']:send('time', 400 + self.TIMERS.REAL)
@@ -163,7 +157,7 @@ function Game:updateTimers(dt)
     self.TIMERS.REAL_SHADER = self.TIMERS.REAL
     self.TIMERS.UPTIME = self.TIMERS.UPTIME + dt
     if self.currentSlot then
-        self.playtime[self.currentSlot] = self.playtime[self.currentSlot] + dt  -- Update playtime for the current slot
+        self.playtime[self.currentSlot] = self.playtime[self.currentSlot] + dt -- Update playtime for the current slot
     end
     self.real_dt = dt
     Timer.update(dt)

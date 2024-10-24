@@ -1,8 +1,11 @@
-NpcElement = setmetatable({}, { __index = UiElement })
+NpcElement = setmetatable({}, {
+    __index = UiElement
+})
 NpcElement.__index = NpcElement
 
 function NpcElement.new(config)
-    local self = setmetatable(UiElement.new(config.x or 0, config.y or 0, config.w or 100, config.h or 100, config.z or 0), NpcElement)
+    local self = setmetatable(UiElement.new(config.x or 0, config.y or 0, config.w or 100, config.h or 100,
+        config.z or 0), NpcElement)
     self.spritesheet = love.graphics.newImage(config.spritesheet or "assets/spritesheets/placeholder_npc.png")
     self.grid = anim8.newGrid(25, 25, self.spritesheet:getWidth(), self.spritesheet:getHeight())
     self.animations = {
@@ -16,7 +19,8 @@ function NpcElement.new(config)
     self.direction = 1
     self.target = nil
     self.moving = true
-    self.onClick = config.onClick or function() end
+    self.onClick = config.onClick or function()
+    end
     self.color = {love.math.random(), love.math.random(), love.math.random(), 1}
     self.debug = config.debug or false
     self.mode = config.mode or "random-in-area"
@@ -29,22 +33,32 @@ function NpcElement.new(config)
     self.waitInterval = config.waitInterval or 0
     self.isWaiting = false
 
-    self.center = {x = config.x + config.w / 2, y = config.y + config.h / 2}
+    self.center = {
+        x = config.x + config.w / 2,
+        y = config.y + config.h / 2
+    }
 
     self.hitzoneWidth = 24
     self.hitzoneHeight = 36
 
-    self.position = {x = self.center.x, y = self.center.y}
+    self.position = {
+        x = self.center.x,
+        y = self.center.y
+    }
     if self.mode == "predefined-path" or self.mode == "predefined-roundtour" then
         self.position.x = self.path[1].x
         self.position.y = self.path[1].y
     else
-        self.position = {x = self.center.x, y = self.center.y}
+        self.position = {
+            x = self.center.x,
+            y = self.center.y
+        }
     end
 
-    self.collider = config.world:newCollider('Rectangle', {self.position.x, self.position.y, self.hitzoneWidth , self.hitzoneHeight})
+    self.collider = config.world:newCollider('Rectangle',
+        {self.position.x, self.position.y, self.hitzoneWidth, self.hitzoneHeight})
 
-    self.button = config.button or nil  -- Adding a button slot here
+    self.button = config.button or nil -- Adding a button slot here
 
     self:nextTarget()
 
@@ -71,7 +85,8 @@ function NpcElement:draw()
         end
 
         love.graphics.setColor(1, 0, 0, 1)
-        love.graphics.rectangle("line", self.position.x - self.hitzoneWidth / 2, self.position.y - self.hitzoneHeight / 2, self.hitzoneWidth, self.hitzoneHeight)
+        love.graphics.rectangle("line", self.position.x - self.hitzoneWidth / 2,
+            self.position.y - self.hitzoneHeight / 2, self.hitzoneWidth, self.hitzoneHeight)
     end
 
     love.graphics.setColor(self.color)
@@ -105,7 +120,7 @@ function NpcElement:update(dt)
 
             local colliders = self._world:queryCircleArea(newX, newY, self.hitzoneWidth / 2)
             local isColliding = false
-            
+
             for _, collider in ipairs(colliders) do
                 if collider ~= self.collider then
                     isColliding = true
@@ -179,7 +194,7 @@ function NpcElement:nextTarget()
 
         local targetOffsetX = self.target.x - self.position.x
         local targetOffsetY = self.target.y - self.position.y
-        
+
         if not self:isColliding(targetOffsetX, targetOffsetY, 0) then
             break
         else
@@ -189,15 +204,21 @@ function NpcElement:nextTarget()
                 local newX = self.position.x + math.cos(newAngle) * r
                 local newY = self.position.y + math.sin(newAngle) * r
 
-                self.target = { x = newX, y = newY }
+                self.target = {
+                    x = newX,
+                    y = newY
+                }
 
                 if not self:isColliding(newX - self.position.x, newY - self.position.y, 0) then
                     print("New target found at: ", newX, newY) -- Debug output
                     return
                 end
             end
-            
-            table.insert(attemptedTargets, {x = self.target.x, y = self.target.y})
+
+            table.insert(attemptedTargets, {
+                x = self.target.x,
+                y = self.target.y
+            })
             if #attemptedTargets >= 10 then
                 print("No valid target found after 10 attempts, staying at current position.")
                 break
@@ -205,7 +226,6 @@ function NpcElement:nextTarget()
         end
     end
 end
-
 
 function NpcElement:setRandomTarget()
     local angle = love.math.random() * (2 * math.pi)
@@ -221,7 +241,7 @@ function NpcElement:getDirection()
         local dx = self.target.x - self.position.x
         local dy = self.target.y - self.position.y
         local distance = math.sqrt(dx * dx + dy * dy)
-        
+
         if distance > 0 then
             return dx / distance, dy / distance
         end
@@ -243,7 +263,7 @@ end
 
 function NpcElement:isInCollisionZone(collider)
     local colliderX, colliderY = collider:getPosition()
-    local distance = math.sqrt((self.position.x - colliderX)^2 + (self.position.y - colliderY)^2)
+    local distance = math.sqrt((self.position.x - colliderX) ^ 2 + (self.position.y - colliderY) ^ 2)
     return distance < (self.hitzoneWidth / 2 + collider:getRadius())
 end
 

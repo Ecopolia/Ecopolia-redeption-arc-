@@ -17,15 +17,15 @@ function Pipeline:addStage(shader, drawFunc, stageWidth, stageHeight)
     -- Use custom stage dimensions if provided, otherwise default to pipeline width/height
     local canvasWidth = stageWidth or self.width
     local canvasHeight = stageHeight or self.height
-    
+
     local stage = {
         canvas = love.graphics.newCanvas(canvasWidth, canvasHeight),
         shader = shader,
         drawFunc = drawFunc,
-        scale = nil,  -- Default scale is nil for regular stages
-        offset = {0, 0}  -- Default offset is (0, 0)
+        scale = nil, -- Default scale is nil for regular stages
+        offset = {0, 0} -- Default offset is (0, 0)
     }
-    
+
     table.insert(self.stages, stage)
 end
 
@@ -37,8 +37,11 @@ function Pipeline:run()
     -- Iterate over all stages and apply them
     for i, stage in ipairs(self.stages) do
         -- Set the canvas for this stage with stencil support
-        love.graphics.setCanvas({stage.canvas, stencil = true})
-        love.graphics.clear()  -- Clear canvas before drawing
+        love.graphics.setCanvas({
+            stage.canvas,
+            stencil = true
+        })
+        love.graphics.clear() -- Clear canvas before drawing
 
         -- Apply shader if it exists
         if stage.shader then
@@ -48,9 +51,9 @@ function Pipeline:run()
         -- Draw the previous stage's canvas if it exists
         if i > 1 then
             local previousCanvas = self.stages[i - 1].canvas
-            
+
             love.graphics.draw(previousCanvas, 0, 0)
-        
+
         end
 
         -- Execute the drawing function for this stage

@@ -1,30 +1,36 @@
 -- Define the Button class
-Button = setmetatable({}, { __index = UiElement })
+Button = setmetatable({}, {
+    __index = UiElement
+})
 Button.__index = Button
 
 function Button.new(config)
-    local self = setmetatable(UiElement.new(config.x or 0, config.y or 0, config.w or 100, config.h or 50, config.z or 0), Button)
+    local self = setmetatable(
+        UiElement.new(config.x or 0, config.y or 0, config.w or 100, config.h or 50, config.z or 0), Button)
     self.text = config.text or "Button"
     self.dsfull = config.dsfull or true
     self.hovered = false
-    self.onClick = config.onClick or function() end
-    self.onHover = config.onHover or function() end
-    self.onUnhover = config.onUnhover or function() end
-    self.onLoad = config.onLoad or function() end
+    self.onClick = config.onClick or function()
+    end
+    self.onHover = config.onHover or function()
+    end
+    self.onUnhover = config.onUnhover or function()
+    end
+    self.onLoad = config.onLoad or function()
+    end
     self.css = config.css or {}
     self.button_text = nil
     self.anim8 = config.anim8 or false
     self.image = config.image or nil
-    self.customDraw = config.draw  -- Store the custom draw function
-    self.customUpdate = config.update  -- Store the custom draw function
-
+    self.customDraw = config.draw -- Store the custom draw function
+    self.customUpdate = config.update -- Store the custom draw function
 
     -- Initialize button_text
     self.button_text = Text.new("left", {
         color = self.css.textColor or {0.9, 0.9, 0.9, 0.95},
         shadow_color = {0.5, 0.5, 1, 0.4},
         font = self.css.font or love.graphics.newFont(12),
-        keep_space_on_line_break = true,
+        keep_space_on_line_break = true
     })
     self.button_text:send(self.text, 320, self.dsfull)
 
@@ -35,11 +41,13 @@ end
 
 function Button:draw()
     -- Set background color
-    love.graphics.setColor(self.hovered and (self.css.hoverBackgroundColor or {1, 1, 1}) or (self.css.backgroundColor or {0.8, 0.8, 0.8}))
+    love.graphics.setColor(self.hovered and (self.css.hoverBackgroundColor or {1, 1, 1}) or
+                               (self.css.backgroundColor or {0.8, 0.8, 0.8}))
     love.graphics.rectangle("fill", self.x, self.y, self.width, self.height, self.css.borderRadius or 0)
 
     -- Draw border
-    love.graphics.setColor(self.hovered and (self.css.hoverBorderColor or {1, 1, 1}) or (self.css.borderColor or {0, 0, 0}))
+    love.graphics.setColor(self.hovered and (self.css.hoverBorderColor or {1, 1, 1}) or
+                               (self.css.borderColor or {0, 0, 0}))
     love.graphics.setLineWidth(self.css.borderWidth or 1)
     love.graphics.rectangle("line", self.x, self.y, self.width, self.height, self.css.borderRadius or 0)
 
@@ -52,7 +60,7 @@ function Button:draw()
 
     -- Strip tags from the text for width and height calculation
     local strippedText = stripTags(self.text)
-    
+
     -- Get the width and height of the rendered text without tags
     local textWidth = love.graphics.getFont():getWidth(strippedText)
     local textHeight = love.graphics.getFont():getHeight(strippedText)
@@ -66,7 +74,8 @@ function Button:draw()
 
     -- Draw anim8 animation if available
     if self.anim8 then
-        self.anim8:draw(self.image, self.x, self.y, 0, self.width / self.anim8:getDimensions(), self.height / self.anim8:getDimensions(), 0, 0)
+        self.anim8:draw(self.image, self.x, self.y, 0, self.width / self.anim8:getDimensions(),
+            self.height / self.anim8:getDimensions(), 0, 0)
     end
 
     -- Call the custom draw function if it exists
@@ -81,10 +90,10 @@ end
 function Button:update(dt)
     -- Get the current mouse position in screen coordinates
     local mx, my = love.mouse.getPosition()
-    
+
     -- Convert mouse position from screen to game coordinates
     -- mx, my = push:toGame(mx, my) 
-    
+
     -- Check if mouse coordinates are valid
     if mx and my then
         -- Check if the mouse position is within the button's bounds
@@ -121,8 +130,6 @@ function Button:update(dt)
         self.customUpdate(self, dt)
     end
 end
-
-
 
 function Button:mousepressed(x, y, button)
     if button == 1 and self.hovered then

@@ -1,6 +1,5 @@
 testcharacter = {}
 
-
 local function setupPipeline()
     local pipeline = Pipeline.new(G.WINDOW.WIDTH, G.WINDOW.HEIGHT)
 
@@ -15,7 +14,6 @@ local function setupPipeline()
 
     return pipeline
 end
-
 
 function testcharacter:load()
     love.graphics.setDefaultFilter('nearest', 'nearest') -- Activer le rendu pixelisé

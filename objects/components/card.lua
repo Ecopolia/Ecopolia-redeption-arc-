@@ -1,5 +1,7 @@
 -- Card class
-Card = setmetatable({}, { __index = UiElement })
+Card = setmetatable({}, {
+    __index = UiElement
+})
 Card.__index = Card
 
 -- Create a new draggable card
@@ -43,7 +45,8 @@ end
 -- Draw the card
 function Card:draw()
     if self.visible then
-        love.graphics.draw(self.image, self.x, self.y, 0, self.width / self.image:getWidth(), self.height / self.image:getHeight())
+        love.graphics.draw(self.image, self.x, self.y, 0, self.width / self.image:getWidth(),
+            self.height / self.image:getHeight())
     end
 end
 

@@ -4,15 +4,20 @@ bg = love.graphics.newImage("assets/imgs/battlegrounds/Battleground4.png")
 local myDialogue
 
 function battleground:load(args)
-    
+
     battle_theme_source = love.audio.newSource('assets/sounds/space_music/battle.wav', 'static')
     battle_theme = ripple.newSound(battle_theme_source, {
         volume = 0.3,
         loop = true
     })
     battle_theme:play()
-    myDialogue = LoveDialogue.play("dialogs/test.ld", {enableFadeIn = false, enableFadeOut = false, fadeInDuration = 0, fadeOutDuration = 0})
-   
+    myDialogue = LoveDialogue.play("dialogs/test.ld", {
+        enableFadeIn = false,
+        enableFadeOut = false,
+        fadeInDuration = 0,
+        fadeOutDuration = 0
+    })
+
 end
 
 function battleground:draw()
@@ -26,8 +31,7 @@ function battleground:draw()
 
     -- Draw G.MONSTERS.CROW.animations.idle
     G.MONSTERS.CROW.animations.idle:draw(G.MONSTERS.CROW.images.idle, 800, 200, 0, 7, 7, 0, 0)
-    --flip the image
-
+    -- flip the image
 
     uiManager:draw("battleground")
 
@@ -38,7 +42,7 @@ end
 
 function battleground:outsideShaderDraw()
     -- This function is currently empty
-    
+
 end
 
 function battleground:update(dt)
@@ -47,7 +51,7 @@ function battleground:update(dt)
     if myDialogue then
         myDialogue:update(dt)
     end
-    
+
 end
 
 function battleground:mousepressed(x, y, button)
