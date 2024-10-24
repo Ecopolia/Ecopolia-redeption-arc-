@@ -45,6 +45,7 @@ local function setupMapPipeline()
         uiManager:draw("map")
         world:draw()
         cam:detach()
+        
     end)
 
     -- Stage 3: Minimap rendering stage
@@ -137,24 +138,8 @@ function map:load(args)
     end
 
     player.anim = player.animations.down
-    local npc_button = Button.new({
-        text = "",
-        x = 0,
-        y = 0,
-        w = 50,
-        h = 50,
-        onClick = function()
-            print("NPC CLICKED")
-            save_and_load.save(player, args.slot, G:getPlaytime(args.slot), "Zone du début")
-        end,
-        css = {
-            backgroundColor = {0, 0, 0, 0},
-            hoverBackgroundColor = {0, 0, 0, 0},
-            borderColor = {0, 0, 0, 0}
-        }
-    })
 
-    local npc_random = NpcElement.new({
+    npc_random = NpcElement.new({
         x = 515,
         y = 260,
         w = 50,
@@ -167,7 +152,8 @@ function map:load(args)
         onClick = function()
             save_and_load.save(player, args.slot, G:getPlaytime(args.slot), "Zone du début")
         end,
-        world = world
+        world = world,
+        camera = cam
     })
 
 
@@ -205,6 +191,7 @@ function map:update(dt)
         if mapLoaded and gamemap then
             -- Mettre à jour la carte (par exemple, si elle contient des éléments interactifs ou de la physique)
             gamemap:update(dt)
+            -- print(cam:mousePosition(npc_random.position.x, npc_random.position.y , G.WINDOW.WIDTH, G.WINDOW.HEIGHT))
         end
 
         local w = love.graphics.getWidth()

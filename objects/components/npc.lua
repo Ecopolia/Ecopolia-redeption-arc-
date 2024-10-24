@@ -28,6 +28,7 @@ function NpcElement.new(config)
     self.forward = true
 
     self._world = config.world
+    self.camera = config.camera
 
     self.waitInterval = config.waitInterval or 0
     self.isWaiting = false
@@ -129,11 +130,11 @@ function NpcElement:update(dt)
         self.animations.idle:update(dt)
     end
 
-    local mx, my = love.mouse.getPosition()
-    -- mx, my = push:toGame(mx, my)
-    if mx and my then
+    if self.camera ~= nil then
+        local mx, my = self.camera:worldCoords(love.mouse.getPosition())
         self.hovered = self:isInClickableZone(mx, my)
     end
+
 end
 
 function NpcElement:isColliding()
