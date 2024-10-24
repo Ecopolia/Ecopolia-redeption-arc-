@@ -170,7 +170,7 @@ function map:load(args)
     player.anim = player.animations.down
 
     npc_random = NpcElement.new({
-        x = 100,
+        x = 50,
         y = 100,
         w = 50,
         h = 50,
