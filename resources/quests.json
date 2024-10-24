@@ -1,0 +1,16 @@
+[
+    {
+        "id": 1,
+        "name": "Parler",
+        "description": "Parler au mec chelou qui bloque l'entré",
+        "prerequisites": [],
+        "rewardMessage": "Vous avez gagné 100 pièces d'or !"
+    },
+    {
+        "id": 2,
+        "name": "CHASSER",
+        "description": "Vaincre le dragon après avoir trouvé l'épée.",
+        "prerequisites": [1],
+        "rewardMessage": "Vous avez vaincu le dragon et gagné 500 pièces d'or !"
+    }
+]

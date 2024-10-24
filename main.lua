@@ -10,6 +10,7 @@ debugGraph = require 'libs/debugGraph'
 bump = require 'libs/bump'
 bf = require("libs/breezefield")
 camera = require("libs/hump/camera")
+json = require("libs/json")
 
 -- Require necessary modules
 require 'version'
@@ -42,7 +43,8 @@ profile.start()
 sti = require 'libs/sti'
 
 Player = require("engine/player")
-
+Quest = require("objects/Quest")
+questEngine = require("engine/QuestEngine")
 -- Scenery initialization
 local SceneryInit = require("libs/scenery")
 local scenery = SceneryInit("main_menu")
@@ -64,7 +66,12 @@ function love.load()
     -- Setup screen resolution
     local FSWidth, FSHeight = love.window.getDesktopDimensions()
     -- push:setupScreen(G.WINDOW.WIDTH, G.WINDOW.HEIGHT, FSWidth, FSHeight, {fullscreen = false, resizable = true})
-
+    quests = questEngine:new()
+    local file = io.open("resources/quests.json", "r")
+    local jsonData = file:read("*a")
+    file:close()
+    quests:loadFromJson(jsonData)
+    
     -- Load scenery
     scenery:load()
 end
@@ -114,6 +121,6 @@ end
 
 -- love.quit is called when the game is closed
 function love.quit()
-    profile.report()
+    -- profile.report()
     profile.stop()
 end
