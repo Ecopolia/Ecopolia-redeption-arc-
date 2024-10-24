@@ -18,6 +18,7 @@ function Player:new(x, y, speed, spriteSheet, grid, world)
             left = nil,
             right = nil
         },
+        ecodex = {}
         isColliding = false,
         direction = "down"
     }
