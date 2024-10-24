@@ -55,7 +55,7 @@ local function setupMainMenuPipeline()
     end)
 
     -- Stage 4: Apply CRT shader
-    pipeline:addStage(G.SHADERS['CRT'], function()
+    pipeline:addStage(G.SHADERS['TRN'], function()
         -- The pipeline will automatically handle canvas switching, so you just draw
     end)
 
@@ -289,6 +289,7 @@ function main_menu:load()
         w = 200,
         h = 60,
         onClick = function()
+            menu_theme:stop(G.TRANSITION_DURATION)
             uiManager:hideElement("main_menu", "play")
             uiManager:hideElement("main_menu", "quit")
             uiManager:hideElement("main_menu", "map")

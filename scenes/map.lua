@@ -103,10 +103,15 @@ local function setupMapPipeline()
         love.graphics.setColor(1, 1, 1) -- Reset color
     end)
 
+    pipeline:addStage(G.SHADERS['TRN'], function()
+        -- The pipeline will automatically handle canvas switching, so you just draw
+    end)
+
     return pipeline
 end
 
 function map:load(args)
+    ManualtransitionIn()
     love.graphics.setDefaultFilter("nearest", "nearest")
     gamemap = sti('assets/maps/MainMap.lua', {"box2d"})
     world = bf.newWorld(0, 90.81, true)

@@ -141,6 +141,8 @@ function Game:updateShaders(dt)
 
     self.SHADERS['CRT']:send('transition_amount', G.TRANSITION)
 
+    self.SHADERS['TRN']:send('transition_amount', G.TRANSITION)
+
     self.SHADERS['PXL']:send('pixel_size', G.PIXEL_SIZE)
     self.SHADERS['CEL']:send('pixel_size', G.PIXEL_SIZE)
     -- Update Fog shader parameters
