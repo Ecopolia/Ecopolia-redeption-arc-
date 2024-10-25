@@ -1,0 +1,36 @@
+[
+    {
+        "id": 1,
+        "type": "Enemy",
+        "name": "Gobelin",
+        "hp": 50,
+        "attack": 12,
+        "defense": 2,
+        "speed": 7,
+        "classType": "warrior",
+        "spriteSheet": "path/to/enemy_goblin_spritesheet.png",
+        "animations": {
+            "down": "path/to/animation_down",
+            "up": "path/to/animation_up",
+            "left": "path/to/animation_left",
+            "right": "path/to/animation_right"
+        }
+    },
+    {
+        "id": 2,
+        "type": "Enemy",
+        "name": "Ogre",
+        "hp": 120,
+        "attack": 20,
+        "defense": 8,
+        "speed": 4,
+        "classType": "protector",
+        "spriteSheet": "path/to/enemy_ogre_spritesheet.png",
+        "animations": {
+            "down": "path/to/animation_down",
+            "up": "path/to/animation_up",
+            "left": "path/to/animation_left",
+            "right": "path/to/animation_right"
+        }
+    }
+]
