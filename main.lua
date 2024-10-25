@@ -36,6 +36,11 @@ NpcElement = require('objects/components/npc')
 -- LoveDialogue for handling dialogue
 LoveDialogue = require "libs/LoveDialogue"
 
+PlayerCombat = require("objects/PlayerCombat")
+Ally = require("objects/Ally")
+Enemy = require("objects/Enemy")
+CombatScene = require("engine/CombatScene")
+
 -- Profile for performance analysis
 local profile = require("engine/profile")
 profile.start()
@@ -49,7 +54,7 @@ questEngine = require("engine/QuestEngine")
 NpcEngine = require("engine/NpcEngine")
 -- Scenery initialization
 local SceneryInit = require("libs/scenery")
-local scenery = SceneryInit("main_menu")
+local scenery = SceneryInit("testcombat")
 
 quests = nil
 npcs = nil
