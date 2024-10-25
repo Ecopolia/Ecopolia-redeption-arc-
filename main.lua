@@ -37,8 +37,8 @@ NpcElement = require('objects/components/npc')
 LoveDialogue = require "libs/LoveDialogue"
 
 PlayerCombat = require("objects/PlayerCombat")
-Ally = require("objects/Ally")
-Enemy = require("objects/Enemy")
+Combatant = require("objects/Combatant")
+CombatantEngine = require("engine/CombatantEngine")
 CombatScene = require("engine/CombatScene")
 
 -- Profile for performance analysis
@@ -58,6 +58,8 @@ local scenery = SceneryInit("testcombat")
 
 quests = nil
 npcs = nil
+allies = nil
+enemies = nil
 
 -- love.load is called once at the beginning of the game
 function love.load()
@@ -88,6 +90,18 @@ function love.load()
     local jsonData = file:read("*a")
     file:close()
     npcs:loadFromJson(jsonData)
+
+    allies = CombatantEngine:new()
+    local file = io.open("resources/allies.json", "r")
+    local jsonData = file:read("*a")
+    file:close()
+    allies:loadFromJson(jsonData)
+
+    enemies = CombatantEngine:new()
+    local file = io.open("resources/enemies.json", "r")
+    local jsonData = file:read("*a")
+    file:close()
+    enemies:loadFromJson(jsonData)
     
     -- Load scenery
     scenery:load()

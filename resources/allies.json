@@ -1,0 +1,38 @@
+[
+    {
+        "id": 1,
+        "type": "Ally",
+        "name": "Guerrier",
+        "hp": 100,
+        "attack": 15,
+        "defense": 5,
+        "speed": 8,
+        "manaCost": 10,
+        "classType": "warrior",
+        "spriteSheet": "path/to/ally_warrior_spritesheet.png",
+        "animations": {
+            "down": "path/to/animation_down",
+            "up": "path/to/animation_up",
+            "left": "path/to/animation_left",
+            "right": "path/to/animation_right"
+        }
+    },
+    {
+        "id": 2,
+        "type": "Ally",
+        "name": "Soigneur",
+        "hp": 80,
+        "attack": 10,
+        "defense": 3,
+        "speed": 6,
+        "manaCost": 15,
+        "classType": "healer",
+        "spriteSheet": "path/to/ally_healer_spritesheet.png",
+        "animations": {
+            "down": "path/to/animation_down",
+            "up": "path/to/animation_up",
+            "left": "path/to/animation_left",
+            "right": "path/to/animation_right"
+        }
+    }
+]

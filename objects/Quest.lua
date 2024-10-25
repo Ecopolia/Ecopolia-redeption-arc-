@@ -3,7 +3,7 @@ Quest.__index = Quest
 
 function Quest:new(id, name, description, prerequisites, rewardFunction)
     local instance = {
-        id = id,
+        id = id or uuid(),
         name = name,
         description = description,
         prerequisites = prerequisites or {},
