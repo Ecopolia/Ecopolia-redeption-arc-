@@ -10,6 +10,7 @@ function UiElement.new(x, y, width, height, z)
     self.height = height
     self.z = z
     self.visible = true
+    self.freeze = false
     return self
 end
 

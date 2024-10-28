@@ -100,28 +100,30 @@ function Button:update(dt)
     -- mx, my = push:toGame(mx, my) 
 
     -- Check if mouse coordinates are valid
-    if mx and my then
-        -- Check if the mouse position is within the button's bounds
-        local isHovered = mx >= self.x and mx <= self.x + self.width and my >= self.y and my <= self.y + self.height
-
-        -- Update hover state and call hover/unhover callbacks if needed
-        if isHovered and not self.hovered then
-            self.hovered = true
-            if self.onHover then
-                self.onHover(self)
+    if not self.freeze then
+        if mx and my then
+            -- Check if the mouse position is within the button's bounds
+            local isHovered = mx >= self.x and mx <= self.x + self.width and my >= self.y and my <= self.y + self.height
+    
+            -- Update hover state and call hover/unhover callbacks if needed
+            if isHovered and not self.hovered then
+                self.hovered = true
+                if self.onHover then
+                    self.onHover(self)
+                end
+            elseif not isHovered and self.hovered then
+                self.hovered = false
+                if self.onUnhover then
+                    self.onUnhover(self)
+                end
             end
-        elseif not isHovered and self.hovered then
-            self.hovered = false
-            if self.onUnhover then
-                self.onUnhover(self)
-            end
-        end
-    else
-        -- If mouse coordinates are invalid, ensure hover state is false
-        if self.hovered then
-            self.hovered = false
-            if self.onUnhover then
-                self.onUnhover(self)
+        else
+            -- If mouse coordinates are invalid, ensure hover state is false
+            if self.hovered then
+                self.hovered = false
+                if self.onUnhover then
+                    self.onUnhover(self)
+                end
             end
         end
     end

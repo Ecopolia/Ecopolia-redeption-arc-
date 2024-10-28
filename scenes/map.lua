@@ -284,7 +284,7 @@ function map:keypressed(key)
     if key == 'f3' then
         debug = not debug
     end
-    if key == 'f4' then
+    if key == 'f4' and debug then
         if collision == true then
             for _, collider in ipairs(colliders) do
                 if collider and collider.destroy then

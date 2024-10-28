@@ -90,9 +90,7 @@ local function createSaveSlotButton(slot, x, y)
         h = 100,
         onClick = function()
             G:setCurrentSlot(slot)
-            main_menu.setScene('map', {
-                slot = slot
-            })
+            main_menu.setScene('map', { slot = slot })
             if saveData ~= nil then
                 G:setPlaytime(slot, saveData.playtime)
             end
@@ -129,15 +127,91 @@ local function createSaveSlotButton(slot, x, y)
         w = 25,
         h = 25,
         onClick = function()
-            -- Delete the save data
-            save_and_load.delete(slot)
-            playtime = "00:00:00"
-            zone = "Unknown"
-            animation = nil
-            local button = uiManager:getElement('main_menu', 'saveSlot'..slot)
-            button:setText('Empty Slot')
-            uiManager:removeElement('main_menu', 'deleteButton'..slot)
-            
+            -- Show confirmation window
+            local confirmationWindow = Window.new({
+                x = love.graphics.getWidth() / 2 - 150,
+                y = love.graphics.getHeight() / 2 - 40,
+                w = 300,
+                h = 100,
+                z = 9,
+                title = "Confirm Delete",
+                draggable = false,
+                visible = true,
+                borderColor = {0, 0, 0},
+                color = {1, 1, 1}
+            })
+
+            local confirmButton = Button.new({
+                text = "Confirm",
+                x = confirmationWindow.x + 50,
+                y = confirmationWindow.y + 40,
+                w = 80,
+                h = 30,
+                z= 10,
+                onClick = function()
+                    -- Delete the save data
+                    save_and_load.delete(slot)
+                    playtime = "00:00:00"
+                    zone = "Unknown"
+                    animation = nil
+                    local button = uiManager:getElement('main_menu', 'saveSlot'..slot)
+                    button:setText('Empty Slot')
+                    uiManager:removeElement('main_menu', 'deleteButton'..slot)
+                    
+                    uiManager:hideElement('main_menu','confirmation_window')
+                    uiManager:freezeElement('main_menu', 'saveSlot1')
+                    uiManager:freezeElement('main_menu', 'saveSlot2')
+                    uiManager:freezeElement('main_menu', 'saveSlot3')
+                    uiManager:hideElement('main_menu','cancel_button')
+                    uiManager:hideElement('main_menu','confirm_button')
+                    
+                end,
+                css = {
+                    backgroundColor = {0.3, 0.7, 0.3},
+                    hoverBackgroundColor = {0.5, 1, 0.5},
+                    textColor = {1, 1, 1},
+                    borderColor = {1, 1, 1}
+                }
+            })
+
+            local cancelButton = Button.new({
+                text = "Cancel",
+                x = confirmationWindow.x + 170,
+                y = confirmationWindow.y + 40,
+                w = 80,
+                h = 30,
+                z = 10,
+                onClick = function()
+                    uiManager:hideElement('main_menu','confirmation_window')
+                    uiManager:freezeElement('main_menu', 'saveSlot1')
+                    uiManager:freezeElement('main_menu', 'saveSlot2')
+                    uiManager:freezeElement('main_menu', 'saveSlot3')
+                    uiManager:hideElement('main_menu','cancel_button')
+                    uiManager:hideElement('main_menu','confirm_button')
+                    
+                end,
+                css = {
+                    backgroundColor = {0.8, 0.3, 0.3},
+                    hoverBackgroundColor = {1, 0.5, 0.5},
+                    textColor = {1, 1, 1},
+                    borderColor = {1, 1, 1}
+                }
+            })
+            uiManager:freezeElement('main_menu', 'saveSlot1')
+            uiManager:freezeElement('main_menu', 'saveSlot2')
+            uiManager:freezeElement('main_menu', 'saveSlot3')
+
+            local cw = uiManager:getElement('main_menu', 'confirmation_window')
+
+            if cw == nil then
+                uiManager:registerElement('main_menu','confirmation_window', confirmationWindow)
+                uiManager:registerElement('main_menu','confirm_button', confirmButton)
+                uiManager:registerElement('main_menu','cancel_button', cancelButton)
+            else 
+                uiManager:showElement('main_menu','confirmation_window')
+                uiManager:showElement('main_menu','confirm_button')
+                uiManager:showElement('main_menu','cancel_button')
+            end
         end,
         css = {
             backgroundColor = {0.8, 0, 0},
@@ -149,6 +223,7 @@ local function createSaveSlotButton(slot, x, y)
 
     return saveSlotButton, deleteButton
 end
+
 
 
 function main_menu:load()
