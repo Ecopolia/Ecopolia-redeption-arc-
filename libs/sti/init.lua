@@ -963,10 +963,21 @@ function Map.drawLayer(_, layer)
 end
 
 -- This require breezefield collision system
-function Map.initWalls(_, _layer, _world)
-	for i, obj in pairs(_layer.objects) do
-		_world:newCollider('Rectangle',{obj.x + obj.width/2, obj.y + obj.height/2, obj.width, obj.height})
-	end
+function Map:initWalls(_layer, _world)
+    local colliders = {}  -- Create a new table to store colliders
+
+    for i, obj in pairs(_layer.objects) do
+        local collider = _world:newCollider('Rectangle', {
+            obj.x + obj.width / 2, 
+            obj.y + obj.height / 2, 
+            obj.width, 
+            obj.height
+        })
+        
+        table.insert(colliders, collider)  -- Store the collider in the table
+    end
+
+    return colliders  -- Return the table of colliders
 end
 
 --- Default draw function for Tile Layers

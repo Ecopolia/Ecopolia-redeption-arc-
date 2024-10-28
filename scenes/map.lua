@@ -5,7 +5,8 @@ local gamemap = nil
 local cam = G.CAMERA
 local zoomFactor = 40
 local mapscale = 0.5
-local collision = nil
+local collision = true
+local colliders = {}
 
 local save_and_load = require 'engine/save_and_load'
 
@@ -13,6 +14,7 @@ screenWidth = G.WINDOW.WIDTH
 screenHeight = G.WINDOW.HEIGHT
 
 local minimapScale = 0.1
+local debug = false
 
 local function setupMapPipeline()
     local pipeline = Pipeline.new(G.WINDOW.WIDTH, G.WINDOW.HEIGHT)
@@ -43,7 +45,9 @@ local function setupMapPipeline()
         gamemap:drawLayer(gamemap.layers["feuille5"])
         player:draw()
         uiManager:draw("npc")
-        world:draw()
+        if debug == true then
+            world:draw()
+        end
         cam:detach()
         uiManager:draw("map")
         
@@ -148,7 +152,7 @@ function map:load(args)
     world = G.WORLD
 
     if gamemap.layers["Wall"] then
-        gamemap:initWalls(gamemap.layers["Wall"], world)
+        colliders = gamemap:initWalls(gamemap.layers["Wall"], world)
     end
 
     spriteSheet = love.graphics.newImage("assets/spritesheets/character/maincharacter.png")
@@ -197,11 +201,22 @@ function map:load(args)
     if gamemap and player then
         mapLoaded = true
     end
+
+    fpsGraph = debugGraph:new('fps', 20, 10, 50, 30, 0.5, 'fps', love.graphics.newFont(16))
+    memGraph = debugGraph:new('mem', 20, 40, 50, 30, 0.5, 'mem', love.graphics.newFont(16))
+    dtGraph = debugGraph:new('custom', 20, 70, 50, 30, 0.5, 'custom', love.graphics.newFont(16))
 end
 
 function map:draw()
     if self.pipeline then
         self.pipeline:run()
+    end
+
+    if version == 'dev-mode' and debug == true then
+        -- Draw graphs
+        fpsGraph:draw()
+        memGraph:draw()
+        dtGraph:draw()
     end
 end
 
@@ -257,6 +272,33 @@ function map:update(dt)
         -- Update the UI
         uiManager:update("map", dt)
         uiManager:update("npc", dt)
+
+        fpsGraph:update(dt)
+        memGraph:update(dt)
+        dtGraph:update(dt, math.floor(dt * 1000))
+        dtGraph.label = 'DT: ' .. math.round(dt, 4)
+    end
+end
+
+function map:keypressed(key) 
+    if key == 'f3' then
+        debug = not debug
+    end
+    if key == 'f4' then
+        if collision == true then
+            for _, collider in ipairs(colliders) do
+                if collider and collider.destroy then
+                    collider:destroy()
+                end
+            end
+            colliders = {}
+            collision = false
+        else
+            if gamemap.layers["Wall"] then
+                colliders = gamemap:initWalls(gamemap.layers["Wall"], world)
+            end
+            collision = true
+        end
     end
 end
 

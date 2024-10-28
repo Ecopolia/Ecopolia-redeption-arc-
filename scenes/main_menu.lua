@@ -136,6 +136,7 @@ local function createSaveSlotButton(slot, x, y)
             animation = nil
             local button = uiManager:getElement('main_menu', 'saveSlot'..slot)
             button:setText('Empty Slot')
+            uiManager:removeElement('main_menu', 'deleteButton'..slot)
             
         end,
         css = {
@@ -194,19 +195,19 @@ function main_menu:load()
             uiManager:hideElement("main_menu", "play")
             uiManager:hideElement("main_menu", "quit")
             uiManager:hideElement("main_menu", "map")
-
-            -- Create save slot buttons
-            local saveSlot1, deleteButton1 = createSaveSlotButton(1, 300, 200)
-            local saveSlot2, deleteButton2 = createSaveSlotButton(2, 300, 300)
-            local saveSlot3, deleteButton3 = createSaveSlotButton(3, 300, 400)
-
-            -- Register save slot buttons
-            uiManager:registerElement("main_menu", "saveSlot1", saveSlot1)
-            uiManager:registerElement("main_menu", "deleteButton1", deleteButton1)
-            uiManager:registerElement("main_menu", "saveSlot2", saveSlot2)
-            uiManager:registerElement("main_menu", "deleteButton2", deleteButton2)
-            uiManager:registerElement("main_menu", "saveSlot3", saveSlot3)
-            uiManager:registerElement("main_menu", "deleteButton3", deleteButton3)
+        
+            -- Create save slots and delete buttons
+            for i = 1, 3 do
+                local saveSlot, deleteButton = createSaveSlotButton(i, 300, 200 + (i - 1) * 100)  -- Adjust the Y position for each slot
+        
+                -- Register save slot buttons
+                uiManager:registerElement("main_menu", "saveSlot" .. i, saveSlot)
+                
+                -- Register delete buttons only if the save slot is not empty
+                if saveSlot.text ~= "Empty Slot" then
+                    uiManager:registerElement("main_menu", "deleteButton" .. i, deleteButton)
+                end
+            end
         end,
         onHover = function(button)
             -- button.text = "[shake=0.4][breathe=0.2][blink]Go[/blink][/shake][/breathe]"
