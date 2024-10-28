@@ -32,6 +32,19 @@ function save_and_load.save(player, slot, playtime, zone)
     end
 end
 
+function save_and_load.delete(slot)
+    local savefile = getSaveFileName(slot)
+    
+    -- Attempt to remove the save file
+    local success, err = os.remove(savefile)
+    
+    if success then
+        print("Save file " .. savefile .. " deleted successfully.")
+    else
+        print("Failed to delete save file: " .. err)
+    end
+end
+
 -- Function to load a collection of objects
 function save_and_load.load(slot)
     local savefile = getSaveFileName(slot)

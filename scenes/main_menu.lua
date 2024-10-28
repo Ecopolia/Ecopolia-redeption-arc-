@@ -65,23 +65,24 @@ end
 local function createSaveSlotButton(slot, x, y)
     local saveData = save_and_load.load(slot)
     local text = "Empty Slot"
-    local sprite = nil
+    local spriteSheet = nil
+    local animation = nil
     local playtime = "00:00:00"
     local zone = "Unknown"
 
+    -- Check if there’s save data to populate
     if saveData then
         text = "Save Slot " .. slot
         if saveData.sprite then
-            spriteSheet = love.graphics.newImage(saveData.sprite) -- Load the sprite sheet from the file path
-            grid = anim8.newGrid(64, 64, spriteSheet:getWidth(), spriteSheet:getHeight())
-            animation = anim8.newAnimation(grid('1-9', 11), 0.2) -- Create a walking down animation
+            spriteSheet = love.graphics.newImage(saveData.sprite)
+            local grid = anim8.newGrid(64, 64, spriteSheet:getWidth(), spriteSheet:getHeight())
+            animation = anim8.newAnimation(grid('1-9', 11), 0.2)
         end
-
         playtime = formatPlaytime(saveData.playtime)
         zone = saveData.zone
     end
 
-    return Button.new({
+    local saveSlotButton = Button.new({
         text = text,
         x = x,
         y = y,
@@ -106,19 +107,48 @@ local function createSaveSlotButton(slot, x, y)
             textY = 10
         },
         update = function(self, dt)
+            -- Update animation for this specific slot, if it exists
             if animation then
-                animation:update(dt) -- Update the animation
+                animation:update(dt)
             end
         end,
         draw = function(self)
+            -- Draw the animation for this specific slot, if it exists
             if animation then
-                animation:draw(spriteSheet, self.x + self.width - 74, self.y + 10, 0, 0.5, 0.5) -- Top-right
+                animation:draw(spriteSheet, self.x + self.width - 74, self.y + 10, 0, 0.5, 0.5)
             end
-            love.graphics.print("Playtime: " .. playtime, self.x + 10, self.y + self.height - 30) -- Bottom-left
-            love.graphics.print("Zone: " .. zone, self.x + self.width - 200, self.y + self.height - 30) -- Bottom-right
+            love.graphics.print("Playtime: " .. playtime, self.x + 10, self.y + self.height - 30)
+            love.graphics.print("Zone: " .. zone, self.x + self.width - 200, self.y + self.height - 30)
         end
     })
+
+    local deleteButton = Button.new({
+        text = "X",
+        x = x + 800,
+        y = y,
+        w = 25,
+        h = 25,
+        onClick = function()
+            -- Delete the save data
+            save_and_load.delete(slot)
+            playtime = "00:00:00"
+            zone = "Unknown"
+            animation = nil
+            local button = uiManager:getElement('main_menu', 'saveSlot'..slot)
+            button:setText('Empty Slot')
+            
+        end,
+        css = {
+            backgroundColor = {0.8, 0, 0},
+            hoverBackgroundColor = {1, 0, 0},
+            textColor = {1, 1, 1},
+            borderColor = {1, 1, 1},
+        },
+    })
+
+    return saveSlotButton, deleteButton
 end
+
 
 function main_menu:load()
     ManualtransitionIn() -- i do this cause it is the first scene
@@ -166,14 +196,17 @@ function main_menu:load()
             uiManager:hideElement("main_menu", "map")
 
             -- Create save slot buttons
-            local saveSlot1 = createSaveSlotButton(1, 300, 200)
-            local saveSlot2 = createSaveSlotButton(2, 300, 300)
-            local saveSlot3 = createSaveSlotButton(3, 300, 400)
+            local saveSlot1, deleteButton1 = createSaveSlotButton(1, 300, 200)
+            local saveSlot2, deleteButton2 = createSaveSlotButton(2, 300, 300)
+            local saveSlot3, deleteButton3 = createSaveSlotButton(3, 300, 400)
 
             -- Register save slot buttons
             uiManager:registerElement("main_menu", "saveSlot1", saveSlot1)
+            uiManager:registerElement("main_menu", "deleteButton1", deleteButton1)
             uiManager:registerElement("main_menu", "saveSlot2", saveSlot2)
+            uiManager:registerElement("main_menu", "deleteButton2", deleteButton2)
             uiManager:registerElement("main_menu", "saveSlot3", saveSlot3)
+            uiManager:registerElement("main_menu", "deleteButton3", deleteButton3)
         end,
         onHover = function(button)
             -- button.text = "[shake=0.4][breathe=0.2][blink]Go[/blink][/shake][/breathe]"
@@ -398,6 +431,14 @@ function main_menu:update(dt)
 end
 
 function main_menu:mousepressed(x, y, button)
+end
+
+function main_menu:keypressed(key)
+    if key == 'x' then
+        local play = uiManager:getElement('main_menu', 'play')
+        play:setText('FFFF')
+    end
+
 end
 
 return main_menu

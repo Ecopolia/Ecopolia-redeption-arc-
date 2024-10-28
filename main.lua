@@ -54,7 +54,7 @@ questEngine = require("engine/QuestEngine")
 NpcEngine = require("engine/NpcEngine")
 -- Scenery initialization
 local SceneryInit = require("libs/scenery")
-local scenery = SceneryInit("testcombat")
+local scenery = SceneryInit("main_menu")
 
 quests = nil
 npcs = nil

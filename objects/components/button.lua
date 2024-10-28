@@ -39,6 +39,11 @@ function Button.new(config)
     return self
 end
 
+function Button:setText(newText)
+    self.text = newText
+    self.button_text:send(self.text, 320, self.dsfull) -- Reinitialize the button_text with the new text
+end
+
 function Button:draw()
     -- Set background color
     love.graphics.setColor(self.hovered and (self.css.hoverBackgroundColor or {1, 1, 1}) or
