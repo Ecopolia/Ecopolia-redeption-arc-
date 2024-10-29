@@ -59,7 +59,7 @@ end
 function Combatant:healTarget(target)
     if target.hp > 0 then
         local healing = self.attack  -- Utilisation de l'attaque comme valeur de guérison
-        target.hp = math.min(target.hp + healing, 100) -- Limite la guérison à 100 hp
+        target.hp = math.min(target.hp + healing, target.maxHp) -- Limite la guérison à 100 hp
         print(self.name .. " soigne " .. target.name .. " pour " .. healing .. " HP.")
     else
         print(target.name .. " est mort")
