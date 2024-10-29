@@ -29,6 +29,13 @@ function NpcElement.new(config)
     self.forward = true
     self.questids = config.questids or {}
 
+    self.is_questgiver = config.is_questgiver or false
+    if self.is_questgiver then
+        self.questgiverSpritesheet = config.questgiverSpritesheet or love.graphics.newImage("assets/spritesheets/emotes/exclamation_mark.png")
+        self.questgiverGrid = anim8.newGrid(32, 32, self.questgiverSpritesheet:getWidth(), self.questgiverSpritesheet:getHeight())
+        self.questgiverAnimation = anim8.newAnimation(self.questgiverGrid('1-3', 1), 0.2)
+    end
+
     self._world = config.world
     self.camera = config.camera
 
@@ -89,6 +96,12 @@ function NpcElement:draw()
     love.graphics.setColor(self.color)
     local anim = self.isWaiting and self.animations.idle or self.animations.walk
     anim:draw(self.spritesheet, self.position.x, self.position.y, 0, self.scale * self.direction, self.scale, 12, 12)
+
+    if self.is_questgiver then
+        love.graphics.setColor(1, 1, 1, 1)
+        self.questgiverAnimation:draw(self.questgiverSpritesheet, self.position.x, self.position.y - 25, 0, 1, 1, 16, 16)
+    end
+
     love.graphics.setColor(1, 1, 1, 1)
 end
 
@@ -130,6 +143,10 @@ function NpcElement:update(dt)
         end
     else
         self.animations.idle:update(dt)
+    end
+
+    if self.is_questgiver then
+        self.questgiverAnimation:update(dt)
     end
 
     if self.camera ~= nil then

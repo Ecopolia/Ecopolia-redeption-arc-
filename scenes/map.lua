@@ -186,7 +186,9 @@ function map:load(args)
             save_and_load.save(player, args.slot, G:getPlaytime(args.slot), "Zone du début")
         end,
         world = world,
-        camera = cam
+        camera = cam,
+        is_questgiver = true,
+        questgiverSpritesheet = love.graphics.newImage("assets/spritesheets/emotes/save_mark.png")
     })
     
     for key, npc in ipairs(npcs.npcs) do

@@ -38,8 +38,13 @@ function NpcEngine:loadFromJson(jsonData)
             path = npcConfig.path or {},
             mode = npcConfig.mode or "random-in-area",
             waitInterval = npcConfig.waitInterval or 0,
-            debug = npcConfig.debug or false
+            debug = npcConfig.debug or false,
+            is_questgiver = npcConfig.is_questgiver or false
         })
+
+        if npcConfig.questgiverSpritesheet then
+            npc.questgiverSpritesheet = love.graphics.newImage(npcConfig.questgiverSpritesheet)
+        end
 
         self:addNpc(npc)
     end

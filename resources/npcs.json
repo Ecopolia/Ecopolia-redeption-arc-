@@ -14,7 +14,9 @@
         "waitInterval": 2,
         "path": [],
         "debug": false,
-        "questids": [1]
+        "questids": [1],
+        "is_questgiver": true,
+        "questgiverSpritesheet": "assets/spritesheets/emotes/question_mark.png"
     },
     {
         "id": 2,
