@@ -13,10 +13,13 @@ end
 
 function testcombat:load(args)
     local player = PlayerCombat:new({ name = "Joueur", hp = 100, attack = 20, defense = 10, speed = 15, mana = 50 })
-    local enemy1 = Combatant:new("Enemy", "Gobelin", 80, 10, 5, 20, nil, "warrior", nil, nil)
-    local enemy2 = Combatant:new("Enemy", "Troll", 120, 15, 8, 6, nil, "healer", nil, nil)
+    local arrayEnemy = {
+        findbyid(enemies.combatants, 1),
+        findbyid(enemies.combatants, 2),
+        findbyid(enemies.combatants, 3)
+    }
 
-    combatScene = CombatScene:new(player, { enemy1, enemy2 })
+    combatScene = CombatScene:new(player, arrayEnemy)
     combatScene:load()
 
     self.pipeline = setupPipeline()

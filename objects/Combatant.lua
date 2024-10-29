@@ -2,7 +2,7 @@ Combatant = {}
 Combatant.__index = Combatant
 
 -- Fonction de création d'un nouveau combattant (allié ou ennemi)
-function Combatant:new(type, name, hp, attack, defense, speed, manaCost, classType, spriteSheet, animations)
+function Combatant:new(id, type, name, hp, attack, defense, speed, manaCost, classType, spriteSheet, animations)
     local instance = {
         id = id or uuid(),
         type = type or "Ally",  -- "Ally" ou "Enemy"
@@ -15,12 +15,24 @@ function Combatant:new(type, name, hp, attack, defense, speed, manaCost, classTy
         manaCost = manaCost or (type == "Ally" and 10 or nil),  -- Coût en mana seulement pour les alliés
         classType = classType or "warrior",  -- Type de classe : "warrior", "healer", "protector"
         spriteSheet = spriteSheet,
-        animations = animations,
+        grid = nil,
+        animations = {},
         currentAnimation = nil,
         direction = "down",  -- Direction par défaut
+        x = 0,
+        y = 0
     }
 
+    if instance.spriteSheet ~= nil then
+        instance.spriteSheet = love.graphics.newImage(instance.spriteSheet)
+        print(instance.spriteSheet:getHeight())
+        instance.grid = anim8.newGrid(31, 31, instance.spriteSheet:getWidth(), instance.spriteSheet:getHeight())
+        instance.animations.base = anim8.newAnimation(instance.grid(1, '1-8'), 0.2)
+        instance.animations.attack = anim8.newAnimation(instance.grid(1, '1-8'), 0.2)
+    end
+
     setmetatable(instance, Combatant)
+
     return instance
 end
 
@@ -74,18 +86,14 @@ end
 
 -- Fonction de mise à jour du combattant en combat
 function Combatant:update(dt)
-    if self.animations[self.direction] then
-        self.animations[self.direction]:update(dt)
-    end
+    self.animations.base:update(dt) 
 end
 
 -- Fonction de dessin du combattant
 function Combatant:draw()
-    if self.animations and self.direction then
-        local anim = self.animations[self.direction]
-        if anim then
-            anim:draw(self.spriteSheet, self.x, self.y)
-        end
+    if self.animations then
+        -- Draw the current animation at the player's position
+        self.animations.base:draw(self.spriteSheet, self.x, self.y)
     end
 end
 

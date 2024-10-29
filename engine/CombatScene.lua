@@ -74,22 +74,6 @@ function CombatScene:calculateTurnOrder()
     self.currentTurnIndex = 1
 end
 
--- Met à jour la scène
-function CombatScene:update(dt)
-    if self.gameState == "start" then
-        self:calculateTurnOrder()
-        self.gameState = "processturn"
-    end
-
-    if self.gameState == "processturn" then
-        self:processTurn()
-    end
-
-    if self.gameState == "endCombat" then
-        -- Logique de fin de combat (victoire ou défaite)
-    end
-end
-
 -- Gère les entrées du joueur
 function CombatScene:keypressed(key)
     if self.gameState == "playerTurn" and not self.choosingTarget and not self.choosingAlly then
@@ -222,15 +206,38 @@ function CombatScene:load()
     print("Chargement de la scène de combat...")
 end
 
+-- Met à jour la scène
+function CombatScene:update(dt)
+    if self.gameState == "start" then
+        self:calculateTurnOrder()
+        self.gameState = "processturn"
+    end
+
+    if self.gameState == "processturn" then
+        self:processTurn()
+    end
+
+    if self.gameState == "endCombat" then
+        -- Logique de fin de combat (victoire ou défaite)
+    end
+
+    for key, enemy in ipairs(self.enemies) do
+        enemy:update(dt)
+    end
+end
+
 -- Dessine la scène
 function CombatScene:draw()
     -- Affichage des stats du joueur
+    
     love.graphics.print("Joueur: " .. self.player.hp .. " HP | Mana: " .. self.player.mana, 10, 10)
 
     -- Afficher les ennemis et leurs stats
     for i, enemy in ipairs(self.enemies) do
         local indicator = (self.choosingTarget and i == self.targetIndex) and ">" or " "
         love.graphics.print(indicator .. enemy.name .. ": " .. enemy.hp .. " HP", 10, 50 + i * 20)
+        enemy.x, enemy.y = 20, 50 + i * 20
+        enemy:draw()
     end
 
     -- Afficher les alliés invoqués

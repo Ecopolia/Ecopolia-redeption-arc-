@@ -9,13 +9,7 @@
         "speed": 8,
         "manaCost": 10,
         "classType": "warrior",
-        "spriteSheet": "path/to/ally_warrior_spritesheet.png",
-        "animations": {
-            "down": "path/to/animation_down",
-            "up": "path/to/animation_up",
-            "left": "path/to/animation_left",
-            "right": "path/to/animation_right"
-        }
+        "spriteSheet": null,
     },
     {
         "id": 2,
@@ -27,12 +21,6 @@
         "speed": 6,
         "manaCost": 15,
         "classType": "healer",
-        "spriteSheet": "path/to/ally_healer_spritesheet.png",
-        "animations": {
-            "down": "path/to/animation_down",
-            "up": "path/to/animation_up",
-            "left": "path/to/animation_left",
-            "right": "path/to/animation_right"
-        }
+        "spriteSheet": null,
     }
 ]

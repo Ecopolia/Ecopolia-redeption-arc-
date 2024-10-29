@@ -26,8 +26,7 @@ function CombatantEngine:loadFromJson(jsonData)
             combatantConfig.speed,
             combatantConfig.manaCost,
             combatantConfig.classType,
-            combatantConfig.spriteSheet,
-            combatantConfig.animations
+            combatantConfig.spriteSheet
         )
 
         -- Ajoute le combattant au moteur

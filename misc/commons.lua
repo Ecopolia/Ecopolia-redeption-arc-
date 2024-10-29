@@ -72,5 +72,4 @@ function findbyid(array, id)
             return value
         end
     end
-    return false
 end
