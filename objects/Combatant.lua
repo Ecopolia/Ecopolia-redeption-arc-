@@ -57,9 +57,10 @@ end
 function Combatant:attackTarget(target)
     if target.hp > 0 then
         local damage = math.max(0, self.attack - target.defense)
-        target.hp = target.hp - damage
+        target.hp = math.max(0, target.hp - damage)
         print(self.name .. " attaque " .. target.name .. " pour " .. damage .. " dégâts.")
         if target.hp <= 0 then
+            target.hp = 0
             print(target.name .. " est mort.")
         end
     else
