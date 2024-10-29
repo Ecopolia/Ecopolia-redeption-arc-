@@ -72,7 +72,11 @@ end
 function PlayerCombat:attackTarget(target)
     if target.hp > 0 then
         local damage = math.max(0, self.attack - target.defense)
-        target.hp = target.hp - damage
+        if target.hp - damage >= 0 then
+            target.hp = target.hp - damage
+        else
+            target.hp = 0
+        end
         print(self.name .. " attaque " .. target.name .. " pour " .. damage .. " dégâts.")
         if target.hp <= 0 then
             print(target.name .. " est mort.")

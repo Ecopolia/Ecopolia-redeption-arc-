@@ -6,12 +6,31 @@ local function setupPipeline()
     pipeline:addStage(nil, function()
         love.graphics.clear(hex('5fcde4'))
         combatScene:draw()
+        particleManager:draw()
     end)
 
     return pipeline
 end
 
 function testcombat:load(args)
+    local particleConfig = {
+        colors = {0.426, 1, 0.610, 0, 0.117, 1, 0.066, 1, 0, 1, 0.086, 0.5, 1, 1, 1, 0},
+        emissionRate = 20,
+        emitterLifetime = -1,
+        particleLifetime = {1.8, 2.2},
+        speed = {169, 100},
+        spread = 0.314,
+        bufferSize = 47,
+        kickStartSteps = 0,
+        kickStartDt = 0,
+        emitAtStart = 10,  -- Emit 10 particles at the start
+        blendMode = "add",
+        texturePreset = "lightBlur",
+        texturePath = "assets/imgs/lightBlur.png",
+    }
+
+    -- Add a particle system
+    particleManager:addParticleSystem("assets/imgs/lightBlur.png", {x = 600, y = 300}, particleConfig)
     local player = PlayerCombat:new({ name = "Joueur", hp = 100, attack = 20, defense = 10, speed = 15, mana = 50 })
     local arrayEnemy = {
         findbyid(enemies.combatants, 1),
@@ -30,15 +49,16 @@ function testcombat:load(args)
         table.insert(self.enemyWindows, {
             window = Window.new({
                 x = 350,
-                y = 50 + (i - 1) * 100, -- Stack windows vertically
+                y = 50 + (i - 1) * 200, -- Stack windows vertically
                 w = 200,
-                h = 80,
+                h = 250,
                 title = enemy.name,
                 color = { 0.8, 0.8, 0.8, 0.9 },
                 borderColor = { 0, 0, 0 },
             }),
             enemy = enemy -- Store reference to the enemy
         })
+        enemy.x, enemy.y = 355, 50 + (i - 1) * 200
     end
 end
 
@@ -55,6 +75,7 @@ function testcombat:draw()
         local window = enemyData.window
         local enemy = enemyData.enemy
         window:draw()
+        enemy:draw()
         -- Draw the health bar for the corresponding enemy
         self:drawHealthBar(window, enemy)
     end

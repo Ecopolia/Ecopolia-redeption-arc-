@@ -41,6 +41,9 @@ Combatant = require("objects/Combatant")
 CombatantEngine = require("engine/CombatantEngine")
 CombatScene = require("engine/CombatScene")
 
+ParticleManager = require("engine/ParticleManager")
+particleManager = ParticleManager.new()
+
 -- Profile for performance analysis
 local profile = require("engine/profile")
 profile.start()
@@ -111,6 +114,7 @@ end
 function love.update(dt)
     scenery:update(dt)
     G:update(dt)
+    particleManager:update(dt)
 end
 
 -- love.draw is called to render everything

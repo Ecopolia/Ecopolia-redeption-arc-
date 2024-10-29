@@ -236,8 +236,6 @@ function CombatScene:draw()
     for i, enemy in ipairs(self.enemies) do
         local indicator = (self.choosingTarget and i == self.targetIndex) and ">" or " "
         love.graphics.print(indicator .. enemy.name .. ": " .. enemy.hp .. " HP", 10, 50 + i * 20)
-        enemy.x, enemy.y = 20, 50 + i * 20
-        enemy:draw()
     end
 
     -- Afficher les alliés invoqués
