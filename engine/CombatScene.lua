@@ -45,12 +45,10 @@ function CombatScene:updateAlives()
     end
 
     if #self.enemiesAlive == 0 or self.player.hp <= 0 then
-        print('fin')
         self.gameState = "endCombat"
     end
 
     if #self.enemiesAlive == 0 and self.player.hp > 0 then
-        print('victoire')
         self.victory = true
     end
 end
