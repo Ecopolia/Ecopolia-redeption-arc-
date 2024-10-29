@@ -187,6 +187,18 @@ function CombatScene:changeAllySelection(key)
     end
 end
 
+function CombatScene:selectTarget(id)
+    self.targetIndex = id
+    self.choosingAlly = false
+    self.choosingTarget = true
+end
+
+function CombatScene:selectAlly(id)
+    self.targetIndex = id
+    self.choosingTarget = false
+    self.choosingAlly = true
+end
+
 -- Confirme l'action du joueur
 function CombatScene:confirmAction()
     if self.choosingTarget then
