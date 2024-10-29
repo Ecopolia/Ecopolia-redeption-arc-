@@ -139,7 +139,7 @@ function Button:update(dt)
 end
 
 function Button:mousepressed(x, y, button)
-    if button == 1 and self.hovered then
+    if button == 1 and self.hovered and not self.freeze then
         self.onClick()
     end
 end
