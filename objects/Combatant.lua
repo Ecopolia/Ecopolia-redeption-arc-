@@ -8,6 +8,7 @@ function Combatant:new(type, name, hp, attack, defense, speed, manaCost, classTy
         type = type or "Ally",  -- "Ally" ou "Enemy"
         name = name or (type == "Enemy" and "Ennemi" or "Allié"),
         hp = hp or (type == "Enemy" and 80 or 50),
+        maxHp = hp,
         attack = attack or (type == "Enemy" and 12 or 10),
         defense = defense or (type == "Enemy" and 4 or 3),
         speed = speed or (type == "Enemy" and 7 or 8),

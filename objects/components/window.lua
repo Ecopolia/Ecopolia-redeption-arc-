@@ -9,7 +9,7 @@ function Window.new(css)
     self.borderThickness = css.borderThickness or 2
     self.title = css.title or ""
     self.font = css.font or love.graphics.newFont(12)
-    self.visible = css.visible or false
+    self.visible = css.visible or true
     self.color = css.color or {1, 1, 1}
     self.borderColor = css.borderColor or {0, 0, 0}
     self.draggable = css.draggable or false
