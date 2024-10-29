@@ -99,7 +99,13 @@ end
 
 function UiManager:freezeElement(scope, name)
     if self.scopedElements[scope] and self.scopedElements[scope][name] then
-        self.scopedElements[scope][name].element.freeze = not self.scopedElements[scope][name].element.freeze
+        self.scopedElements[scope][name].element.freeze = true
+    end
+end
+
+function UiManager:unfreezeElement(scope, name)
+    if self.scopedElements[scope] and self.scopedElements[scope][name] then
+        self.scopedElements[scope][name].element.freeze = false
     end
 end
 
