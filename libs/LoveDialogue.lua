@@ -28,6 +28,7 @@ function LoveDialogue:new(config)
         state = "inactive", -- Can be "inactive", "fading_in", "active", "fading_out"
         enableFadeIn = config.enableFadeIn or true,
         enableFadeOut = config.enableFadeOut or true,
+        keys = config.keys or {'up', 'down', 'return'},
         effects = {},
         currentBranch = nil,
         selectedBranchIndex = 1,
@@ -219,6 +220,7 @@ function LoveDialogue:draw()
 
             love.graphics.setColor(color[1], color[2], color[3], self.boxOpacity)
             love.graphics.print(char, x + offset.x, y + offset.y, 0, scale, scale)
+            love.graphics.setColor(1, 1, 1) -- prevent colouring the whole screen
             x = x + charWidth * scale
 
             if x > limit then
@@ -274,15 +276,15 @@ function LoveDialogue:advance()
 end
 
 function LoveDialogue:keypressed(key)
-    if key == "up" then
+    if key == self.keys[1] then
         if self.currentBranch then
             self.selectedBranchIndex = math.max(1, self.selectedBranchIndex - 1)
         end
-    elseif key == "down" then
+    elseif key == self.keys[2] then
         if self.currentBranch then
             self.selectedBranchIndex = math.min(#self.currentBranch, self.selectedBranchIndex + 1)
         end
-    elseif key == "return" or key == "space" then
+    elseif key == self.keys[3] or key == "space" then
         self:advance()
     end
 end

@@ -70,39 +70,41 @@ function Player:update(dt)
     local upKey = love.keyboard.getKeyFromScancode("w")
 
     -- Handling player movement and animation based on input
-    if love.keyboard.isDown(rightKey) then
-        self.direction = "right"
-        if not collisionSides.right then -- Only move if not colliding on the right
-            self.x = self.x + self.speed * dt
-            self.anim = self.animations.right
-            isMoving = true
+    if inDialogue == false then
+        if love.keyboard.isDown(rightKey) then
+            self.direction = "right"
+            if not collisionSides.right then -- Only move if not colliding on the right
+                self.x = self.x + self.speed * dt
+                self.anim = self.animations.right
+                isMoving = true
+            end
         end
-    end
-
-    if love.keyboard.isDown(leftKey) then
-        self.direction = "left"
-        if not collisionSides.left then -- Only move if not colliding on the left
-            self.x = self.x - self.speed * dt
-            self.anim = self.animations.left
-            isMoving = true
+    
+        if love.keyboard.isDown(leftKey) then
+            self.direction = "left"
+            if not collisionSides.left then -- Only move if not colliding on the left
+                self.x = self.x - self.speed * dt
+                self.anim = self.animations.left
+                isMoving = true
+            end
         end
-    end
-
-    if love.keyboard.isDown(downKey) then
-        self.direction = "down"
-        if not collisionSides.bottom then -- Only move if not colliding at the bottom
-            self.y = self.y + self.speed * dt
-            self.anim = self.animations.down
-            isMoving = true
+    
+        if love.keyboard.isDown(downKey) then
+            self.direction = "down"
+            if not collisionSides.bottom then -- Only move if not colliding at the bottom
+                self.y = self.y + self.speed * dt
+                self.anim = self.animations.down
+                isMoving = true
+            end
         end
-    end
-
-    if love.keyboard.isDown(upKey) then
-        self.direction = "up"
-        if not collisionSides.top then -- Only move if not colliding at the top
-            self.y = self.y - self.speed * dt
-            self.anim = self.animations.up
-            isMoving = true
+    
+        if love.keyboard.isDown(upKey) then
+            self.direction = "up"
+            if not collisionSides.top then -- Only move if not colliding at the top
+                self.y = self.y - self.speed * dt
+                self.anim = self.animations.up
+                isMoving = true
+            end
         end
     end
 

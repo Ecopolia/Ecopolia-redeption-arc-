@@ -71,6 +71,7 @@ function Game:set_globals()
 
     self.METAL_BUTTONS_ICONS_ANIMATIONS = {
         settings = anim8.newAnimation(self.METAL_BUTTONS_ICONS_GRID('10-12', 2), 0.1, 'pauseAtStart'),
+        list = anim8.newAnimation(self.METAL_BUTTONS_ICONS_GRID('10-12', 3), 0.1, 'pauseAtStart'),
         music = anim8.newAnimation(self.METAL_BUTTONS_ICONS_GRID('7-9', 8), 0.1, 'pauseAtStart'),
         close = anim8.newAnimation(self.METAL_BUTTONS_ICONS_GRID('7-9', 4), 0.1, 'pauseAtStart')
     }

@@ -88,12 +88,14 @@ end
 function UiManager:hideElement(scope, name)
     if self.scopedElements[scope] and self.scopedElements[scope][name] then
         self.scopedElements[scope][name].element.visible = false
+        self.scopedElements[scope][name].element.freeze = true
     end
 end
 
 function UiManager:showElement(scope, name)
     if self.scopedElements[scope] and self.scopedElements[scope][name] then
         self.scopedElements[scope][name].element.visible = true
+        self.scopedElements[scope][name].element.freeze = false
     end
 end
 

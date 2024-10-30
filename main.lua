@@ -57,12 +57,13 @@ questEngine = require("engine/QuestEngine")
 NpcEngine = require("engine/NpcEngine")
 -- Scenery initialization
 local SceneryInit = require("libs/scenery")
-local scenery = SceneryInit("testcombat")
+local scenery = SceneryInit("main_menu")
 
 quests = nil
 npcs = nil
 allies = nil
 enemies = nil
+inDialogue = false
 
 -- love.load is called once at the beginning of the game
 function love.load()

@@ -183,6 +183,18 @@ function map:load(args)
         radius = 50,
         clickableRadius = 20,
         onClick = function()
+            local downKey = love.keyboard.getKeyFromScancode("s")
+            local upKey = love.keyboard.getKeyFromScancode("w")
+            if inDialogue == false then
+                inDialogue = true
+                SaveDialogue = LoveDialogue.play("dialogs/npc_save.ld", {
+                    enableFadeIn = false,
+                    enableFadeOut = false,
+                    fadeInDuration = 0,
+                    fadeOutDuration = 0,
+                    keys = {upKey, downKey, 'return'}
+                })
+            end
             save_and_load.save(player, args.slot, G:getPlaytime(args.slot), "Zone du début")
         end,
         world = world,
@@ -219,6 +231,10 @@ function map:draw()
         fpsGraph:draw()
         memGraph:draw()
         dtGraph:draw()
+    end
+
+    if SaveDialogue then
+        SaveDialogue:draw()
     end
 end
 
@@ -275,6 +291,10 @@ function map:update(dt)
         uiManager:update("map", dt)
         uiManager:update("npc", dt)
 
+        if SaveDialogue then
+            SaveDialogue:update(dt)
+        end
+
         fpsGraph:update(dt)
         memGraph:update(dt)
         dtGraph:update(dt, math.floor(dt * 1000))
@@ -301,6 +321,9 @@ function map:keypressed(key)
             end
             collision = true
         end
+    end
+    if SaveDialogue then
+        SaveDialogue:keypressed(key)
     end
 end
 

@@ -12,6 +12,30 @@ local function setupPipeline()
     return pipeline
 end
 
+local function createEnemyWindow(enemy, centerX, centerY)
+    local windowWidth, windowHeight = 200, 190
+    local windowX = centerX - windowWidth / 2
+    local windowY = centerY - windowHeight / 2
+    
+    local window = Window.new({
+        x = windowX,
+        y = windowY,
+        w = windowWidth,
+        h = windowHeight,
+        title = enemy.name,
+        color = { 0.8, 0.8, 0.8, 0.9 },
+        borderColor = { 0, 0, 0 },
+    })
+    
+    enemy.x, enemy.y = centerX - (32 * 3) / 2, centerY - (32 * 3) / 2 + 15
+
+    
+    return {
+        window = window,
+        enemy = enemy -- Store reference to the enemy
+    }
+end
+
 function testcombat:load(args)
     local particleConfig = {
         colors = {0.426, 1, 0.610, 0, 0.117, 1, 0.066, 1, 0, 1, 0.086, 0.5, 1, 1, 1, 0},
@@ -23,14 +47,14 @@ function testcombat:load(args)
         bufferSize = 47,
         kickStartSteps = 0,
         kickStartDt = 0,
-        emitAtStart = 10,  -- Emit 10 particles at the start
+        emitAtStart = 10,
         blendMode = "add",
         texturePreset = "lightBlur",
         texturePath = "assets/imgs/lightBlur.png",
     }
 
     -- Add a particle system
-    particleManager:addParticleSystem("assets/imgs/lightBlur.png", {x = 600, y = 300}, particleConfig)
+    -- particleManager:addParticleSystem("assets/imgs/lightBlur.png", {x = 600, y = 300}, particleConfig)
     local player = PlayerCombat:new({ name = "Joueur", hp = 100, attack = 20, defense = 10, speed = 15, mana = 50 })
     local arrayEnemy = {
         findbyid(enemies.combatants, 1),
@@ -42,24 +66,13 @@ function testcombat:load(args)
     combatScene:load()
 
     self.pipeline = setupPipeline()
-    
-    -- Create a window for each enemy
-    self.enemyWindows = {}
-    for i, enemy in ipairs(combatScene.enemies) do
-        table.insert(self.enemyWindows, {
-            window = Window.new({
-                x = 350,
-                y = 50 + (i - 1) * 200, -- Stack windows vertically
-                w = 200,
-                h = 250,
-                title = enemy.name,
-                color = { 0.8, 0.8, 0.8, 0.9 },
-                borderColor = { 0, 0, 0 },
-            }),
-            enemy = enemy -- Store reference to the enemy
-        })
-        enemy.x, enemy.y = 355, 50 + (i - 1) * 200
-    end
+
+    -- Create a window for each enemy, placing them centered at specified coordinates
+    self.enemyWindows = {
+        createEnemyWindow(combatScene.enemies[1], 400, 150),
+        createEnemyWindow(combatScene.enemies[2], 600, 300),
+        createEnemyWindow(combatScene.enemies[3], 800, 450),
+    }
 end
 
 function testcombat:draw()
@@ -86,14 +99,14 @@ function testcombat:drawHealthBar(window, enemy)
     local barWidth = window.width - 10
     local barHeight = 10
     local x = window.x + 5
-    local y = window.y + 40 -- Positioning below the title
+    local y = window.y + 40
 
     -- Draw health bar background
-    love.graphics.setColor(0.2, 0.2, 0.2) -- Dark gray for background
+    love.graphics.setColor(0.2, 0.2, 0.2)
     love.graphics.rectangle("fill", x, y, barWidth, barHeight)
 
     -- Draw health bar foreground
-    love.graphics.setColor(0.0, 1.0, 0.0) -- Green for health
+    love.graphics.setColor(0.0, 1.0, 0.0)
     love.graphics.rectangle("fill", x, y, barWidth * healthPercentage, barHeight)
     
     -- Reset color

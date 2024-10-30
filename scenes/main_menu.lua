@@ -15,6 +15,8 @@ local mainMenuCanvas = love.graphics.newCanvas(G.WINDOW.WIDTH, G.WINDOW.HEIGHT)
 
 local save_and_load = require 'engine/save_and_load'
 
+local debug = false
+
 local function setupMainMenuPipeline()
     local pipeline = Pipeline.new(G.WINDOW.WIDTH, G.WINDOW.HEIGHT)
 
@@ -90,14 +92,15 @@ local function createSaveSlotButton(slot, x, y)
         h = 100,
         onClick = function()
             G:setCurrentSlot(slot)
+            menu_theme:stop(G.TRANSITION_DURATION)
             main_menu.setScene('map', { slot = slot })
             if saveData ~= nil then
                 G:setPlaytime(slot, saveData.playtime)
             end
         end,
         css = {
-            backgroundColor = {0.5, 0.5, 0.5},
-            hoverBackgroundColor = {0.7, 0.7, 0.7},
+            backgroundColor = {0.5, 0.5, 0.7},
+            hoverBackgroundColor = {0.5, 0.5, 0.9},
             textColor = {1, 1, 1},
             borderColor = {1, 1, 1},
             font = love.graphics.newFont(16),
@@ -127,12 +130,13 @@ local function createSaveSlotButton(slot, x, y)
         w = 25,
         h = 25,
         onClick = function()
+            uiManager:freezeElement('main_menu', 'BackButton')
             for i = 1, 3 do
                 local saveSlotButton = uiManager:getElement('main_menu', 'saveSlot'..i)
                 if saveSlotButton then
                     uiManager:freezeElement('main_menu', 'saveSlot'..i)
                 end
-                uiManager:hideElement('main_menu', 'deleteButton' .. i)
+                uiManager:removeElement('main_menu', 'deleteButton' .. i)
             end
             -- Show or register the confirmation window and buttons
             local confirmationWindow = uiManager:getElement('main_menu', 'confirmation_window')
@@ -185,6 +189,7 @@ local function createSaveSlotButton(slot, x, y)
                             end
                             uiManager:showElement('main_menu', 'deleteButton' .. i)
                         end
+                        uiManager:unfreezeElement('main_menu', 'BackButton')
                     end,
                     css = {
                         backgroundColor = {0.3, 0.7, 0.3},
@@ -213,12 +218,18 @@ local function createSaveSlotButton(slot, x, y)
                             if saveSlotButton then
                                 uiManager:unfreezeElement('main_menu', 'saveSlot' .. i)
                             end
-                            uiManager:showElement('main_menu', 'deleteButton' .. i)
+                            local deleteButton = uiManager:getElement('main_menu', 'deleteButton' .. i)
+                            if deleteButton then
+                                print(deleteButton.freeze, deleteButton.visible)
+                                -- deleteButton.freeze, deleteButton.visible = false , true // for an obscure reason even manupulating the values directly will halt the uiManager for now on we will be recreating the button when user come back to the save window
+                                print(deleteButton.freeze, deleteButton.visible)
+                            end
                         end
                         -- Hide the confirmation window and buttons
                         uiManager:hideElement('main_menu', 'confirmation_window')
                         uiManager:hideElement('main_menu', 'cancel_button')
                         uiManager:hideElement('main_menu', 'confirm_button')
+                        uiManager:unfreezeElement('main_menu', 'BackButton')
                     end,
                     css = {
                         backgroundColor = {0.8, 0.3, 0.3},
@@ -239,6 +250,35 @@ local function createSaveSlotButton(slot, x, y)
             borderColor = {1, 1, 1},
         },
     })
+
+    local backButton = Button.new({
+        text = "[shake=0.4][breathe=0.2]Back[/shake][/breathe]",
+        x = 100,
+        y = G.WINDOW.HEIGHT - 100,
+        w = 200,
+        h = 60,
+        onClick = function()
+            for i = 1, 3 do
+                -- Register save slot buttons
+                uiManager:removeElement("main_menu", "saveSlot" .. i)
+                uiManager:removeElement("main_menu", "deleteButton" .. i)
+                
+            end
+            uiManager:hideElement('main_menu', 'BackButton')
+            uiManager:showElement("main_menu", "play")
+            uiManager:showElement("main_menu", "quit")
+            uiManager:showElement("main_menu", "map")
+        end,
+        css = {
+            backgroundColor = {0.5, 0, 0},
+            hoverBackgroundColor = {1, 0, 0},
+            textColor = {1, 1, 1},
+            borderColor = {1, 1, 1},
+            font = G.Fonts.m6x11plus
+        }
+    })
+    uiManager:registerElement('main_menu', 'BackButton', backButton)
+    uiManager:hideElement('main_menu', 'BackButton')
 
     return saveSlotButton, deleteButton
 end
@@ -268,15 +308,15 @@ function main_menu:load()
         w = 400,
         h = 500,
         z = 10,
-        borderThickness = 32,
-        title = "Settings",
+        borderThickness = 0,
+        title = "The Team",
         uiAtlas = G.UiAtlas_Animation,
         font = G.Fonts.m6x11plus_medium,
         visible = false,
         color = {0.5, 0.5, 0.9}
     })
     uiManager:registerElement("main_menu", "SettingsWindow", SettingsWindow)
-
+    uiManager:hideElement("main_menu", "SettingsWindow")
     local play = Button.new({
         text = "[shake=0.4][breathe=0.2]Play[/shake][/breathe]",
         dsfull = false,
@@ -285,11 +325,10 @@ function main_menu:load()
         w = 200,
         h = 60,
         onClick = function()
-            menu_theme:stop(G.TRANSITION_DURATION)
             uiManager:hideElement("main_menu", "play")
             uiManager:hideElement("main_menu", "quit")
             uiManager:hideElement("main_menu", "map")
-        
+           
             -- Create save slots and delete buttons
             for i = 1, 3 do
                 local saveSlot, deleteButton = createSaveSlotButton(i, 300, 200 + (i - 1) * 100)  -- Adjust the Y position for each slot
@@ -302,6 +341,8 @@ function main_menu:load()
                     uiManager:registerElement("main_menu", "deleteButton" .. i, deleteButton)
                 end
             end
+            uiManager:showElement('main_menu', 'BackButton')
+        
         end,
         onHover = function(button)
             -- button.text = "[shake=0.4][breathe=0.2][blink]Go[/blink][/shake][/breathe]"
@@ -347,17 +388,52 @@ function main_menu:load()
         w = 64,
         h = 64,
         onClick = function()
-            G.METAL_BUTTONS_ICONS_ANIMATIONS.settings:gotoFrame(3)
+            SettingsWindow:toggle()
+            G.METAL_BUTTONS_ICONS_ANIMATIONS.list:gotoFrame(3)
             Timer.after(0.3, function()
-                SettingsWindow:toggle()
-                G.METAL_BUTTONS_ICONS_ANIMATIONS.settings:gotoFrame(1)
+                
+                G.METAL_BUTTONS_ICONS_ANIMATIONS.list:gotoFrame(1)
             end)
+            local sw = uiManager:getElement("main_menu", "SettingsWindow")
+            if sw.visible == true then
+                for i = 1, 3 do
+                    local saveSlotButton = uiManager:getElement('main_menu', 'saveSlot'..i)
+                    if saveSlotButton then
+                        uiManager:freezeElement('main_menu', 'saveSlot'..i)
+                    end
+                    uiManager:freezeElement('main_menu', 'deleteButton'..i)
+                end
+                uiManager:freezeElement('main_menu', 'cancel_button')
+                uiManager:freezeElement('main_menu', 'confirm_button')
+            else 
+                for i = 1, 3 do
+                    local saveSlotButton = uiManager:getElement('main_menu', 'saveSlot'..i)
+                    if saveSlotButton then
+                        uiManager:unfreezeElement('main_menu', 'saveSlot'..i)
+                    end
+                    uiManager:unfreezeElement('main_menu', 'deleteButton'..i)
+                end
+                local cb = uiManager:getElement('main_menu', 'cancel_button')
+                if cb ~= nil and cb.visible == true then
+                    for i = 1, 3 do
+                        local saveSlotButton = uiManager:getElement('main_menu', 'saveSlot'..i)
+                        if saveSlotButton then
+                            uiManager:freezeElement('main_menu', 'saveSlot'..i)
+                        end
+                        uiManager:freezeElement('main_menu', 'deleteButton'..i)
+                    end
+                
+                end
+                uiManager:unfreezeElement('main_menu', 'cancel_button')
+                uiManager:unfreezeElement('main_menu', 'confirm_button')
+            end
+            
         end,
         onHover = function(button)
-            G.METAL_BUTTONS_ICONS_ANIMATIONS.settings:gotoFrame(2)
+            G.METAL_BUTTONS_ICONS_ANIMATIONS.list:gotoFrame(2)
         end,
         onUnhover = function(button)
-            G.METAL_BUTTONS_ICONS_ANIMATIONS.settings:gotoFrame(1)
+            G.METAL_BUTTONS_ICONS_ANIMATIONS.list:gotoFrame(1)
         end,
         css = {
             backgroundColor = {0, 0, 0, 0},
@@ -366,7 +442,7 @@ function main_menu:load()
             textColor = {0, 0, 0, 0},
             font = G.Fonts.m6x11plus
         },
-        anim8 = G.METAL_BUTTONS_ICONS_ANIMATIONS.settings,
+        anim8 = G.METAL_BUTTONS_ICONS_ANIMATIONS.list,
         image = G.METAL_BUTTONS_ICONS_IMAGE
     })
 
@@ -496,6 +572,10 @@ function main_menu:load()
     uiManager:registerElement("main_menu", "music", music)
     -- uiManager:registerElement("main_menu", "map", map)
 
+    fpsGraph = debugGraph:new('fps', 20, 60, 50, 30, 0.5, 'fps', love.graphics.newFont(16))
+    memGraph = debugGraph:new('mem', 20, 80, 50, 30, 0.5, 'mem', love.graphics.newFont(16))
+    dtGraph = debugGraph:new('custom', 20, 100, 50, 30, 0.5, 'custom', love.graphics.newFont(16))
+
     self.pipeline = setupMainMenuPipeline()
 end
 
@@ -503,6 +583,25 @@ function main_menu:draw()
     if self.pipeline then
         self.pipeline:run()
     end
+
+    if version == 'dev-mode' and debug == true then
+        -- Draw graphs
+        fpsGraph:draw()
+        memGraph:draw()
+        dtGraph:draw()
+    end
+
+    if SettingsWindow.visible then
+        local nameX = SettingsWindow.x + 20  -- Add padding from left
+        local nameY = SettingsWindow.y + 40  -- Start a bit below the top of the window
+        local lineHeight = 30  -- Space between names
+    
+        love.graphics.print("Paul", nameX, nameY)
+        love.graphics.print("Thomas", nameX, nameY + lineHeight)
+        love.graphics.print("Nassim", nameX, nameY + lineHeight * 2)
+        love.graphics.print("Abdelquodousse", nameX, nameY + lineHeight * 3)
+    end
+
 end
 
 function main_menu:update(dt)
@@ -521,7 +620,10 @@ function main_menu:update(dt)
     if falling_star_timer >= falling_star_interval then
         falling_star_timer = 0
     end
-
+    fpsGraph:update(dt)
+    memGraph:update(dt)
+    dtGraph:update(dt, math.floor(dt * 1000))
+    dtGraph.label = 'DT: ' .. math.round(dt, 4)
     menu_theme:update(dt)
 end
 
@@ -532,6 +634,9 @@ function main_menu:keypressed(key)
     if key == 'x' then
         local play = uiManager:getElement('main_menu', 'play')
         play:setText('FFFF')
+    end
+    if key == 'f3' then
+        debug = not debug
     end
 
 end
