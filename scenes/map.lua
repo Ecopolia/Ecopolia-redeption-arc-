@@ -261,6 +261,10 @@ function map:load(args)
     uiManager:registerElement("map", "returnTitleButton", returnTitleButton)
     uiManager:hideElement("map", "returnTitleButton")
 
+
+    npc1 = uiManager:getElement('npc', 'npc_1')
+    npc1.onClick = function() self.setScene('testcombat') end
+
     fpsGraph = debugGraph:new('fps', 20, 10, 50, 30, 0.5, 'fps', love.graphics.newFont(16))
     memGraph = debugGraph:new('mem', 20, 40, 50, 30, 0.5, 'mem', love.graphics.newFont(16))
     dtGraph = debugGraph:new('custom', 20, 70, 50, 30, 0.5, 'custom', love.graphics.newFont(16))

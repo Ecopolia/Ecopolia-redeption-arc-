@@ -284,4 +284,8 @@ function NpcElement:getDirection()
     return 0, 0
 end
 
+function NpcElement:setOnClick(onClickFunction)
+    self.onClick = onClickFunction
+end
+
 return NpcElement

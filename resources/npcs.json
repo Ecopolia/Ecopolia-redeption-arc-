@@ -16,7 +16,7 @@
         "debug": false,
         "questids": [1],
         "is_questgiver": true,
-        "questgiverSpritesheet": "assets/spritesheets/emotes/question_mark.png"
+        "questgiverSpritesheet": "assets/spritesheets/emotes/monster_mark.png"
     },
     {
         "id": 2,

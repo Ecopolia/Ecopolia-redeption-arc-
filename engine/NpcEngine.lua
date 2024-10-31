@@ -19,6 +19,7 @@ function NpcEngine:loadFromJson(jsonData)
     for _, npcConfig in ipairs(npcData) do
         -- Crée un nouveau NPC à partir des données du fichier JSON
         local npc = NpcElement.new({
+            id = npcConfig.id,
             x = npcConfig.x,
             y = npcConfig.y,
             w = npcConfig.w,
@@ -53,6 +54,15 @@ end
 -- Ajoute une quête au moteur
 function NpcEngine:addNpc(npc)
     table.insert(self.npcs, npc)
+end
+
+function NpcEngine:setNpcOnClick(npcId, onClickFunction)
+    for _, npc in ipairs(npcs) do
+        if npc.id == npcId then  -- assuming each NPC has a unique ID
+            npc:setOnClick(onClickFunction)
+            break
+        end
+    end
 end
 
 return NpcEngine

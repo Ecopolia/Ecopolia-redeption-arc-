@@ -37,6 +37,7 @@ local function createEnemyWindow(enemy, centerX, centerY)
 end
 
 function testcombat:load(args)
+    ManualtransitionIn()
     local particleConfig = {
         colors = {0.426, 1, 0.610, 0, 0.117, 1, 0.066, 1, 0, 1, 0.086, 0.5, 1, 1, 1, 0},
         emissionRate = 20,
@@ -76,21 +77,23 @@ function testcombat:load(args)
 end
 
 function testcombat:draw()
-    if not self.pipeline then
-        print("Waiting for pipeline to draw")
-        return
-    end
-
-    self.pipeline:run()
-
-    -- Draw each enemy's window and health bar
-    for _, enemyData in ipairs(self.enemyWindows) do
-        local window = enemyData.window
-        local enemy = enemyData.enemy
-        window:draw()
-        enemy:draw()
-        -- Draw the health bar for the corresponding enemy
-        self:drawHealthBar(window, enemy)
+    if combatScene then
+        if not self.pipeline then
+            print("Waiting for pipeline to draw")
+            return
+        end
+    
+        self.pipeline:run()
+    
+        -- Draw each enemy's window and health bar
+        for _, enemyData in ipairs(self.enemyWindows) do
+            local window = enemyData.window
+            local enemy = enemyData.enemy
+            window:draw()
+            enemy:draw()
+            -- Draw the health bar for the corresponding enemy
+            self:drawHealthBar(window, enemy)
+        end
     end
 end
 
@@ -114,16 +117,20 @@ function testcombat:drawHealthBar(window, enemy)
 end
 
 function testcombat:update(dt)
-    combatScene:update(dt)
+    if combatScene then
+        combatScene:update(dt)
 
-    -- Update each enemy's window as necessary
-    for _, enemyData in ipairs(self.enemyWindows) do
-        enemyData.window:update(dt)
+        -- Update each enemy's window as necessary
+        for _, enemyData in ipairs(self.enemyWindows) do
+            enemyData.window:update(dt)
+        end
     end
 end
 
 function testcombat:keypressed(key)
-    combatScene:keypressed(key)
+    if combatScene then
+        combatScene:keypressed(key)
+    end
 end
 
 return testcombat
