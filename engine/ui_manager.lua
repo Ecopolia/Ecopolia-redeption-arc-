@@ -111,4 +111,25 @@ function UiManager:unfreezeElement(scope, name)
     end
 end
 
+function UiManager:freezeScope(scope)
+    if not self.scopedElements[scope] then
+        return
+    end
+
+    for _, data in pairs(self.scopedElements[scope]) do
+        data.element.freeze = true
+    end
+end
+
+function UiManager:hideScope(scope)
+    if not self.scopedElements[scope] then
+        return
+    end
+
+    for _, data in pairs(self.scopedElements[scope]) do
+        data.element.freeze = true
+        data.element.visible = false
+    end
+end
+
 return UiManager.new()

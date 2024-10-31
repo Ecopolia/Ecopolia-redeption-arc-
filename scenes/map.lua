@@ -216,6 +216,51 @@ function map:load(args)
         mapLoaded = true
     end
 
+
+    echapWindow = Window.new({
+        x = G.WINDOW.WIDTH / 2 - 200,
+        y = G.WINDOW.HEIGHT / 2 - 250,
+        w = 400,
+        h = 500,
+        z = 10,
+        borderThickness = 0,
+        title = "",
+        uiAtlas = G.UiAtlas_Animation,
+        font = G.Fonts.m6x11plus_medium,
+        visible = false,
+        color = {0.5, 0.5, 0.9}
+    })
+    uiManager:registerElement('map', 'echapWindow', echapWindow)
+    uiManager:hideElement('map', 'echapWindow')
+
+    local returnTitleButton = Button.new({
+        text = "[shake=0.4][breathe=0.2]Return to Main Menu[/shake][/breathe]",
+        dsfull = false,
+        x = echapWindow.x + (400 - 220) / 2, -- Center horizontally in echapWindow
+        y = echapWindow.y + (500 - 60) / 2,  -- Center vertically in echapWindow
+        w = 220,
+        h = 60,
+        z = 11,
+        onClick = function()
+            uiManager:hideElement("map", "echapWindow")
+            uiManager:hideElement("map", "returnTitleButton")
+            self.setScene('main_menu', { from = 'map' })
+        end,
+        css = {
+            backgroundColor = {0, 0.5, 0},
+            hoverBackgroundColor = {0, 1, 0},
+            textColor = {1, 1, 1},
+            hoverTextColor = {0, 0, 0},
+            borderColor = {1, 1, 1},
+            borderRadius = 10,
+            font = G.Fonts.m6x11plus_medium
+        }
+    })
+    
+    -- Register the button in the UI Manager within the 'map' scene context for echapWindow
+    uiManager:registerElement("map", "returnTitleButton", returnTitleButton)
+    uiManager:hideElement("map", "returnTitleButton")
+
     fpsGraph = debugGraph:new('fps', 20, 10, 50, 30, 0.5, 'fps', love.graphics.newFont(16))
     memGraph = debugGraph:new('mem', 20, 40, 50, 30, 0.5, 'mem', love.graphics.newFont(16))
     dtGraph = debugGraph:new('custom', 20, 70, 50, 30, 0.5, 'custom', love.graphics.newFont(16))
@@ -324,6 +369,17 @@ function map:keypressed(key)
     end
     if SaveDialogue then
         SaveDialogue:keypressed(key)
+    end
+    if key == 'escape' then
+        if echapWindow.visible == false and inDialogue == false then 
+            uiManager:showElement('map', 'echapWindow')
+            uiManager:showElement("map", "returnTitleButton")
+            uiManager:freezeElement("npc", "npc_random")
+        elseif echapWindow.visible == true and inDialogue == false then
+            uiManager:hideElement('map', 'echapWindow')
+            uiManager:hideElement("map", "returnTitleButton")
+            uiManager:unfreezeElement("npc", "npc_random")
+        end
     end
 end
 

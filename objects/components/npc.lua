@@ -248,7 +248,11 @@ end
 function NpcElement:isInClickableZone(x, y)
     local dx = x - self.position.x
     local dy = y - self.position.y
-    return (dx * dx + dy * dy) <= (self.clickableRadius * self.clickableRadius)
+    if self.freeze == false then
+        return (dx * dx + dy * dy) <= (self.clickableRadius * self.clickableRadius)
+    else
+        return false
+    end
 end
 
 function NpcElement:setRandomTarget()

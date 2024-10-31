@@ -94,6 +94,7 @@ local function createSaveSlotButton(slot, x, y)
             G:setCurrentSlot(slot)
             menu_theme:stop(G.TRANSITION_DURATION)
             main_menu.setScene('map', { slot = slot })
+            uiManager:hideScope('main_menu')
             if saveData ~= nil then
                 G:setPlaytime(slot, saveData.playtime)
             end
@@ -285,8 +286,21 @@ end
 
 
 
-function main_menu:load()
+function main_menu:load(args)
     ManualtransitionIn() -- i do this cause it is the first scene
+
+    if args and args.from == 'map' then
+        for i = 1, 3 do
+            local saveSlotButton = uiManager:getElement('main_menu', 'saveSlot'..i)
+            if saveSlotButton then
+                uiManager:hideElement('main_menu', 'saveSlot'..i)
+            end
+            uiManager:hideElement('main_menu', 'deleteButton'..i)
+        end
+        uiManager:hideElement('main_menu', 'BackButton')
+    end
+
+
     main_menu_name = Text.new("left", {
         color = {0.9, 0.9, 0.9, 0.95},
         shadow_color = {0.5, 0.5, 1, 0.4},
