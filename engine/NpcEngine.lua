@@ -40,7 +40,8 @@ function NpcEngine:loadFromJson(jsonData)
             mode = npcConfig.mode or "random-in-area",
             waitInterval = npcConfig.waitInterval or 0,
             debug = npcConfig.debug or false,
-            is_questgiver = npcConfig.is_questgiver or false
+            is_questgiver = npcConfig.is_questgiver or false,
+            description = npcConfig.description or ""
         })
 
         if npcConfig.questgiverSpritesheet then

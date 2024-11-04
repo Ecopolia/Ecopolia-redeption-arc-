@@ -57,6 +57,8 @@ function NpcElement.new(config)
 
     self.collider = config.world:newCollider('Rectangle', {self.position.x, self.position.y, self.hitzoneWidth , self.hitzoneHeight})
 
+    self.description = config.description or ""
+
     self:nextTarget()
 
     return self
@@ -100,6 +102,27 @@ function NpcElement:draw()
     if self.is_questgiver then
         love.graphics.setColor(1, 1, 1, 1)
         self.questgiverAnimation:draw(self.questgiverSpritesheet, self.position.x, self.position.y - 25, 0, 1, 1, 16, 16)
+    end
+
+    if self.hovered and self.description ~= "" then
+        love.graphics.setColor(1, 1, 1, 0.9)
+
+        -- Calculate bubble dimensions based on text size
+        local font = love.graphics.getFont()
+        local textWidth = font:getWidth(self.description) + 10
+        local textHeight = font:getHeight() + 6
+
+        -- Bubble position slightly above the NPC's head
+        local bubbleX = self.position.x - textWidth / 2
+        local bubbleY = self.position.y - 40
+
+        -- Draw a rounded rectangle as bubble background
+        love.graphics.setColor(0, 0, 0, 0.8)
+        love.graphics.rectangle("fill", bubbleX, bubbleY, textWidth, textHeight, 5, 5)
+
+        -- Draw the description text in white
+        love.graphics.setColor(1, 1, 1, 1)
+        love.graphics.print(self.description, bubbleX + 5, bubbleY + 3)
     end
 
     love.graphics.setColor(1, 1, 1, 1)
