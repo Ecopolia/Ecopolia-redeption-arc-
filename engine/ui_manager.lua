@@ -132,4 +132,41 @@ function UiManager:hideScope(scope)
     end
 end
 
+
+-- Find a UI element by a pattern in a specific scope
+function UiManager:findElement(scope, pattern)
+    -- Check if the scope exists
+    if not self.scopedElements[scope] then
+        return nil
+    end
+
+    -- Iterate through elements in the scope to find a match
+    for name, data in pairs(self.scopedElements[scope]) do
+        if name:match(pattern) then
+            return data.element  -- Return the element if the pattern matches
+        end
+    end
+
+    -- Return nil if no element matches the pattern
+    return nil
+end
+
+function UiManager:findElements(scope, pattern)
+    local matchedElements = {}
+
+    -- Check if the scope exists
+    if not self.scopedElements[scope] then
+        return matchedElements
+    end
+
+    -- Iterate through elements in the scope to find matches
+    for name, data in pairs(self.scopedElements[scope]) do
+        if name:match(pattern) then
+            table.insert(matchedElements, data.element) -- Add the matched element to the list
+        end
+    end
+
+    return matchedElements
+end
+
 return UiManager.new()

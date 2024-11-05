@@ -268,6 +268,13 @@ function map:load(args)
     fpsGraph = debugGraph:new('fps', 20, 10, 50, 30, 0.5, 'fps', love.graphics.newFont(16))
     memGraph = debugGraph:new('mem', 20, 40, 50, 30, 0.5, 'mem', love.graphics.newFont(16))
     dtGraph = debugGraph:new('custom', 20, 70, 50, 30, 0.5, 'custom', love.graphics.newFont(16))
+
+
+    lastPlayerPosition = { x = player.x, y = player.y }
+    visibilityCheckDistance = 50
+    firstcheck = true
+
+    uiNpcElements = uiManager:findElements("npc", "^npc_")
 end
 
 function map:draw()
@@ -285,6 +292,7 @@ function map:draw()
     if SaveDialogue then
         SaveDialogue:draw()
     end
+
 end
 
 function map:update(dt)
@@ -348,6 +356,20 @@ function map:update(dt)
         memGraph:update(dt)
         dtGraph:update(dt, math.floor(dt * 1000))
         dtGraph.label = 'DT: ' .. math.round(dt, 4)
+
+        local dx = player.x - lastPlayerPosition.x
+        local dy = player.y - lastPlayerPosition.y
+        local distanceMoved = math.sqrt(dx * dx + dy * dy)
+        
+        if distanceMoved >= visibilityCheckDistance or firstcheck == true then
+            firstcheck = false
+            NpcEngine:update(dt, uiManager, uiNpcElements)
+        end
+
+        local npcs_ui = uiManager:findElements("npc", "^npc_")
+        for _, npc in ipairs(npcs_ui) do
+            print("LOADED ", npc.id)
+        end
     end
 end
 
