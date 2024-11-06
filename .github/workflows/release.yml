@@ -40,20 +40,21 @@ jobs:
           COMMIT_HASH=$(git rev-parse --short HEAD)
           
           # Unzip, add resources, and re-zip win32
-          unzip build/$COMMIT_HASH/Ecopolia-redemption-arc-win32.zip -d build/$COMMIT_HASH/win32_temp/
-          mkdir -p build/$COMMIT_HASH/win32_temp/ressources
-          cp reposource/ressources/*.json build/$COMMIT_HASH/win32_temp/ressources/
-          cd build/$COMMIT_HASH/win32_temp/
+          ls
+          unzip build/$COMMIT_HASH/win32/Ecopolia-redemption-arc-win32.zip -d build/$COMMIT_HASH/win32/win32_temp/
+          mkdir -p build/$COMMIT_HASH/win32/win32_temp/ressources
+          cp reposource/ressources/*.json build/$COMMIT_HASH/win32/win32_temp/ressources/
+          cd build/$COMMIT_HASH/win32/win32_temp/
           zip -r ../win32.zip ./*
-          cd ../../../
+          cd ../../../../
 
           # Unzip, add resources, and re-zip win64
-          unzip build/$COMMIT_HASH/Ecopolia-redemption-arc-win64.zip -d build/$COMMIT_HASH/win64_temp/
-          mkdir -p build/$COMMIT_HASH/win64_temp/ressources
-          cp reposource/ressources/*.json build/$COMMIT_HASH/win64_temp/ressources/
-          cd build/$COMMIT_HASH/win64_temp/
+          unzip build/$COMMIT_HASH/win64/Ecopolia-redemption-arc-win64.zip -d build/$COMMIT_HASH/win64/win64_temp/
+          mkdir -p build/$COMMIT_HASH/win64/win64_temp/ressources
+          cp reposource/ressources/*.json build/$COMMIT_HASH/win64/win64_temp/ressources/
+          cd build/$COMMIT_HASH/win64/win64_temp/
           zip -r ../win64.zip ./*
-          cd ../../../
+          cd ../../../../
 
       - name: Prepare AppImage build with ressources
         run: |
