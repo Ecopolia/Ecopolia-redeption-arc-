@@ -260,7 +260,7 @@ function NpcElement:nextTarget()
             
             table.insert(attemptedTargets, {x = self.target.x, y = self.target.y})
             if #attemptedTargets >= 10 then
-                print("No valid target found after 10 attempts, staying at current position.")
+                -- print("No valid target found after 10 attempts, staying at current position.")
                 break
             end
         end

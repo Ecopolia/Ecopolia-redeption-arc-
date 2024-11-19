@@ -1,5 +1,4 @@
 local save_and_load = {}
-
 local bitser = require 'libs/bitser'
 
 local function getSaveFileName(slot)
@@ -8,6 +7,14 @@ end
 
 -- Function to save a collection of objects
 function save_and_load.save(player, slot, playtime, zone)
+    local questsToSave = {}
+    for _, quest in ipairs(quests.quests) do
+        table.insert(questsToSave, {
+            id = quest.id,
+            isCompleted = quest.isCompleted
+        })
+    end
+
     local savefile = getSaveFileName(slot)
     local data_collection = {
         x = player.x,
@@ -16,7 +23,8 @@ function save_and_load.save(player, slot, playtime, zone)
         health = player.health,
         sprite = "assets/spritesheets/character/maincharacter.png",
         playtime = playtime or 0,
-        zone = zone or "Unknown"
+        zone = zone or "Unknown",
+        quests = questsToSave
     }
 
     local binary_data = bitser.dumps(data_collection)
@@ -61,6 +69,14 @@ function save_and_load.load(slot)
     else
         print("Failed to open file for reading")
         return nil
+    end
+end
+
+function save_and_load.get_quest_data(quest_id)
+    for _, quest in ipairs(quests.quests) do
+        if quest.id == quest_id then
+            return quest
+        end
     end
 end
 

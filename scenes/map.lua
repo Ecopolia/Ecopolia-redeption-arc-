@@ -173,35 +173,37 @@ function map:load(args)
 
     player.anim = player.animations.down
 
-    -- npc_random = NpcElement.new({
-    --     x = 50,
-    --     y = 100,
-    --     w = 50,
-    --     h = 50,
-    --     scale = 2,
-    --     speed = 30,
-    --     radius = 50,
-    --     clickableRadius = 20,
-    --     onClick = function()
-    --         local downKey = love.keyboard.getKeyFromScancode("s")
-    --         local upKey = love.keyboard.getKeyFromScancode("w")
-    --         if inDialogue == false then
-    --             inDialogue = true
-    --             SaveDialogue = LoveDialogue.play("dialogs/npc_save.ld", {
-    --                 enableFadeIn = false,
-    --                 enableFadeOut = false,
-    --                 fadeInDuration = 0,
-    --                 fadeOutDuration = 0,
-    --                 keys = {upKey, downKey, 'return'}
-    --             })
-    --         end
-    --         save_and_load.save(player, args.slot, G:getPlaytime(args.slot), "Zone du début")
-    --     end,
-    --     world = world,
-    --     camera = cam,
-    --     is_questgiver = true,
-    --     questgiverSpritesheet = love.graphics.newImage("assets/spritesheets/emotes/save_mark.png")
-    -- })
+    npc_random = NpcElement.new({
+        x = 570,
+        y = 150,
+        w = 50,
+        h = 50,
+        scale = 2,
+        speed = 30,
+        radius = 50,
+        clickableRadius = 20,
+        onClick = function()
+            local downKey = love.keyboard.getKeyFromScancode("s")
+            local upKey = love.keyboard.getKeyFromScancode("w")
+            if inDialogue == false then
+                inDialogue = true
+                SaveDialogue = LoveDialogue.play("dialogs/npc_save.ld", {
+                    enableFadeIn = false,
+                    enableFadeOut = false,
+                    fadeInDuration = 0,
+                    fadeOutDuration = 0,
+                    keys = {upKey, downKey, 'return'}
+                })
+            end
+            save_and_load.save(player, args.slot, G:getPlaytime(args.slot), "Zone du début")
+        end,
+        world = world,
+        camera = cam,
+        is_questgiver = true,
+        questgiverSpritesheet = love.graphics.newImage("assets/spritesheets/emotes/save_mark.png")
+    })
+
+    uiManager:registerElement("npc", "npc_random", npc_random)
     
     for key, npc in ipairs(npcs.npcs) do
         uiManager:registerElement("npc", "npc_"..npc.id , npc)
@@ -368,7 +370,7 @@ function map:update(dt)
 
         local npcs_ui = uiManager:findElements("npc", "^npc_")
         for _, npc in ipairs(npcs_ui) do
-            print("LOADED ", npc.id)
+            -- print("LOADED ", npc.id)
         end
     end
 end
