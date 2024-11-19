@@ -70,9 +70,9 @@ function testcombat:load(args)
 
     -- Create a window for each enemy, placing them centered at specified coordinates
     self.enemyWindows = {
-        createEnemyWindow(combatScene.enemies[1], 400, 150),
-        createEnemyWindow(combatScene.enemies[2], 600, 300),
-        createEnemyWindow(combatScene.enemies[3], 800, 450),
+        createEnemyWindow(combatScene.enemies[1], 900, 100),
+        createEnemyWindow(combatScene.enemies[2], 900, 300),
+        createEnemyWindow(combatScene.enemies[3], 900, 500),
     }
 end
 

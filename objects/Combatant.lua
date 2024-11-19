@@ -23,7 +23,8 @@ function Combatant:new(id, type, name, hp, attack, defense, speed, manaCost, cla
         protectAnimationPlaying = false,
         direction = "down",
         x = 0,
-        y = 0
+        y = 0,
+        effect = {}
     }
 
     if instance.spriteSheet ~= nil then
@@ -47,14 +48,53 @@ end
 function Combatant:chooseAction(allies, enemies, player)
     local bad = self.type == "Ally" and enemies or allies
     local good = self.type == "Ally" and allies or enemies 
+
     if self.classType == "warrior" then
         if #bad > 0 then
-            self:attackTarget(bad[math.random(#bad)])
+            -- Trouver l'ennemi avec le moins de hp
+            local target = bad[1]
+            for _, enemy in ipairs(bad) do
+                if enemy.hp < target.hp then
+                    target = enemy
+                end
+            end
+            self:attackTarget(target)
         else
             self:attackTarget(player)
         end
     elseif self.classType == "healer" then
-        self:healTarget(good[math.random(#good)])
+        -- Vérifier si tous les alliés sont full hp
+        local allFullHp = true
+        for _, ally in ipairs(good) do
+            if ally.hp < ally.maxHp then
+                allFullHp = false
+                break
+            end
+        end
+
+        if allFullHp then
+            -- Si tous les alliés sont full hp, attaquer l'ennemi avec le moins de hp
+            if #bad > 0 then
+                local target = bad[1]
+                for _, enemy in ipairs(bad) do
+                    if enemy.hp < target.hp then
+                        target = enemy
+                    end
+                end
+                self:attackTarget(target)
+            else
+                self:attackTarget(player)
+            end
+        else
+            -- Sinon, soigner l'allié avec le moins de hp
+            local target = good[1]
+            for _, ally in ipairs(good) do
+                if ally.hp < target.hp then
+                    target = ally
+                end
+            end
+            self:healTarget(target)
+        end
     elseif self.classType == "protector" then
         self:defendTarget(good[math.random(#good)])
     end
@@ -62,12 +102,15 @@ end
 
 function Combatant:attackTarget(target)
     if target.hp > 0 then
-        local damage = math.max(0, self.attack - target.defense)
+        target.effect = target.effect or {}
+        target.effect['protect'] = target.effect['protect'] or 0
+        local damage = math.max(0, self.attack - (target.defense + target.effect['protect']))
         target.hp = math.max(0, target.hp - damage)
         print(self.name .. " attaque " .. target.name .. " pour " .. damage .. " dégâts.")
         if target.hp <= 0 then
             print(target.name .. " est mort.")
         end
+        target.effect['protect'] = 0
     else
         print(target.name .. " est déjà mort.")
     end
@@ -90,6 +133,7 @@ end
 
 function Combatant:defendTarget(target)
     print(self.name .. " défend " .. target.name)
+    target.effect['protect'] = self.defense
     self.protectAnimationPlaying = true
     self.animations.protect:gotoFrame(1)  -- Start from the beginning
     self.animations.protect:resume()
