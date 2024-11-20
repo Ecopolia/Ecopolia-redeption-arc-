@@ -106,7 +106,7 @@ function love.load()
     local jsonData = file:read("*a")
     file:close()
     enemies:loadFromJson(jsonData)
-    
+
     -- Load scenery
     scenery:load()
 end

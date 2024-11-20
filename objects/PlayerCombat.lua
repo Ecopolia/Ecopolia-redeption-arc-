@@ -10,12 +10,12 @@ function PlayerCombat:new(playerBase)
         defense = playerBase.defense or 5,
         speed = playerBase.speed or 20,
         mana = playerBase.mana or 50,
-        inventory = playerBase.ecodex or {},  -- Récupère l'inventaire du joueur de base
+        inventory = playerBase.ecodex or {}, -- Récupère l'inventaire du joueur de base
         spriteSheet = playerBase.spriteSheet,
         animations = playerBase.animations,
-        allies = {},  -- Liste des alliés invoqués (vide au début du combat)
+        allies = {}, -- Liste des alliés invoqués (vide au début du combat)
         currentAnimation = nil,
-        direction = "down",
+        direction = "down"
     }
 
     setmetatable(instance, PlayerCombat)
@@ -37,12 +37,12 @@ function PlayerCombat:chooseSummon()
     end
 
     -- Sélection de l'utilisateur (remplacer par un choix utilisateur dans une vraie interface)
-    local choice = tonumber(io.read())  -- Simule la sélection via la console
+    local choice = tonumber(io.read()) -- Simule la sélection via la console
 
     -- Vérifier si le choix est valide
     if choice and self.inventory[choice] then
         local selectedAlly = self.inventory[choice]
-        
+
         -- Vérifier si le joueur a assez de mana
         if self.mana >= selectedAlly.manaCost then
             print("Vous avez choisi d'invoquer " .. selectedAlly.name)

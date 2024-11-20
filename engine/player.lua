@@ -79,7 +79,7 @@ function Player:update(dt)
                 isMoving = true
             end
         end
-    
+
         if love.keyboard.isDown(leftKey) then
             self.direction = "left"
             if not collisionSides.left then -- Only move if not colliding on the left
@@ -88,7 +88,7 @@ function Player:update(dt)
                 isMoving = true
             end
         end
-    
+
         if love.keyboard.isDown(downKey) then
             self.direction = "down"
             if not collisionSides.bottom then -- Only move if not colliding at the bottom
@@ -97,7 +97,7 @@ function Player:update(dt)
                 isMoving = true
             end
         end
-    
+
         if love.keyboard.isDown(upKey) then
             self.direction = "up"
             if not collisionSides.top then -- Only move if not colliding at the top

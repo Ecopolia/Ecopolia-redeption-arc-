@@ -104,7 +104,7 @@ function Button:update(dt)
         if mx and my then
             -- Check if the mouse position is within the button's bounds
             local isHovered = mx >= self.x and mx <= self.x + self.width and my >= self.y and my <= self.y + self.height
-    
+
             -- Update hover state and call hover/unhover callbacks if needed
             if isHovered and not self.hovered then
                 self.hovered = true

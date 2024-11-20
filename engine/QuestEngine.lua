@@ -3,7 +3,7 @@ QuestEngine.__index = QuestEngine
 
 function QuestEngine:new()
     local instance = {
-        quests = {}  -- Stocke toutes les quêtes par ID
+        quests = {} -- Stocke toutes les quêtes par ID
     }
     setmetatable(instance, QuestEngine)
     return instance
@@ -20,16 +20,11 @@ function QuestEngine:loadFromJson(jsonString)
 
     for _, questData in ipairs(questsData) do
         local rewardFunction = function()
-            print(questData.rewardMessage)  -- Exemple simple d'une récompense
+            print(questData.rewardMessage) -- Exemple simple d'une récompense
         end
 
-        local quest = Quest:new(
-            questData.id,
-            questData.name,
-            questData.description,
-            questData.prerequisites,
-            rewardFunction
-        )
+        local quest = Quest:new(questData.id, questData.name, questData.description, questData.prerequisites,
+            rewardFunction)
         self:addQuest(quest)
     end
 end

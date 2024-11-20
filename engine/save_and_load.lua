@@ -42,10 +42,10 @@ end
 
 function save_and_load.delete(slot)
     local savefile = getSaveFileName(slot)
-    
+
     -- Attempt to remove the save file
     local success, err = os.remove(savefile)
-    
+
     if success then
         print("Save file " .. savefile .. " deleted successfully.")
     else

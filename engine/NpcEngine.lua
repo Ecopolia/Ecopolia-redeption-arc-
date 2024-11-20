@@ -4,7 +4,7 @@ NpcEngine.__index = NpcEngine
 function NpcEngine.new(config)
 
     local instance = {
-        npcs = {},  -- Stocke toutes les quêtes par ID
+        npcs = {}, -- Stocke toutes les quêtes par ID
         world = G.WORLD,
         camera = G.CAMERA
     }
@@ -59,7 +59,7 @@ end
 
 function NpcEngine:setNpcOnClick(npcId, onClickFunction)
     for _, npc in ipairs(npcs) do
-        if npc.id == npcId then  -- assuming each NPC has a unique ID
+        if npc.id == npcId then -- assuming each NPC has a unique ID
             npc:setOnClick(onClickFunction)
             break
         end
@@ -71,17 +71,16 @@ function NpcEngine:isVisible(npc)
     -- Get screen boundaries based on camera position and screen dimensions
     local screenX, screenY = _camera:worldCoords(0, 0)
     local screenWidth, screenHeight = love.graphics.getDimensions()
-    
+
     local npcRight = npc.x + 50
     local npcBottom = npc.y + 50
 
-    return npc.x < screenX + screenWidth and npcRight > screenX and
-           npc.y < screenY + screenHeight and npcBottom > screenY
+    return npc.x < screenX + screenWidth and npcRight > screenX and npc.y < screenY + screenHeight and npcBottom >
+               screenY
 end
 
 function NpcEngine:updateVisibility(uiManager, uiNpcElements)
     -- Get all NPC elements currently registered in the UiManager's "npc" scope
-    
 
     for _, npc in ipairs(uiNpcElements) do
         -- Check if the NPC is visible on the screen
@@ -99,10 +98,8 @@ function NpcEngine:updateVisibility(uiManager, uiNpcElements)
     end
 end
 
-
 function NpcEngine:update(dt, uiManager, uiNpcElements)
     self:updateVisibility(uiManager, uiNpcElements)
 end
-
 
 return NpcEngine

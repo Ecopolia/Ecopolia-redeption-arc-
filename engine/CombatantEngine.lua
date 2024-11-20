@@ -4,7 +4,7 @@ CombatantEngine.__index = CombatantEngine
 -- Constructeur du CombatantEngine
 function CombatantEngine.new(config)
     local instance = {
-        combatants = {},  -- Stocke tous les combattants
+        combatants = {} -- Stocke tous les combattants
     }
     setmetatable(instance, CombatantEngine)
     return instance
@@ -16,18 +16,9 @@ function CombatantEngine:loadFromJson(jsonData)
 
     for _, combatantConfig in ipairs(combatantData) do
         -- Crée un nouveau combattant à partir des données du fichier JSON
-        local combatant = Combatant:new(
-            combatantConfig.id,
-            combatantConfig.type,
-            combatantConfig.name,
-            combatantConfig.hp,
-            combatantConfig.attack,
-            combatantConfig.defense,
-            combatantConfig.speed,
-            combatantConfig.manaCost,
-            combatantConfig.classType,
-            combatantConfig.spriteSheet
-        )
+        local combatant = Combatant:new(combatantConfig.id, combatantConfig.type, combatantConfig.name,
+            combatantConfig.hp, combatantConfig.attack, combatantConfig.defense, combatantConfig.speed,
+            combatantConfig.manaCost, combatantConfig.classType, combatantConfig.spriteSheet)
 
         -- Ajoute le combattant au moteur
         self:addCombatant(combatant)
