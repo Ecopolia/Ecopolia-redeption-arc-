@@ -4,7 +4,7 @@ Combatant.__index = Combatant
 function Combatant:new(id, type, name, hp, attack, defense, speed, manaCost, classType, spriteSheet, animations)
     local instance = {
         id = id or uuid(),
-        type = type or "Ally",  
+        type = type or "Ally",
         name = name or (type == "Enemy" and "Ennemi" or "Allié"),
         hp = hp or (type == "Enemy" and 80 or 50),
         maxHp = hp,
@@ -33,13 +33,13 @@ function Combatant:new(id, type, name, hp, attack, defense, speed, manaCost, cla
         instance.animations.base = anim8.newAnimation(instance.grid(1, '1-8'), 0.2)
     end
     instance.attackGrid = anim8.newGrid(64, 64, instance.attackSheet:getWidth(), instance.attackSheet:getHeight())
-    
+
     if instance.classType == 'healer' then
         instance.animations.heal = anim8.newAnimation(instance.attackGrid('1-8', 2), 0.1, 'pauseAtEnd')
     elseif instance.classType == 'protector' then
         instance.animations.protect = anim8.newAnimation(instance.attackGrid('1-8', 7), 0.1, 'pauseAtEnd')
     end
-    
+
     instance.currentAnimation = instance.animations.base
     setmetatable(instance, Combatant)
     return instance
@@ -47,7 +47,7 @@ end
 
 function Combatant:chooseAction(allies, enemies, player)
     local bad = self.type == "Ally" and enemies or allies
-    local good = self.type == "Ally" and allies or enemies 
+    local good = self.type == "Ally" and allies or enemies
 
     if self.classType == "warrior" then
         if #bad > 0 then
@@ -121,10 +121,10 @@ function Combatant:healTarget(target)
         local healing = self.attack
         target.hp = math.min(target.hp + healing, target.maxHp)
         print(self.name .. " soigne " .. target.name .. " pour " .. healing .. " HP.")
-        
+
         -- Set heal animation to play once
         self.healAnimationPlaying = true
-        self.animations.heal:gotoFrame(1)  -- Start from the beginning
+        self.animations.heal:gotoFrame(1) -- Start from the beginning
         self.animations.heal:resume()
     else
         print(target.name .. " est mort")
@@ -135,18 +135,18 @@ function Combatant:defendTarget(target)
     print(self.name .. " défend " .. target.name)
     target.effect['protect'] = self.defense
     self.protectAnimationPlaying = true
-    self.animations.protect:gotoFrame(1)  -- Start from the beginning
+    self.animations.protect:gotoFrame(1) -- Start from the beginning
     self.animations.protect:resume()
 end
 
 function Combatant:update(dt)
     -- Update base animation continuously
     self.animations.base:update(dt)
-    
+
     -- Update heal animation if it's playing
     if self.healAnimationPlaying then
         self.animations.heal:update(dt)
-        
+
         -- Stop playing heal animation when it finishes
         if self.animations.heal.status == "paused" then
             self.healAnimationPlaying = false
@@ -154,7 +154,7 @@ function Combatant:update(dt)
     end
     if self.protectAnimationPlaying then
         self.animations.protect:update(dt)
-        
+
         -- Stop playing heal animation when it finishes
         if self.animations.protect.status == "paused" then
             self.protectAnimationPlaying = false

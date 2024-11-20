@@ -132,7 +132,6 @@ function UiManager:hideScope(scope)
     end
 end
 
-
 -- Find a UI element by a pattern in a specific scope
 function UiManager:findElement(scope, pattern)
     -- Check if the scope exists
@@ -143,7 +142,7 @@ function UiManager:findElement(scope, pattern)
     -- Iterate through elements in the scope to find a match
     for name, data in pairs(self.scopedElements[scope]) do
         if name:match(pattern) then
-            return data.element  -- Return the element if the pattern matches
+            return data.element -- Return the element if the pattern matches
         end
     end
 

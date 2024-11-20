@@ -3,8 +3,11 @@ ParticleManager.__index = ParticleManager
 
 function ParticleManager.new()
     local self = setmetatable({}, ParticleManager)
-    
-    self.particles = {x = 0, y = 0}  -- Main particle container
+
+    self.particles = {
+        x = 0,
+        y = 0
+    } -- Main particle container
 
     return self
 end
@@ -37,7 +40,7 @@ function ParticleManager:addParticleSystem(imagePath, position, config)
         texturePreset = config.texturePreset or "",
         shaderPath = config.shaderPath or "",
         shaderFilename = config.shaderFilename or "",
-        position = position,
+        position = position
     })
 end
 
@@ -48,7 +51,7 @@ function ParticleManager:update(dt)
             -- Emit particles at the start if configured
             if particle.emitAtStart > 0 then
                 particle.system:emit(particle.emitAtStart)
-                particle.emitAtStart = 0  -- Emit only once
+                particle.emitAtStart = 0 -- Emit only once
             end
         end
     end
@@ -59,7 +62,7 @@ function ParticleManager:draw()
         love.graphics.setBlendMode(particle.blendMode)
         love.graphics.draw(particle.system, particle.position.x, particle.position.y)
     end
-    love.graphics.setBlendMode("alpha")  -- Reset blend mode
+    love.graphics.setBlendMode("alpha") -- Reset blend mode
 end
 
 return ParticleManager

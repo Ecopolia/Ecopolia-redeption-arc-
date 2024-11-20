@@ -5,18 +5,18 @@ CombatScene.__index = CombatScene
 -- Fonction de création d'une nouvelle scène de combat
 function CombatScene:new(player, enemies)
     local instance = {
-        player = player,  -- Joueur de la scène de combat
-        enemies = enemies,  -- Liste des ennemis
+        player = player, -- Joueur de la scène de combat
+        enemies = enemies, -- Liste des ennemis
         allies = {},
         turnOrders = {},
         currentTurnIndex = 0,
-        gameState = "start",  -- État du jeu (playerTurn, enemyTurn, etc.)
-        actionSelected = nil,  -- Action sélectionnée par le joueur (attack, summon)
-        targetIndex = 1,  -- Indice de la cible actuelle pour l'attaque ou l'invocation
-        choosingTarget = false,  -- Si le joueur choisit une cible
-        choosingAlly = false,  -- Si le joueur choisit un allié à invoquer
-        alliesAlive = {},  -- Liste des alliés vivants
-        enemiesAlive = {},  -- Liste des ennemis vivants
+        gameState = "start", -- État du jeu (playerTurn, enemyTurn, etc.)
+        actionSelected = nil, -- Action sélectionnée par le joueur (attack, summon)
+        targetIndex = 1, -- Indice de la cible actuelle pour l'attaque ou l'invocation
+        choosingTarget = false, -- Si le joueur choisit une cible
+        choosingAlly = false, -- Si le joueur choisit un allié à invoquer
+        alliesAlive = {}, -- Liste des alliés vivants
+        enemiesAlive = {}, -- Liste des ennemis vivants
         victory = false
     }
 
@@ -55,7 +55,7 @@ end
 
 -- Calcule l'ordre des tours en utilisant alliesAlive et enemiesAlive
 function CombatScene:calculateTurnOrder()
-    self:updateAlives()  -- Met à jour les listes des vivants
+    self:updateAlives() -- Met à jour les listes des vivants
 
     -- Fusionner les alliés et ennemis vivants pour l'ordre de tour
     local allCombatants = {self.player}
@@ -67,7 +67,9 @@ function CombatScene:calculateTurnOrder()
     end
 
     -- Trier par vitesse (du plus rapide au plus lent)
-    table.sort(allCombatants, function(a, b) return a.speed > b.speed end)
+    table.sort(allCombatants, function(a, b)
+        return a.speed > b.speed
+    end)
     self.turnOrders = allCombatants
     self.currentTurnIndex = 1
 end
@@ -95,14 +97,14 @@ end
 -- Gère le processus du tour
 function CombatScene:processTurn()
     local currentCombatant = nil
-    
+
     if #self.turnOrders < self.currentTurnIndex then
         self.currentTurnIndex = self.currentTurnIndex + 1
-    else 
+    else
         currentCombatant = self.turnOrders[self.currentTurnIndex]
     end
 
-    if currentCombatant ~= nil then 
+    if currentCombatant ~= nil then
         if currentCombatant.hp <= 0 then
             self.currentTurnIndex = self.currentTurnIndex + 1
             self:updateAlives()
@@ -121,14 +123,14 @@ function CombatScene:processTurn()
         self.currentTurnIndex = 1
         self:calculateTurnOrder()
     end
-    self:updateAlives() 
+    self:updateAlives()
 end
 
 -- Choisir une cible pour attaquer
 function CombatScene:chooseTarget()
     self.gameState = "chooseTarget"
     if #self.enemies > 0 then
-        self.targetIndex = 1  -- Commence à la première cible (premier ennemi)
+        self.targetIndex = 1 -- Commence à la première cible (premier ennemi)
         self.choosingTarget = true
     end
 end
@@ -137,7 +139,7 @@ end
 function CombatScene:chooseAlly()
     self.gameState = "chooseAlly"
     if #self.player.inventory > 0 then
-        self.targetIndex = 1  -- Commence avec le premier allié de l'inventaire
+        self.targetIndex = 1 -- Commence avec le premier allié de l'inventaire
         self.choosingAlly = true
     else
         print("Pas d'alliés disponibles dans l'inventaire.")
@@ -151,10 +153,14 @@ end
 function CombatScene:changeTargetSelection(key)
     if key == "up" then
         self.targetIndex = self.targetIndex - 1
-        if self.targetIndex < 1 then self.targetIndex = #self.enemies end
+        if self.targetIndex < 1 then
+            self.targetIndex = #self.enemies
+        end
     elseif key == "down" then
         self.targetIndex = self.targetIndex + 1
-        if self.targetIndex > #self.enemies then self.targetIndex = 1 end
+        if self.targetIndex > #self.enemies then
+            self.targetIndex = 1
+        end
     end
 end
 
@@ -162,10 +168,14 @@ end
 function CombatScene:changeAllySelection(key)
     if key == "up" then
         self.targetIndex = self.targetIndex - 1
-        if self.targetIndex < 1 then self.targetIndex = #self.player.inventory end
+        if self.targetIndex < 1 then
+            self.targetIndex = #self.player.inventory
+        end
     elseif key == "down" then
         self.targetIndex = self.targetIndex + 1
-        if self.targetIndex > #self.player.inventory then self.targetIndex = 1 end
+        if self.targetIndex > #self.player.inventory then
+            self.targetIndex = 1
+        end
     end
 end
 
@@ -227,7 +237,7 @@ end
 -- Dessine la scène
 function CombatScene:draw()
     -- Affichage des stats du joueur
-    
+
     love.graphics.print("Joueur: " .. self.player.hp .. " HP | Mana: " .. self.player.mana, 10, 10)
 
     -- Afficher les ennemis et leurs stats

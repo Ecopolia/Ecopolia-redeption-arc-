@@ -42,10 +42,10 @@ end
 
 function save_and_load.delete(slot)
     local savefile = getSaveFileName(slot)
-    
+
     -- Attempt to remove the save file
     local success, err = os.remove(savefile)
-    
+
     if success then
         print("Save file " .. savefile .. " deleted successfully.")
     else
@@ -78,6 +78,7 @@ function save_and_load.get_quest_data(slot, quest_id)
         for _, quest in ipairs(data_collection.quests) do
             if quest.id == quest_id then
                 return quest
+            end
         end
     end
     return nil
