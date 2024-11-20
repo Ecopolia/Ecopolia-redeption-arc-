@@ -72,12 +72,16 @@ function save_and_load.load(slot)
     end
 end
 
-function save_and_load.get_quest_data(quest_id)
-    for _, quest in ipairs(quests.quests) do
-        if quest.id == quest_id then
-            return quest
+function save_and_load.get_quest_data(slot, quest_id)
+    local data_collection = save_and_load.load(slot)
+    if data_collection and data_collection.quests then
+        for _, quest in ipairs(data_collection.quests) do
+            if quest.id == quest_id then
+                return quest
+            end
         end
     end
+    return nil
 end
 
 return save_and_load
