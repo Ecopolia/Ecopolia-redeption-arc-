@@ -23,7 +23,7 @@ function QuestEngine:loadFromJson(jsonString)
             print(questData.rewardMessage) -- Exemple simple d'une récompense
         end
 
-        local quest = Quest:new(questData.id, questData.name, questData.description, questData.prerequisites,
+        local quest = Quest:new(questData.id, questData.name, questData.description, questData.prerequisites, questData.rewardText,
             rewardFunction)
         self:addQuest(quest)
     end

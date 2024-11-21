@@ -1,13 +1,14 @@
 Quest = {}
 Quest.__index = Quest
 
-function Quest:new(id, name, description, prerequisites, rewardFunction)
+function Quest:new(id, name, description, prerequisites, rewardText, rewardFunction)
     local instance = {
         id = id or uuid(),
         name = name,
         description = description,
         prerequisites = prerequisites or {},
         isCompleted = false,
+        rewardText = rewardText,
         rewardFunction = rewardFunction or function()
         end -- Fonction de récompense par défaut
     }

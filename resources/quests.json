@@ -1,16 +1,23 @@
 [
     {
         "id": 1,
-        "name": "Parler",
-        "description": "Parler au mec chelou qui bloque l'entré",
+        "name": "Tuto",
+        "description": "Utilisez les touches zqsd pour vous déplacer",
         "prerequisites": [],
-        "rewardMessage": "Vous avez gagné 100 pièces d'or !"
+        "rewardText": "Vous avez appris à vous deplacer"
     },
     {
         "id": 2,
-        "name": "CHASSER",
-        "description": "Vaincre le dragon après avoir trouvé l'épée.",
+        "name": "L'EcoSage",
+        "description": "Parler avec l'EcoSage",
         "prerequisites": [1],
-        "rewardMessage": "Vous avez vaincu le dragon et gagné 500 pièces d'or !"
+        "rewardText": "Vous avez appris à parler"
+    },
+    {
+        "id": 3,
+        "name": "Le Combat",
+        "description": "Protéger les villageois",
+        "prerequisites": [2],
+        "rewardText": "Vous avez appris à combattre"
     }
 ]

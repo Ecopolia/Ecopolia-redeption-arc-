@@ -73,3 +73,17 @@ function findbyid(array, id)
         end
     end
 end
+
+function getNextQuest(quests)
+    local nextQuest = nil
+
+    for _, quest in ipairs(quests.quests) do
+        if not quest.isCompleted then
+            if nextQuest == nil or quest.id < nextQuest.id then
+                nextQuest = quest
+            end
+        end
+    end
+
+    return nextQuest
+end

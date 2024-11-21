@@ -11,11 +11,9 @@
         "clickableRadius": 20,
         "color": [100, 150, 200, 1],
         "mode": "predefined-path",
-        "path": [{"x": 560, "y": 377}, {"x": 560, "y": 377}],
         "waitInterval": 3,
         "debug": false,
         "questids": [1],
-        "is_questgiver": true,
         "description": "Vieil Eldor, le Sage du village"
     },
     {
@@ -30,11 +28,9 @@
         "clickableRadius": 20,
         "color": [100, 200, 200, 1],
         "mode": "predefined-path",
-        "path": [{"x": 580, "y": 380}, {"x": 580, "y": 380}],
         "waitInterval": 3,
         "debug": false,
         "questids": [1],
-        "is_questgiver": false,
         "description": "Naya, l’apprentie guérisseuse"
     },
     {
@@ -52,7 +48,7 @@
         "path": [{"x": 350, "y": 200}, {"x": 360, "y": 190}],
         "debug": false,
         "questids": [3],
-        "description": "Raoul, le Bûcheron rebelle"
+        "description": "EcoSage"
     },
     {
         "id": 4,

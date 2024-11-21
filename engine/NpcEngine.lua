@@ -36,8 +36,8 @@ function NpcEngine:loadFromJson(jsonData)
             color = npcConfig.color,
             world = self.world,
             camera = self.camera,
-            path = npcConfig.path or {},
-            mode = npcConfig.mode or "random-in-area",
+            path = npcConfig.path or {{x = npcConfig.x, y = npcConfig.y}},
+            mode = npcConfig.mode or "predefined-path",
             waitInterval = npcConfig.waitInterval or 0,
             debug = npcConfig.debug or false,
             is_questgiver = npcConfig.is_questgiver or false,
@@ -52,18 +52,9 @@ function NpcEngine:loadFromJson(jsonData)
     end
 end
 
--- Ajoute une quête au moteur
+-- Ajoute un npc au moteur
 function NpcEngine:addNpc(npc)
     table.insert(self.npcs, npc)
-end
-
-function NpcEngine:setNpcOnClick(npcId, onClickFunction)
-    for _, npc in ipairs(npcs) do
-        if npc.id == npcId then  -- assuming each NPC has a unique ID
-            npc:setOnClick(onClickFunction)
-            break
-        end
-    end
 end
 
 function NpcEngine:isVisible(npc)

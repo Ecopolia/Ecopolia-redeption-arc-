@@ -7,6 +7,9 @@ local zoomFactor = 40
 local mapscale = 0.5
 local collision = true
 local colliders = {}
+local rewardText = nil -- Texte de la récompense
+local rewardTimer = 0 -- Durée pendant laquelle afficher la récompense
+
 
 local save_and_load = require 'engine/save_and_load'
 
@@ -157,6 +160,12 @@ function map:load(args)
         colliders = gamemap:initWalls(gamemap.layers["Wall"], world)
     end
 
+    z = false
+    q = false
+    s = false
+    d = false
+    inDialogue = false
+
     spriteSheet = love.graphics.newImage("assets/spritesheets/character/maincharacter.png")
     grid = anim8.newGrid(64, 64, spriteSheet:getWidth(), spriteSheet:getHeight())
     local playerData = nil
@@ -164,6 +173,12 @@ function map:load(args)
         print("Loaded with slot:", args.slot)
         G:setCurrentSlot(args.slot) -- Set the current slot
         playerData = save_and_load.load(args.slot)
+    end
+
+    for key, quest in ipairs(quests.quests) do
+        if save_and_load.get_quest_data(args.slot, quest.id) then
+            quest.isCompleted = save_and_load.get_quest_data(args.slot, quest.id).isCompleted
+        end
     end
 
     if playerData then
@@ -180,8 +195,8 @@ function map:load(args)
         for key2, questid in ipairs(npc.questids) do
             quest = findbyid(quests.quests, questid)
             if quest.isCompleted == false then 
-                for key3, needquest in ipairs(quest.prerequisites) do
-                    if save_and_load.get_quest_data(args.slot, needquest).isCompleted == false then
+                for key3, needquestid in ipairs(quest.prerequisites) do
+                    if save_and_load.get_quest_data(args.slot, needquestid).isCompleted == false then
                         render = false
                     end
                 end
@@ -194,6 +209,8 @@ function map:load(args)
             uiManager:registerElement("npc", "npc_"..npc.id , npc)
         end
     end
+
+    questInProgress = getNextQuest(quests)
 
     -- uiManager:registerElement("npc", "npc_random", npc_random)
 
@@ -280,7 +297,6 @@ function map:load(args)
     memGraph = debugGraph:new('mem', 20, 40, 50, 30, 0.5, 'mem', love.graphics.newFont(16))
     dtGraph = debugGraph:new('custom', 20, 70, 50, 30, 0.5, 'custom', love.graphics.newFont(16))
 
-
     lastPlayerPosition = { x = player.x, y = player.y }
     visibilityCheckDistance = 50
     firstcheck = true
@@ -293,6 +309,27 @@ function map:draw()
         self.pipeline:run()
     end
 
+    if questInProgress then
+        love.graphics.setColor(1, 1, 1, 1) -- Couleur blanche pour le texte
+        love.graphics.setFont(G.Fonts.m6x11plus_medium) -- Remplacez par la police que vous utilisez
+        local textX = G.WINDOW.WIDTH - 300 -- Position X en haut à droite
+        local textY = 10 -- Position Y
+        love.graphics.printf("Quête : " .. questInProgress.name, textX, textY, 280, "right")
+        love.graphics.printf("Description : " .. questInProgress.description, textX, textY + 20, 280, "right")
+    end
+
+    -- Affichage du texte de récompense en haut de l'écran
+    if rewardText then
+        love.graphics.setColor(1, 1, 0, 1) -- Couleur jaune pour attirer l'attention
+        love.graphics.setFont(G.Fonts.m6x11plus_medium) -- Police utilisée (à adapter selon votre projet)
+        local textX = G.WINDOW.WIDTH / 2 -- Centré horizontalement
+        local textY = 20 -- Décalage vertical en haut
+        love.graphics.printf(rewardText, textX - 200, textY, 400, "center") -- Affiche le texte centré
+        love.graphics.setColor(1, 1, 1, 1) -- Réinitialise la couleur
+    end
+
+    
+
     if version == 'dev-mode' and debug == true then
         -- Draw graphs
         fpsGraph:draw()
@@ -304,9 +341,119 @@ function map:draw()
         SaveDialogue:draw()
     end
 
+    if questDialogue then
+        questDialogue:draw()
+    end
+
 end
 
 function map:update(dt)
+
+    -- Mise à jour du timer pour le texte de récompense
+    if rewardText and rewardTimer > 0 then
+        rewardTimer = rewardTimer - dt
+        if rewardTimer <= 0 then
+            rewardText = nil -- Supprime le texte après expiration du timer
+        end
+    end
+
+    if not questInProgress then
+        questInProgress = getNextQuest(quests)
+    end
+
+    if questInProgress and questInProgress.id == 1 then
+        -- Logique pour la quête 1
+
+        if z and q and s and d then
+            movementKeysPressed = true
+        else
+            movementKeysPressed = false
+        end
+
+        if not questDialogue and not inDialogue then
+            inDialogue = true
+            questDialogue = LoveDialogue.play("dialogs/quest_1.ld", {
+                enableFadeIn = false,
+                enableFadeOut = false,
+                fadeInDuration = 0,
+                fadeOutDuration = 0,
+            })
+        end
+    
+        if questDialogue and not questDialogue.isActive then
+            -- Actions après la fin du dialogue de la quête 1
+            if movementKeysPressed then
+                inDialogue = false
+                questDialogue = nil
+                questInProgress:complete()
+                rewardText = questInProgress.rewardText
+                rewardTimer = 3
+                questInProgress = getNextQuest(quests)
+            else
+                questDialogue = LoveDialogue.play("dialogs/quest_1retry.ld", {
+                    enableFadeIn = false,
+                    enableFadeOut = false,
+                    fadeInDuration = 0,
+                    fadeOutDuration = 0,
+                })
+            end
+        end
+    end
+    
+    if questInProgress and questInProgress.id == 2 then
+        -- Logique pour la quête 2
+        if not npcquest2 then
+            npcquest2 = findbyid(npcs.npcs, 3)
+            npcquest2:setQuestGiverState(true)
+            npcquest2.onClick = (function()
+                inDialogue = true
+                npcquest2Click = true
+                questDialogue = LoveDialogue.play("dialogs/quest_2.ld", {
+                    enableFadeIn = false,
+                    enableFadeOut = false,
+                    fadeInDuration = 0,
+                    fadeOutDuration = 0,
+                })
+            end)
+        end
+    
+        if questDialogue and not questDialogue.isActive and npcquest2Click then
+            -- Actions après la fin du dialogue de la quête 2
+            inDialogue = false
+            npcquest2:setQuestGiverState(false)
+            questInProgress:complete()
+            rewardText = questInProgress.rewardText
+            rewardTimer = 3
+            questInProgress = getNextQuest(quests)
+        end
+    end
+    
+    
+    if questInProgress and questInProgress.id == 3 then
+        if not npcquest3 then
+            npcquest3 = findbyid(npcs.npcs, 1)
+            npcquest3:setQuestGiverState(true)
+            npcquest3.onClick = (function()
+                inDialogue = true
+                npcquest3Click = true
+                questDialogue = LoveDialogue.play("dialogs/quest_3.ld", {
+                    enableFadeIn = false,
+                    enableFadeOut = false,
+                    fadeInDuration = 0,
+                    fadeOutDuration = 0,
+                })
+            end)
+        end
+
+        if questDialogue and not questDialogue.isActive and npcquest3Click and inDialogue == true then
+            -- Actions après la fin du dialogue de la quête 3
+            inDialogue = false
+            npcquest3:setQuestGiverState(false)
+            self.setScene('testcombat')
+        end
+    end
+    
+    
 
     if mapLoaded then
         if player then
@@ -363,6 +510,10 @@ function map:update(dt)
             SaveDialogue:update(dt)
         end
 
+        if questDialogue then
+            questDialogue:update(dt)
+        end
+
         if debug then
             fpsGraph:update(dt)
             memGraph:update(dt)
@@ -394,8 +545,23 @@ function map:keypressed(key)
             collision = true
         end
     end
+    if key == 'z' then
+        z = true
+    end
+    if key == 'q' then
+        q = true
+    end
+    if key == 's' then
+        s = true
+    end
+    if key == 'd' then
+        d = true
+    end
     if SaveDialogue then
         SaveDialogue:keypressed(key)
+    end
+    if questDialogue then
+        questDialogue:keypressed(key)
     end
     if key == 'escape' then
         if echapWindow.visible == false and inDialogue == false then 
