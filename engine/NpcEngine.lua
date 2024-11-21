@@ -82,7 +82,6 @@ end
 function NpcEngine:updateVisibility(uiManager, uiNpcElements)
     -- Get all NPC elements currently registered in the UiManager's "npc" scope
     
-
     for _, npc in ipairs(uiNpcElements) do
         -- Check if the NPC is visible on the screen
         local isVisible = self:isVisible(npc)

@@ -172,41 +172,25 @@ function map:load(args)
     end
 
     player.anim = player.animations.down
-
-    npc_random = NpcElement.new({
-        x = 570,
-        y = 150,
-        w = 50,
-        h = 50,
-        scale = 2,
-        speed = 30,
-        radius = 50,
-        clickableRadius = 20,
-        onClick = function()
-            local downKey = love.keyboard.getKeyFromScancode("s")
-            local upKey = love.keyboard.getKeyFromScancode("w")
-            if inDialogue == false then
-                inDialogue = true
-                SaveDialogue = LoveDialogue.play("dialogs/npc_save.ld", {
-                    enableFadeIn = false,
-                    enableFadeOut = false,
-                    fadeInDuration = 0,
-                    fadeOutDuration = 0,
-                    keys = {upKey, downKey, 'return'}
-                })
-            end
-            save_and_load.save(player, args.slot, G:getPlaytime(args.slot), "Zone du début")
-        end,
-        world = world,
-        camera = cam,
-        is_questgiver = true,
-        questgiverSpritesheet = love.graphics.newImage("assets/spritesheets/emotes/save_mark.png")
-    })
-
-    uiManager:registerElement("npc", "npc_random", npc_random)
     
     for key, npc in ipairs(npcs.npcs) do
-        uiManager:registerElement("npc", "npc_"..npc.id , npc)
+        local render = true
+        for key2, questid in ipairs(npc.questids) do
+            quest = findbyid(quests.quests, questid)
+            if quest.isCompleted == false then 
+                for key3, needquest in ipairs(quest.prerequisites) do
+                    if save_and_load.get_quest_data(args.slot, needquest).isCompleted == false then
+                        render = false
+                    end
+                end
+            else
+                render = false
+            end
+        end
+        
+        if render == true then
+            uiManager:registerElement("npc", "npc_"..npc.id , npc)
+        end
     end
 
     -- uiManager:registerElement("npc", "npc_random", npc_random)
@@ -236,11 +220,11 @@ function map:load(args)
     uiManager:hideElement('map', 'echapWindow')
 
     local returnTitleButton = Button.new({
-        text = "[shake=0.4][breathe=0.2]Return to Main Menu[/shake][/breathe]",
+        text = "[shake=0.4][breathe=0.2]Retour au menu principal[/shake][/breathe]",
         dsfull = false,
-        x = echapWindow.x + (400 - 220) / 2, -- Center horizontally in echapWindow
-        y = echapWindow.y + (500 - 60) / 2,  -- Center vertically in echapWindow
-        w = 220,
+        x = echapWindow.x + (300 - 200) / 2, -- Center horizontally in echapWindow
+        y = echapWindow.y + (400 - 60) / 2,  -- Center vertically in echapWindow
+        w = 300,
         h = 60,
         z = 11,
         onClick = function()
@@ -258,14 +242,37 @@ function map:load(args)
             font = G.Fonts.m6x11plus_medium
         }
     })
+
+    local saveButton = Button.new({
+        text = "[shake=0.4][breathe=0.2]Sauvegarder[/shake][/breathe]",
+        dsfull = false,
+        x = echapWindow.x + (400 - 220) / 2, -- Center horizontally in echapWindow
+        y = echapWindow.y + (600 - 60) / 2,  -- Center vertically in echapWindow
+        w = 220,
+        h = 60,
+        z = 11,
+        onClick = function()
+            uiManager:hideElement("map", "echapWindow")
+            uiManager:hideElement("map", "returnTitleButton")
+            uiManager:hideElement("map", "saveButton")
+            save_and_load.save(player, args.slot, G:getPlaytime(args.slot), "Zone du début")
+        end,
+        css = {
+            backgroundColor = {0, 0.5, 0},
+            hoverBackgroundColor = {0, 1, 0},
+            textColor = {1, 1, 1},
+            hoverTextColor = {0, 0, 0},
+            borderColor = {1, 1, 1},
+            borderRadius = 10,
+            font = G.Fonts.m6x11plus_medium
+        }
+    })
     
     -- Register the button in the UI Manager within the 'map' scene context for echapWindow
     uiManager:registerElement("map", "returnTitleButton", returnTitleButton)
     uiManager:hideElement("map", "returnTitleButton")
-
-
-    npc1 = uiManager:getElement('npc', 'npc_1')
-    npc1.onClick = function() self.setScene('testcombat') end
+    uiManager:registerElement("map", "saveButton", saveButton)
+    uiManager:hideElement("map", "saveButton")
 
     fpsGraph = debugGraph:new('fps', 20, 10, 50, 30, 0.5, 'fps', love.graphics.newFont(16))
     memGraph = debugGraph:new('mem', 20, 40, 50, 30, 0.5, 'mem', love.graphics.newFont(16))
@@ -354,10 +361,13 @@ function map:update(dt)
             SaveDialogue:update(dt)
         end
 
-        fpsGraph:update(dt)
-        memGraph:update(dt)
-        dtGraph:update(dt, math.floor(dt * 1000))
-        dtGraph.label = 'DT: ' .. math.round(dt, 4)
+        if debug then
+            fpsGraph:update(dt)
+            memGraph:update(dt)
+            dtGraph:update(dt, math.floor(dt * 1000))
+            dtGraph.label = 'DT: ' .. math.round(dt, 4)
+            print(love.mouse.getPosition())
+        end
 
     end
 end
@@ -389,10 +399,12 @@ function map:keypressed(key)
         if echapWindow.visible == false and inDialogue == false then 
             uiManager:showElement('map', 'echapWindow')
             uiManager:showElement("map", "returnTitleButton")
+            uiManager:showElement("map", "saveButton")
             -- uiManager:freezeElement("npc", "npc_random")
         elseif echapWindow.visible == true and inDialogue == false then
             uiManager:hideElement('map', 'echapWindow')
             uiManager:hideElement("map", "returnTitleButton")
+            uiManager:hideElement("map", "saveButton")
             -- uiManager:unfreezeElement("npc", "npc_random")
         end
     end
