@@ -39,8 +39,7 @@ jobs:
         run: |
           COMMIT_HASH=$(git rev-parse --short HEAD)
           mkdir -p build/$COMMIT_HASH/appimage/resources
-          ls
-          cp reposource/resources/*.json build/$COMMIT_HASH/appimage/resources/
+          cp resources/*.json build/$COMMIT_HASH/appimage/resources/
 
       - name: Package all builds
         run: |
