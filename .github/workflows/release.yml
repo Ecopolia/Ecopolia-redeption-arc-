@@ -35,11 +35,11 @@ jobs:
           COMMIT_HASH=$(git rev-parse --short HEAD)
           makelove --version-name $COMMIT_HASH
 
-      - name: Prepare AppImage build with ressources
+      - name: Prepare AppImage build with resources
         run: |
           COMMIT_HASH=$(git rev-parse --short HEAD)
-          mkdir -p build/$COMMIT_HASH/appimage/ressources
-          cp reposource/ressources/*.json build/$COMMIT_HASH/appimage/ressources/
+          mkdir -p build/$COMMIT_HASH/appimage/resources
+          cp reposource/resources/*.json build/$COMMIT_HASH/appimage/resources/
 
       - name: Package all builds
         run: |
