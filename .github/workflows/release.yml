@@ -35,27 +35,6 @@ jobs:
           COMMIT_HASH=$(git rev-parse --short HEAD)
           makelove --version-name $COMMIT_HASH
 
-      - name: Prepare win32 and win64 builds with ressources
-        run: |
-          COMMIT_HASH=$(git rev-parse --short HEAD)
-          
-          # Unzip, add resources, and re-zip win32
-          ls
-          unzip build/$COMMIT_HASH/win32/Ecopolia-redemption-arc-win32.zip -d build/$COMMIT_HASH/win32/win32_temp/
-          mkdir -p build/$COMMIT_HASH/win32/win32_temp/ressources
-          cp reposource/ressources/*.json build/$COMMIT_HASH/win32/win32_temp/ressources/
-          cd build/$COMMIT_HASH/win32/win32_temp/
-          zip -r ../win32.zip ./*
-          cd ../../../../
-
-          # Unzip, add resources, and re-zip win64
-          unzip build/$COMMIT_HASH/win64/Ecopolia-redemption-arc-win64.zip -d build/$COMMIT_HASH/win64/win64_temp/
-          mkdir -p build/$COMMIT_HASH/win64/win64_temp/ressources
-          cp reposource/ressources/*.json build/$COMMIT_HASH/win64/win64_temp/ressources/
-          cd build/$COMMIT_HASH/win64/win64_temp/
-          zip -r ../win64.zip ./*
-          cd ../../../../
-
       - name: Prepare AppImage build with ressources
         run: |
           COMMIT_HASH=$(git rev-parse --short HEAD)
@@ -67,26 +46,12 @@ jobs:
           cd build
           COMMIT_HASH=$(git rev-parse --short HEAD)
           zip -r ecopolia_appimage.zip $COMMIT_HASH/appimage/
-          mv $COMMIT_HASH/win32.zip ecopolia_win32.zip
-          mv $COMMIT_HASH/win64.zip ecopolia_win64.zip
 
       - name: Upload AppImage artifact
         uses: actions/upload-artifact@v3
         with:
           name: ecopolia-appimage
           path: build/ecopolia_appimage.zip
-
-      - name: Upload win32 artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: ecopolia-win32
-          path: build/ecopolia_win32.zip
-
-      - name: Upload win64 artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: ecopolia-win64
-          path: build/ecopolia_win64.zip
 
   release:
     permissions: write-all
@@ -100,16 +65,6 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: ecopolia-appimage
-      
-      - name: Download artifact Win32
-        uses: actions/download-artifact@v3
-        with:
-          name: ecopolia-win32
-
-      - name: Download artifact Win64
-        uses: actions/download-artifact@v3
-        with:
-          name: ecopolia-win64
 
       - name: Get latest commit hash
         id: get_commit
@@ -134,24 +89,4 @@ jobs:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ecopolia_appimage.zip
           asset_name: ecopolia_appimage.zip
-          asset_content_type: application/zip
-
-      - name: Upload win32 release asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ecopolia_win32.zip
-          asset_name: ecopolia_win32.zip
-          asset_content_type: application/zip
-
-      - name: Upload win64 release asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ecopolia_win64.zip
-          asset_name: ecopolia_win64.zip
           asset_content_type: application/zip
